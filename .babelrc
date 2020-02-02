@@ -1,0 +1,9 @@
+{
+    "plugins": [
+        ["relay", { "artifactDirectory": "./__generated__/relay/" }],
+        "@babel/transform-runtime"
+    ],
+    "presets": [
+        "@babel/preset-env"
+    ]
+}

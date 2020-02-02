@@ -1,0 +1,183 @@
+input AddEventInput {
+  name: String!
+  artistIds: [ID]!
+  clientMutationId: String
+}
+
+type AddEventPayload {
+  eventEdge: EventEdge!
+  clientMutationId: String
+}
+
+input AddGoodsInput {
+  name: String!
+  eventId: ID!
+  artistId: ID!
+  clientMutationId: String
+}
+
+type AddGoodsPayload {
+  goodsEdge: GoodsEdge!
+  clientMutationId: String
+}
+
+input AddItemInput {
+  idx: Int!
+  memberIds: [ID]!
+  goodsId: ID!
+  clientMutationId: String
+}
+
+type AddItemPayload {
+  itemEdge: ItemEdge!
+  clientMutationId: String
+}
+
+type Artist implements Node {
+  """The ID of an object"""
+  id: ID!
+  artistId: ID!
+  name: String!
+  aliases: [String]
+  description: String
+  isGroup: Boolean!
+  members: [Member]
+  events(after: String, first: Int, before: String, last: Int): EventConnection
+  goodsList: [Goods]
+}
+
+type Event implements Node {
+  """The ID of an object"""
+  id: ID!
+  eventId: ID!
+  name: String!
+  description: String
+  goodsList(artistId: ID = "any", artistName: String = "any", after: String, first: Int, before: String, last: Int): GoodsConnection
+}
+
+"""A connection to a list of items."""
+type EventConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [EventEdge]
+}
+
+"""An edge in a connection."""
+type EventEdge {
+  """The item at the end of the edge"""
+  node: Event
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Goods implements Node {
+  """The ID of an object"""
+  id: ID!
+  goodsId: ID!
+  name: String!
+  items(after: String, first: Int, before: String, last: Int): ItemConnection
+}
+
+"""A connection to a list of items."""
+type GoodsConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [GoodsEdge]
+}
+
+"""An edge in a connection."""
+type GoodsEdge {
+  """The item at the end of the edge"""
+  node: Goods
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Item implements Node {
+  """The ID of an object"""
+  id: ID!
+  itemId: ID!
+  idx: Int!
+  members: [Member]!
+}
+
+"""A connection to a list of items."""
+type ItemConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ItemEdge]
+}
+
+"""An edge in a connection."""
+type ItemEdge {
+  """The item at the end of the edge"""
+  node: Item
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Member implements Node {
+  """The ID of an object"""
+  id: ID!
+  memberId: ID!
+  name: String!
+  aliases: [String]
+  description: String
+}
+
+type Mutation {
+  addGoods(input: AddGoodsInput!): AddGoodsPayload
+  addEvent(input: AddEventInput!): AddEventPayload
+  addItem(input: AddItemInput!): AddItemPayload
+}
+
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+type Query {
+  viewer: User
+  user(id: ID): User
+  artist(name: String): Artist
+  event(id: ID): Event
+  goods(id: ID): Goods
+
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+}
+
+type User implements Node {
+  """The ID of an object"""
+  id: ID!
+  userId: ID!
+  name: String!
+}

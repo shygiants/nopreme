@@ -1,0 +1,57 @@
+{
+  "name": "nopreme",
+  "version": "0.0.0",
+  "description": "NO MORE PREMIUM",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "babel-node server.js",
+    "relay": "relay-compiler --src ./src --schema ./data/schema.graphql --artifactDirectory ./__generated__/relay",
+    "clean-relay": "rm -rf __generated__",
+    "build": "parcel build src/index.html -d docs/",
+    "clean": "rm -rf dist docs .cache",
+    "update-schema": "babel-node ./scripts/updateSchema.js",
+    "help": "babel-node --help"
+  },
+  "keywords": [],
+  "author": "Sanghoon Yoon",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/runtime": "^7.8.3",
+    "babel-plugin-relay": "^8.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "express-jwt": "^5.3.1",
+    "farce": "^0.2.8",
+    "found": "^0.4.9",
+    "found-relay": "^0.6.0",
+    "graphql": "^14.5.8",
+    "graphql-relay": "^0.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.8.9",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-relay": "^8.0.0",
+    "react-relay-network-modern": "^4.4.0",
+    "relay-compiler": "^8.0.0",
+    "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.8.3"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shygiants/nopreme.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shygiants/nopreme/issues"
+  },
+  "homepage": "https://github.com/shygiants/nopreme#readme"
+}
