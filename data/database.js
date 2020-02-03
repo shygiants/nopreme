@@ -1,12 +1,21 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
+import {getKakaoUserInfo} from '../src/utils';
+
 
 const userSchema = new mongoose.Schema({
     name: String,
     createdAt: {
         type: Date,
         default: Date.now,
+    },
+    openChatLink: {
+        type: String,
+    },
+    kakao: {
+        id: String,
+        accessToken: String,
     },
     posesses: [{ 
         type: Schema.Types.ObjectId, 
@@ -85,6 +94,24 @@ export function isObjectId(idOrObj) {
 
 export function getUserById(id) {
     return User.findById(id).exec();
+}
+
+export function getUserByKakaoId(kakaoId) {
+    return User.findOne({'kakao.id': kakaoId}).exec();
+}
+
+export function addUser(name, openChatLink, accessToken) {
+    return getKakaoUserInfo(accessToken).then(({id}) => {
+        return getUserByKakaoId(id).then(user => {
+            if (user !== null) {
+                throw new Error('User already exists');
+            }
+
+            return new User({name, openChatLink, kakao: {
+                accessToken, id
+            }}).save().then(({_id}) => _id);
+        });
+    });
 }
 
 export function getArtistById(id) {

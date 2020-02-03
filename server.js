@@ -13,6 +13,8 @@ import jwt from 'express-jwt';
 import jwtSign from 'jsonwebtoken';
 
 import {schema} from './data/schema';
+import {addUser, getUserByKakaoId} from './data/database';
+import {getKakaoUserInfo} from './src/utils';
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -32,7 +34,48 @@ app.use('/graphql', jwt({secret: jwtSecret}), graphqlHTTP({
   schema: schema,
   graphiql: true,
 }));
-app.get('/jwt/refresh', (req, res) => res.json({token: jwtSign.sign({ id: process.env.DEFAULT_USER_ID }, jwtSecret)}));
+
+app.use('/signin', express.static(path.resolve(__dirname, 'docs', 'signin')));
+
+function kakaoAccessToken(req, res, next) {
+  getKakaoUserInfo(req.body.accessToken).then(resp => {
+    req.kakaoUser = resp;
+    next();
+  }).catch(err => {
+    console.error(err);
+    res.status(401).end();
+  });
+}
+
+app.post('/auth/signin', express.json(), kakaoAccessToken, (req, res) => {
+  getUserByKakaoId(req.kakaoUser.id).then(user => {
+    if (user !== null) {
+      res.json({
+        token: jwtSign.sign({ 
+          id: user._id,
+        }, jwtSecret)})
+      return
+    } 
+
+    res.json({exists: false});
+  });
+});
+
+app.post('/auth/signup', express.json(), (req, res) => {
+  const {nickname, openChatLink, accessToken} = req.body;
+
+  addUser(nickname, openChatLink, accessToken).then(_id => {
+    res.json({
+      token: jwtSign.sign({ 
+        id: _id,
+      }, jwtSecret)})
+  });
+});
+
+// TODO: CORS
+app.post('/kakao/nickname', express.json(), kakaoAccessToken, (req, res) => {
+  res.json({nickname: req.kakaoUser.kakao_account.profile.nickname});
+});
 
 app.listen(4000);
 console.log('Running a GraphQL API server at http://localhost:4000/graphql');

@@ -51,14 +51,9 @@ const network = new RelayNetworkLayer([
         token: () => localStorage.getItem('jwt'),
         tokenRefreshPromise: (req) => {
             console.log('[client.js] resolve token refresh', req);
-            return fetch('/jwt/refresh')
-                .then((res) => res.json())
-                .then((json) => {
-                const token = json.token;
-                localStorage.setItem('jwt', token);
-                return token;
-            })
-            .catch((err) => console.log('[client.js] ERROR can not refresh token', err));
+
+            localStorage.removeItem('jwt');
+            window.location.href = 'http://localhost:4000/signin';
         },
     }),
     progressMiddleware({

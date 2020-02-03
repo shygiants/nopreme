@@ -6,8 +6,8 @@ export default class TextsInput extends Component {
 
         const {texts} = props
 
-        this.state = texts.reduce((map, {name}) => {
-            map[name] = '';
+        this.state = texts.reduce((map, {name, initialValue}) => {
+            map[name] = initialValue || '';
             return map;
         }, {})
     }

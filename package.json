@@ -5,12 +5,12 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "babel-node server.js",
-    "relay": "relay-compiler --src ./src --schema ./data/schema.graphql --artifactDirectory ./__generated__/relay",
+    "serve": "NODE_ENV=development babel-node server.js",
+    "relay": "NODE_ENV=development relay-compiler --src ./src --schema ./data/schema.graphql --artifactDirectory ./__generated__/relay",
     "clean-relay": "rm -rf __generated__",
-    "build": "parcel build src/index.html -d docs/",
+    "build": "NODE_ENV=development parcel build src/entries/**/*.html src/entries/*.html -d docs/",
     "clean": "rm -rf dist docs .cache",
-    "update-schema": "babel-node ./scripts/updateSchema.js",
+    "update-schema": "NODE_ENV=development babel-node ./scripts/updateSchema.js",
     "help": "babel-node --help"
   },
   "keywords": [],
@@ -35,6 +35,8 @@
     "react-relay": "^8.0.0",
     "react-relay-network-modern": "^4.4.0",
     "relay-compiler": "^8.0.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.8",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
