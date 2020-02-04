@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
         id: String,
         accessToken: String,
     },
+    admin: {
+        type: Boolean,
+        defualt: false,
+    },
     posesses: [{ 
         type: Schema.Types.ObjectId, 
         ref: 'Item' 

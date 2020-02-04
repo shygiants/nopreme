@@ -8,7 +8,9 @@ class Item extends Component {
 
         const displayName = artist.members.length === item.members.length ? '단체' : item.members.map(member => member.name).join(', ');
 
-        return <Link to={`/items/${item.itemId}`}>{displayName} {item.idx}</Link>;
+        const curr = location.hash.slice(1);
+
+        return <Link to={curr + `/items/${item.itemId}`}>{displayName} {item.idx}</Link>;
 
     }
 }

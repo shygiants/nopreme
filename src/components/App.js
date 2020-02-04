@@ -12,7 +12,7 @@ class App extends Component {
         return (
             <div>
                 <Link to='/'>Home</Link>
-                <h3>Viewer: {viewer.name}</h3>
+                <h3>Viewer: {viewer.name} {viewer.admin && '(ADMIN)'}</h3>
                 {children}
             </div>
         );
@@ -25,6 +25,7 @@ export default createFragmentContainer(App, {
             id
             userId
             name
+            admin
         }
     `,
 });

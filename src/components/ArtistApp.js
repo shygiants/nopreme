@@ -2,9 +2,25 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
 import EventList from './EventList';
+import ToggleSwitch from './ToggleSwith';
 
 class ArtistApp extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            editable: false,
+        };
+    }
+
+    handleToggle() {
+        this.setState(state => ({
+            editable: !state.editable,
+        }));
+    }
+
     render() {
+        const {editable} = this.state;
         const {artist} = this.props;
 
         return (
@@ -15,7 +31,8 @@ class ArtistApp extends Component {
                         <li key={member.memberId}>{member.name}</li>
                     ))}
                 </ul>
-                <EventList artist={artist} />
+                <ToggleSwitch on={editable} onChange={this.handleToggle.bind(this)} label='Admin' />
+                <EventList artist={artist} editable={editable} />
             </div>
         );
     }

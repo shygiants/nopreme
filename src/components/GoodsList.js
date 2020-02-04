@@ -16,14 +16,14 @@ class GoodsList extends Component {
     }
 
     render() {
-        const {event, artist} = this.props;
+        const {event, artist, editable} = this.props;
         const {goodsList} = event;
 
         const nodes = goodsList.edges.map(edge => edge.node);
 
         return (
             <div>
-                <TextInput placeholder='굿즈 이름' onSave={this.handleTextInputSave.bind(this)} />
+                {editable && <TextInput placeholder='굿즈 이름' onSave={this.handleTextInputSave.bind(this)} />}
                 <ul>
                     {nodes.map(goods => <li key={goods.id}><Goods goods={goods} /></li>)}
                 </ul>

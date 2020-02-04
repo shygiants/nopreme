@@ -167,6 +167,7 @@ type Query {
   artist(name: String): Artist
   event(id: ID): Event
   goods(id: ID): Goods
+  item(id: ID): Item
 
   """Fetches an object given its ID"""
   node(
@@ -180,4 +181,5 @@ type User implements Node {
   id: ID!
   userId: ID!
   name: String!
+  admin: Boolean
 }

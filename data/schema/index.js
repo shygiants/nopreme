@@ -12,6 +12,7 @@ import {
     GraphQLArtist,
     GraphQLGoods,
     GraphQLEventEdge,
+    GraphQLItem,
 } from './nodes';
 
 import {
@@ -19,6 +20,7 @@ import {
     getArtistByName,
     getEventById,
     getGoodsById,
+    getItemById,
 } from '../database';
 
 import {AddGoodsMutation} from './mutations/AddGoodsMutation';
@@ -68,19 +70,16 @@ const Query = new GraphQLObjectType({
                 },
             },
             resolve: (root, {id}) => getGoodsById(id),
-        },                
-        //     },
-        //     resolve: (root, {id}) => getGoodsById(id),
-        // },
-        // items: {
-        //     type: new GraphQLList(GraphQLItem),
-        //     args: {
-        //         goodsId: {
-        //             type: GraphQLString,
-        //         }
-        //     },
-        //     resolve: (root, {goodsId}) => getItemsByGoodsId(goodsId),
-        // },
+        },
+        item: {
+            type: GraphQLItem,
+            args: {
+                id: {
+                    type: GraphQLID,
+                },
+            },
+            resolve: (root, {id}) => getItemById(id),
+        },        
         node: nodeField,
     }
 });

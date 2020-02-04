@@ -61,7 +61,7 @@ class ItemList extends Component {
         return (
             <div>
                 {/* <SelectionInput options={memberNames} /> */}
-                <TextsInput texts={texts} onSave={this.handleTextsInputSave.bind(this)} />
+                {this.props.editable && <TextsInput texts={texts} onSave={this.handleTextsInputSave.bind(this)} />}
                 <ul>
                     {sortedItems.map(item => <li key={item.id}><Item item={item} artist={this.props.artist} /></li>)}
                 </ul>

@@ -6,8 +6,9 @@ class Goods extends Component {
     render() {
         const {goods} = this.props;
 
-        return <Link to={`/goods/${goods.goodsId}`}>{goods.name}</Link>;
+        const curr = location.hash.slice(1);
 
+        return <Link to={curr + `/goods/${goods.goodsId}`}>{goods.name}</Link>;
     }
 }
 

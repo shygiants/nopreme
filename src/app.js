@@ -18,8 +18,11 @@ import App from './components/App';
 import ArtistApp from './components/ArtistApp';
 import EventApp from './components/EventApp';
 import GoodsApp from './components/GoodsApp';
+import ItemApp from './components/ItemApp';
+import Pop from './components/Pop';
 
 import {environment} from './environment';
+import { graphql } from 'react-relay';
 
 const artistName = 'IZ*ONE';
 
@@ -51,34 +54,60 @@ const Router = createFarceRouter({
             />
             <Route
                 path='events/:eventId'
-                Component={EventApp}
-                query={graphql`
-                    query app_EventApp_Query($eventId: ID, $artistName: String) {
-                        event(id: $eventId) {
-                            ...EventApp_event @arguments(artistName: $artistName)
+                Component={Pop}
+            >
+                <Route
+                    Component={EventApp}
+                    query={graphql`
+                        query app_EventApp_Query($eventId: ID, $artistName: String) {
+                            event(id: $eventId) {
+                                ...EventApp_event @arguments(artistName: $artistName)
+                            }
+                            artist(name: $artistName) {
+                                ...EventApp_artist 
+                            }
                         }
-                        artist(name: $artistName) {
-                            ...EventApp_artist 
-                        }
-                    }
-                `}
-                prepareVariables={(params) => ({eventId: params.eventId, artistName})}
-            />
-            <Route
-                path='goods/:goodsId'
-                Component={GoodsApp}
-                query={graphql`
-                    query app_GoodsApp_Query($goodsId: ID, $artistName: String) {
-                        goods(id: $goodsId) {
-                            ...GoodsApp_goods
-                        }
-                        artist(name: $artistName) {
-                            ...ItemList_artist 
-                        }
-                    }
-                `}
-                prepareVariables={params => ({goodsId: params.goodsId, artistName})}
-            />
+                    `}
+                    prepareVariables={(params) => ({eventId: params.eventId, artistName})}
+                />
+                <Route
+                    path='/goods/:goodsId'
+                >
+                    <Route
+                        Component={GoodsApp}
+                        query={graphql`
+                            query app_GoodsApp_Query($goodsId: ID, $artistName: String, $eventId: ID) {
+                                goods(id: $goodsId) {
+                                    ...GoodsApp_goods
+                                }
+                                artist(name: $artistName) {
+                                    ...ItemList_artist 
+                                }
+                                event(id: $eventId) {
+                                    ...GoodsApp_event
+                                }
+                            }
+                        `}
+                        prepareVariables={({goodsId, eventId}) => ({goodsId, artistName, eventId})}
+                    />
+                    <Route
+                        path='/items/:itemId'
+                        Component={ItemApp}
+                            query={graphql`
+                                query app_ItemApp_Query($itemId: ID, $goodsId: ID) {
+                                    item(id: $itemId) {
+                                        ...ItemApp_item
+                                    }
+                                    goods(id: $goodsId) {
+                                        ...ItemApp_goods
+                                    }
+                                }
+                            `}
+                            prepareVariables={({itemId, goodsId}) => ({itemId, goodsId})}
+                    />
+                </Route>
+            </Route>
+            
         </Route>
     ),
 });

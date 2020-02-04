@@ -15,13 +15,14 @@ class EventList extends Component {
     }
 
     render() {
+        const {editable} = this.props;
         const {events} = this.props.artist;
 
         const nodes = events.edges.map(edge => edge.node);
 
         return (
             <div>
-                <TextInput placeholder='이벤트 이름' onSave={this.handleTextInputSave.bind(this)}/>
+                {editable && <TextInput placeholder='이벤트 이름' onSave={this.handleTextInputSave.bind(this)}/>}
                 <ul>
                     {nodes.map(event => <li key={event.id}><Event event={event} /></li>)}
                 </ul>

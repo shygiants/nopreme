@@ -298,6 +298,10 @@ const GraphQLUser = new GraphQLObjectType({
         name: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        admin: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+        }
     },
     interfaces: [nodeInterface],
 });
