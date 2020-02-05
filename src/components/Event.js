@@ -6,7 +6,11 @@ class Event extends Component {
     render() {
         const {event} = this.props;
 
-        return <Link to={`/events/${event.eventId}`} >{event.name}</Link>;
+        const curr = location.hash.slice(1);
+
+        return (
+            <Link to={curr + `/events/${event.eventId}`} >{event.name}</Link>
+        );
     }
 }
 

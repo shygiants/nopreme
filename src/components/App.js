@@ -11,7 +11,11 @@ class App extends Component {
 
         return (
             <div>
-                <Link to='/'>Home</Link>
+                <ul>
+                    <li><Link to='/'>Home</Link></li>
+                    <li><Link to='/browse'>Browse</Link></li>
+                </ul>
+                
                 <h3>Viewer: {viewer.name} {viewer.admin && '(ADMIN)'}</h3>
                 {children}
             </div>

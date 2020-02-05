@@ -3,6 +3,9 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 
 import EventList from './EventList';
 import ToggleSwitch from './ToggleSwith';
+import TextInput from './TextInput';
+
+import AddEventMutation from '../mutations/AddEventMutation';
 
 class ArtistApp extends Component {
     constructor(props) {
@@ -19,6 +22,10 @@ class ArtistApp extends Component {
         }));
     }
 
+    handleTextInputSave(eventName) {
+        AddEventMutation.commit(this.props.relay.environment, eventName, this.props.artist);
+    }
+
     render() {
         const {editable} = this.state;
         const {artist} = this.props;
@@ -32,7 +39,8 @@ class ArtistApp extends Component {
                     ))}
                 </ul>
                 <ToggleSwitch on={editable} onChange={this.handleToggle.bind(this)} label='Admin' />
-                <EventList artist={artist} editable={editable} />
+                {editable && <TextInput placeholder='이벤트 이름' onSave={this.handleTextInputSave.bind(this)}/>}
+                <EventList artist={artist} />
             </div>
         );
     }
@@ -42,6 +50,7 @@ export default createFragmentContainer(ArtistApp, {
     artist: graphql`
         fragment ArtistApp_artist on Artist {
             id
+            artistId
             name
             members {
                 id

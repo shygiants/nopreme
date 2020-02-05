@@ -301,7 +301,31 @@ const GraphQLUser = new GraphQLObjectType({
         admin: {
             type: GraphQLBoolean,
             defaultValue: false,
-        }
+        },
+        collects: {
+            type: new GraphQLList(GraphQLItem),
+            resolve: user => {
+                return Promise.all(user.collects.map(itemId => {
+                    return getItemById(itemId);
+                }));
+            },
+        },
+        posesses: {
+            type: new GraphQLList(GraphQLItem),
+            resolve: user => {
+                return Promise.all(user.posesses.map(itemId => {
+                    return getItemById(itemId);
+                }));
+            },
+        },
+        wishes: {
+            type: new GraphQLList(GraphQLItem),
+            resolve: user => {
+                return Promise.all(user.wishes.map(itemId => {
+                    return getItemById(itemId);
+                }));
+            },
+        },
     },
     interfaces: [nodeInterface],
 });

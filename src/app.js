@@ -20,6 +20,7 @@ import EventApp from './components/EventApp';
 import GoodsApp from './components/GoodsApp';
 import ItemApp from './components/ItemApp';
 import Pop from './components/Pop';
+import Feed from './components/Feed';
 
 import {environment} from './environment';
 import { graphql } from 'react-relay';
@@ -41,70 +42,87 @@ const Router = createFarceRouter({
                 }
             `}
         >
-            <Route
-                Component={ArtistApp}
+            <Route 
+                Component={Feed}
                 query={graphql`
-                    query app_ArtistApp_Query($artistName: String) {
-                        artist(name: $artistName) {
-                            ...ArtistApp_artist
+                    query app_Feed_Query($artistName: String) {
+                        viewer {
+                            ...Feed_viewer
                         }
                     }
                 `}
-                prepareVariables={() => ({artistName})}
             />
             <Route
-                path='events/:eventId'
-                Component={Pop}
+                path='browse'
             >
                 <Route
-                    Component={EventApp}
+                    Component={ArtistApp}
                     query={graphql`
-                        query app_EventApp_Query($eventId: ID, $artistName: String) {
-                            event(id: $eventId) {
-                                ...EventApp_event @arguments(artistName: $artistName)
-                            }
+                        query app_ArtistApp_Query($artistName: String) {
                             artist(name: $artistName) {
-                                ...EventApp_artist 
+                                ...ArtistApp_artist
                             }
                         }
                     `}
-                    prepareVariables={(params) => ({eventId: params.eventId, artistName})}
+                    prepareVariables={() => ({artistName})}
                 />
                 <Route
-                    path='/goods/:goodsId'
+                    path='events/:eventId'
+                    Component={Pop}
                 >
                     <Route
-                        Component={GoodsApp}
+                        Component={EventApp}
                         query={graphql`
-                            query app_GoodsApp_Query($goodsId: ID, $artistName: String, $eventId: ID) {
-                                goods(id: $goodsId) {
-                                    ...GoodsApp_goods
-                                }
+                            query app_EventApp_Query($eventId: ID, $artistName: String) {
                                 artist(name: $artistName) {
-                                    ...ItemList_artist 
+                                    ...EventApp_artist 
                                 }
                                 event(id: $eventId) {
-                                    ...GoodsApp_event
+                                    ...EventApp_event @arguments(artistName: $artistName)
                                 }
                             }
                         `}
-                        prepareVariables={({goodsId, eventId}) => ({goodsId, artistName, eventId})}
+                        prepareVariables={(params) => ({eventId: params.eventId, artistName})}
                     />
                     <Route
-                        path='/items/:itemId'
-                        Component={ItemApp}
+                        path='/goods/:goodsId'
+                    >
+                        <Route
+                            Component={GoodsApp}
                             query={graphql`
-                                query app_ItemApp_Query($itemId: ID, $goodsId: ID) {
-                                    item(id: $itemId) {
-                                        ...ItemApp_item
+                                query app_GoodsApp_Query($goodsId: ID, $artistName: String, $eventId: ID) {
+                                    viewer {
+                                        ...GoodsApp_viewer
+                                    }
+                                    artist(name: $artistName) {
+                                        ...GoodsApp_artist 
+                                    }
+                                    event(id: $eventId) {
+                                        ...GoodsApp_event
                                     }
                                     goods(id: $goodsId) {
-                                        ...ItemApp_goods
-                                    }
+                                        ...GoodsApp_goods
+                                    }   
                                 }
                             `}
-                            prepareVariables={({itemId, goodsId}) => ({itemId, goodsId})}
-                    />
+                            prepareVariables={({goodsId, eventId}) => ({goodsId, artistName, eventId})}
+                        />
+                        <Route
+                            path='/items/:itemId'
+                            Component={ItemApp}
+                                query={graphql`
+                                    query app_ItemApp_Query($itemId: ID, $goodsId: ID) {
+                                        item(id: $itemId) {
+                                            ...ItemApp_item
+                                        }
+                                        goods(id: $goodsId) {
+                                            ...ItemApp_goods
+                                        }
+                                    }
+                                `}
+                                prepareVariables={({itemId, goodsId}) => ({itemId, goodsId})}
+                        />
+                    </Route>
                 </Route>
             </Route>
             

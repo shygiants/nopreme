@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         defualt: false,
     },
+    collects: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'Item' 
+    }],
     posesses: [{ 
         type: Schema.Types.ObjectId, 
         ref: 'Item' 

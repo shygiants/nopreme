@@ -2,28 +2,20 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay'
 
 import Goods from './Goods';
-import AddGoodsMutation from '../mutations/AddGoodsMutation';
-import TextInput from './TextInput';
+
 
 class GoodsList extends Component {
-    handleTextInputSave(goodsName) {
-        const {relay, event, artist} = this.props;
-        AddGoodsMutation.commit(
-            relay.environment, 
-            goodsName, 
-            event, 
-            artist);
-    }
+    
 
     render() {
-        const {event, artist, editable} = this.props;
+        const {event} = this.props;
         const {goodsList} = event;
 
         const nodes = goodsList.edges.map(edge => edge.node);
 
         return (
             <div>
-                {editable && <TextInput placeholder='굿즈 이름' onSave={this.handleTextInputSave.bind(this)} />}
+                
                 <ul>
                     {nodes.map(goods => <li key={goods.id}><Goods goods={goods} /></li>)}
                 </ul>
@@ -51,13 +43,6 @@ export default createFragmentContainer(GoodsList, {
                     }
                 }
             }
-        }
-    `,
-    artist: graphql`
-        fragment GoodsList_artist on Artist {
-            id
-            artistId
-            name
         }
     `,
 });

@@ -182,4 +182,7 @@ type User implements Node {
   userId: ID!
   name: String!
   admin: Boolean
+  collects: [Item]
+  posesses: [Item]
+  wishes: [Item]
 }

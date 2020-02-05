@@ -4,6 +4,9 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 import GoodsList from './GoodsList';
 import ToggleSwitch from './ToggleSwith';
 
+import AddGoodsMutation from '../mutations/AddGoodsMutation';
+import TextInput from './TextInput';
+
 class EventApp extends Component {
     constructor(props) {
         super(props);
@@ -11,6 +14,15 @@ class EventApp extends Component {
         this.state = {
             editable: false,
         };
+    }
+
+    handleTextInputSave(goodsName) {
+        const {relay, event, artist} = this.props;
+        AddGoodsMutation.commit(
+            relay.environment, 
+            goodsName, 
+            event, 
+            artist);
     }
 
     handleToggle() {
@@ -28,7 +40,8 @@ class EventApp extends Component {
                 <h1>{event.name}</h1>
                 <h2>{artist.name}</h2>
                 <ToggleSwitch on={editable} onChange={this.handleToggle.bind(this)} label='Admin' />
-                <GoodsList event={event} artist={artist} editable={editable} />
+                {editable && <TextInput placeholder='굿즈 이름' onSave={this.handleTextInputSave.bind(this)} />}
+                <GoodsList event={event} />
             </div>
         );
     }
@@ -48,8 +61,8 @@ export default createFragmentContainer(EventApp, {
     artist: graphql`
         fragment EventApp_artist on Artist {
             id
+            artistId
             name
-            ...GoodsList_artist
         }
     `,
 });
