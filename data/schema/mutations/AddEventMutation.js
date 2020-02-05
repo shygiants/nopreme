@@ -14,7 +14,8 @@ import {
 import {
     getEventById,
     addEvent,
-    getEventsByArtistId
+    getEventsByArtistId,
+    getUserById
 } from '../../database';
 
 export const AddEventMutation = mutationWithClientMutationId({
@@ -51,7 +52,12 @@ export const AddEventMutation = mutationWithClientMutationId({
     mutateAndGetPayload: ({
         name,
         artistIds
-    }) => {
-        return addEvent(name, artistIds).then(eventId => ({eventId, artistIds}));
+    }, {user: {id}}) => {
+        return getUserById(id).then(user => {
+            if (!user.admin)
+                return null;
+
+            return addEvent(name, artistIds).then(eventId => ({eventId, artistIds}));
+        });
     }
 });

@@ -54,9 +54,14 @@ export const AddItemMutation = mutationWithClientMutationId({
         idx,
         memberIds,
         goodsId,
-    }) => {
-        return addItem(idx, memberIds, goodsId).then(itemId => ({
-            itemId, goodsId,
-        }));
+    }, {user: {id}}) => {
+        return getUserById(id).then(user => {
+            if (!user.admin)
+                return null;
+
+            return addItem(idx, memberIds, goodsId).then(itemId => ({
+                itemId, goodsId,
+            }));
+        });
     },
 });

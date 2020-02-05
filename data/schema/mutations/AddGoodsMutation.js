@@ -15,7 +15,8 @@ import {
     addGoods,
     getGoodsById,
     getGoodsByEventId,
-    getGoodsByEventArtistId
+    getGoodsByEventArtistId,
+    getUserById
 } from '../../database';
 
 export const AddGoodsMutation = mutationWithClientMutationId({
@@ -54,9 +55,14 @@ export const AddGoodsMutation = mutationWithClientMutationId({
         name,
         eventId,
         artistId,
-    }) => {
-        return addGoods(name, eventId, artistId).then(goodsId => ({
-            goodsId, eventId, artistId,
-        }));
+    }, {user: {id}}) => {
+        return getUserById(id).then(user => {
+            if (!user.admin)
+                return null;
+
+            return addGoods(name, eventId, artistId).then(goodsId => ({
+                goodsId, eventId, artistId,
+            }));
+        });
     }
 });

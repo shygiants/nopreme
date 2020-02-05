@@ -45,7 +45,7 @@ const Router = createFarceRouter({
             <Route 
                 Component={Feed}
                 query={graphql`
-                    query app_Feed_Query($artistName: String) {
+                    query app_Feed_Query {
                         viewer {
                             ...Feed_viewer
                         }
