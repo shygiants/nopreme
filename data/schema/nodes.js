@@ -36,6 +36,9 @@ import {
     getGoodsByArtistId,
     getGoodsByEventArtistId,
     getGoodsByEventArtistName,
+    getUserItemsByUserId,
+    getUserItemById,
+    UserItem,
 } from '../database';
 // import { get } from 'mongoose';
 
@@ -48,9 +51,7 @@ const {
 
         if (type === 'User') {
             return getUserById(id);
-        } else if (type === 'Artist') {
-            return getArtistById(id);
-        } else if (type === 'Member') {
+        } else if (type === 'Artist' || type === 'Member') {
             return getArtistById(id);
         } else if (type === 'Event') {
             return getEventById(id);
@@ -58,6 +59,8 @@ const {
             return getGoodsById(id);
         } else if (type === 'Item') {
             return getItemById(id);
+        } else if (type === 'Collection' || type === 'Posession' || type === 'Wish') {
+            return getUserItemById(id);
         }
 
         return null;
@@ -73,6 +76,20 @@ const {
             return GraphQLGoods;
         } else if (obj instanceof Item) {
             return GraphQLItem;
+        } else if (obj instanceof UserItem) {
+            switch (obj.relationType) {
+                case 'Collection':
+                    return GraphQLCollection;
+                    break;
+                case 'Posession':
+                    return GraphQLPosession;
+                    break;
+                case 'Wish':
+                    return GraphQLWish;
+                    break;
+                default:
+                    return null;
+            }
         }
 
         return null;
@@ -286,6 +303,92 @@ const GraphQLArtist = new GraphQLObjectType({
     interfaces: [nodeInterface],
 })
 
+const GraphQLCollection = new GraphQLObjectType({
+    name: 'Collection',
+    fields: {
+        id: globalIdField('Collection', collection => collection._id),
+        collectionId: {
+            type: new GraphQLNonNull(GraphQLID),
+            resolve: collection => collection._id,
+        },
+        item: {
+            type: new GraphQLNonNull(GraphQLItem),
+            resolve: collection => {
+                return getItemById(collection.item);
+            },
+        },
+        num: {
+            type: new GraphQLNonNull(GraphQLInt),
+        }
+    },
+    interfaces: [nodeInterface],
+});
+
+const {
+    connectionType: CollectionConnection,
+    edgeType: GraphQLCollectionEdge,
+} = connectionDefinitions({
+    name: 'Collection',
+    nodeType: GraphQLCollection
+});
+
+const GraphQLPosession = new GraphQLObjectType({
+    name: 'Posession',
+    fields: {
+        id: globalIdField('Posession', posession => posession._id),
+        posessionId: {
+            type: new GraphQLNonNull(GraphQLID),
+            resolve: posession => posession._id,
+        },
+        item: {
+            type: new GraphQLNonNull(GraphQLItem),
+            resolve: posession => {
+                return getItemById(posession.item);
+            },
+        },
+        num: {
+            type: new GraphQLNonNull(GraphQLInt),
+        }
+    },
+    interfaces: [nodeInterface],
+});
+
+const {
+    connectionType: PosessionConnection,
+    edgeType: GraphQLPosessionEdge,
+} = connectionDefinitions({
+    name: 'Posession',
+    nodeType: GraphQLPosession,
+});
+
+const GraphQLWish = new GraphQLObjectType({
+    name: 'Wish',
+    fields: {
+        id: globalIdField('Wish', wish => wish._id),
+        wishId: {
+            type: new GraphQLNonNull(GraphQLID),
+            resolve: wish => wish._id,
+        },
+        item: {
+            type: new GraphQLNonNull(GraphQLItem),
+            resolve: wish => {
+                return getItemById(wish.item);
+            },
+        },
+        num: {
+            type: new GraphQLNonNull(GraphQLInt),
+        }
+    },
+    interfaces: [nodeInterface],
+});
+
+const {
+    connectionType: WishConnection,
+    edgeType: GraphQLWishEdge,
+} = connectionDefinitions({
+    name: 'Wish',
+    nodeType: GraphQLWish,
+});
 
 const GraphQLUser = new GraphQLObjectType({
     name: 'User',
@@ -303,27 +406,42 @@ const GraphQLUser = new GraphQLObjectType({
             defaultValue: false,
         },
         collects: {
-            type: new GraphQLList(GraphQLItem),
-            resolve: user => {
-                return Promise.all(user.collects.map(itemId => {
-                    return getItemById(itemId);
-                }));
+            type: CollectionConnection,
+            args: {
+                ...connectionArgs,
+            },
+            resolve: (user, {after, before, first, last}) => {
+                return getUserItemsByUserId(user._id, 'Collection').then(collections => {
+                    return connectionFromArray([...collections], {
+                        after, before, first, last,
+                    })
+                });
             },
         },
         posesses: {
-            type: new GraphQLList(GraphQLItem),
-            resolve: user => {
-                return Promise.all(user.posesses.map(itemId => {
-                    return getItemById(itemId);
-                }));
+            type: PosessionConnection,
+            args: {
+                ...connectionArgs,
+            },
+            resolve: (user, {after, before, first, last}) => {
+                return getUserItemsByUserId(user._id, 'Posession').then(posessions => {
+                    return connectionFromArray([...posessions], {
+                        after, before, first, last,
+                    })
+                });
             },
         },
         wishes: {
-            type: new GraphQLList(GraphQLItem),
-            resolve: user => {
-                return Promise.all(user.wishes.map(itemId => {
-                    return getItemById(itemId);
-                }));
+            type: WishConnection,
+            args: {
+                ...connectionArgs,
+            },
+            resolve: (user, {after, before, first, last}) => {
+                return getUserItemsByUserId(user._id, 'Wish').then(wishes => {
+                    return connectionFromArray([...wishes], {
+                        after, before, first, last,
+                    })
+                });
             },
         },
     },
@@ -331,8 +449,10 @@ const GraphQLUser = new GraphQLObjectType({
 });
 
 
+
 export {
-    GraphQLMember, GraphQLItem, GraphQLGoods, GraphQLEvent, GraphQLArtist, GraphQLUser,
+    GraphQLMember, GraphQLItem, GraphQLGoods, GraphQLEvent, GraphQLArtist, GraphQLUser, GraphQLCollection, GraphQLPosession, GraphQLWish,
     nodeInterface, nodeField, 
-    EventConnection, GraphQLEventEdge, GoodsConnection, GraphQLGoodsEdge, ItemConnection, GraphQLItemEdge,
+    EventConnection, GraphQLEventEdge, GoodsConnection, GraphQLGoodsEdge, ItemConnection, GraphQLItemEdge, 
+    CollectionConnection, GraphQLCollectionEdge, PosessionConnection, GraphQLPosessionEdge, WishConnection, GraphQLWishEdge,
 };

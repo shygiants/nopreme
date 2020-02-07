@@ -56,3 +56,7 @@ export function classify(arr, fieldName, comparator=strcmp) {
 
     return directory;
 }
+
+export function getNodesFromConnection(connection) {
+    return connection.edges.map(edge => edge.node);
+}

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
 import ItemList from './ItemList';
-import ToggleSwitch from './ToggleSwith';
+import ToggleSwitch from './ToggleSwitch';
 
 import SelectionInput from './SelectionInput';
 import TextsInput from './TextsInput';

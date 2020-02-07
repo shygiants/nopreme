@@ -5,12 +5,13 @@ import {
 } from 'react-relay';
 
 import Event from './Event';
+import {getNodesFromConnection} from '../utils';
 
 class EventList extends Component {
     render() {
         const {events} = this.props.artist;
 
-        const nodes = events.edges.map(edge => edge.node);
+        const nodes = getNodesFromConnection(events);
 
         return (
             <div>

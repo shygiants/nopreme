@@ -21,22 +21,9 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         defualt: false,
     },
-    collects: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'Item' 
-    }],
-    posesses: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'Item' 
-    }],
-    wishes: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'Item' 
-    }],
 });
 
 export const User = mongoose.model('User', userSchema);
-
 
 const artistSchema = new mongoose.Schema({
     name: String,
@@ -94,6 +81,24 @@ const itemSchema = new mongoose.Schema({
 
 export const Item = mongoose.model('Item', itemSchema);
 
+const userItemSchema = new mongoose.Schema({
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    item: {
+        type: Schema.Types.ObjectId,
+        ref: 'Item',
+    },
+    num: Number,
+    relationType: {
+        type: String,
+        // TODO: Use enum
+        enum: ['Collection', 'Posession', 'Wish'],
+    }
+});
+
+export const UserItem = mongoose.model('UserItem', userItemSchema);
 
 export function isObjectId(idOrObj) {
     return idOrObj instanceof mongoose.Types.ObjectId
@@ -216,4 +221,26 @@ export function addItemsByNumber(number, artists, goods) {
     const promises = range(number).map(idx => new Item({idx, artists, goods}).save().then(({_id}) => _id))
 
     return Promise.all(promises);
+}
+
+export function getUserItemById(id) {
+    return UserItem.findById(id).exec();
+}
+
+export function getUserItemByIds(userId, itemId, relationType) {
+    return UserItem.findOne({user: userId, item: itemId, relationType}).exec();
+}
+
+export function getUserItemsByUserId(userId, relationType) {
+    return UserItem.find({user: userId, relationType}).exec();
+}
+
+export function addUserItem(user, item, num, relationType) {
+    const userItem = new UserItem({user, item, num, relationType});
+
+    return userItem.save().then(({_id}) => _id);
+}
+
+export function removeUserItem(user, item, relationType) {
+    return UserItem.findOneAndDelete({user, item, relationType}).exec().then(({_id}) => _id);
 }

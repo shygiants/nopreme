@@ -1,3 +1,14 @@
+input AddCollectionInput {
+  itemId: ID!
+  num: Int = 1
+  clientMutationId: String
+}
+
+type AddCollectionPayload {
+  collectionEdge: CollectionEdge!
+  clientMutationId: String
+}
+
 input AddEventInput {
   name: String!
   artistIds: [ID]!
@@ -33,6 +44,28 @@ type AddItemPayload {
   clientMutationId: String
 }
 
+input AddPosessionInput {
+  itemId: ID!
+  num: Int = 1
+  clientMutationId: String
+}
+
+type AddPosessionPayload {
+  posessionEdge: PosessionEdge!
+  clientMutationId: String
+}
+
+input AddWishInput {
+  itemId: ID!
+  num: Int = 1
+  clientMutationId: String
+}
+
+type AddWishPayload {
+  wishEdge: WishEdge!
+  clientMutationId: String
+}
+
 type Artist implements Node {
   """The ID of an object"""
   id: ID!
@@ -44,6 +77,32 @@ type Artist implements Node {
   members: [Member]
   events(after: String, first: Int, before: String, last: Int): EventConnection
   goodsList: [Goods]
+}
+
+type Collection implements Node {
+  """The ID of an object"""
+  id: ID!
+  collectionId: ID!
+  item: Item!
+  num: Int!
+}
+
+"""A connection to a list of items."""
+type CollectionConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [CollectionEdge]
+}
+
+"""An edge in a connection."""
+type CollectionEdge {
+  """The item at the end of the edge"""
+  node: Collection
+
+  """A cursor for use in pagination"""
+  cursor: String!
 }
 
 type Event implements Node {
@@ -138,6 +197,12 @@ type Mutation {
   addGoods(input: AddGoodsInput!): AddGoodsPayload
   addEvent(input: AddEventInput!): AddEventPayload
   addItem(input: AddItemInput!): AddItemPayload
+  addCollection(input: AddCollectionInput!): AddCollectionPayload
+  addPosession(input: AddPosessionInput!): AddPosessionPayload
+  addWish(input: AddWishInput!): AddWishPayload
+  removeCollection(input: RemoveCollectionInput!): RemoveCollectionPayload
+  removeWish(input: RemoveWishInput!): RemoveWishPayload
+  removePosession(input: RemovePosessionInput!): RemovePosessionPayload
 }
 
 """An object with an ID"""
@@ -161,6 +226,32 @@ type PageInfo {
   endCursor: String
 }
 
+type Posession implements Node {
+  """The ID of an object"""
+  id: ID!
+  posessionId: ID!
+  item: Item!
+  num: Int!
+}
+
+"""A connection to a list of items."""
+type PosessionConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [PosessionEdge]
+}
+
+"""An edge in a connection."""
+type PosessionEdge {
+  """The item at the end of the edge"""
+  node: Posession
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
 type Query {
   viewer: User
   user(id: ID): User
@@ -176,13 +267,69 @@ type Query {
   ): Node
 }
 
+input RemoveCollectionInput {
+  itemId: ID!
+  clientMutationId: String
+}
+
+type RemoveCollectionPayload {
+  deletedCollectionId: ID!
+  clientMutationId: String
+}
+
+input RemovePosessionInput {
+  itemId: ID!
+  clientMutationId: String
+}
+
+type RemovePosessionPayload {
+  deletedPosessionId: ID!
+  clientMutationId: String
+}
+
+input RemoveWishInput {
+  itemId: ID!
+  clientMutationId: String
+}
+
+type RemoveWishPayload {
+  deletedWishId: ID!
+  clientMutationId: String
+}
+
 type User implements Node {
   """The ID of an object"""
   id: ID!
   userId: ID!
   name: String!
   admin: Boolean
-  collects: [Item]
-  posesses: [Item]
-  wishes: [Item]
+  collects(after: String, first: Int, before: String, last: Int): CollectionConnection
+  posesses(after: String, first: Int, before: String, last: Int): PosessionConnection
+  wishes(after: String, first: Int, before: String, last: Int): WishConnection
+}
+
+type Wish implements Node {
+  """The ID of an object"""
+  id: ID!
+  wishId: ID!
+  item: Item!
+  num: Int!
+}
+
+"""A connection to a list of items."""
+type WishConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [WishEdge]
+}
+
+"""An edge in a connection."""
+type WishEdge {
+  """The item at the end of the edge"""
+  node: Wish
+
+  """A cursor for use in pagination"""
+  cursor: String!
 }

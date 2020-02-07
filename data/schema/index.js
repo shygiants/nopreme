@@ -23,9 +23,15 @@ import {
     getItemById,
 } from '../database';
 
-import {AddGoodsMutation} from './mutations/AddGoodsMutation';
+import { AddGoodsMutation } from './mutations/AddGoodsMutation';
 import { AddEventMutation } from './mutations/AddEventMutation';
 import { AddItemMutation } from './mutations/AddItemMutation';
+import { AddCollectionMutation } from './mutations/AddCollectionMutation';
+import { AddPosessionMutation } from './mutations/AddPosessionMutation';
+import { AddWishMutation } from './mutations/AddWishMutation';
+import { RemoveCollectionMutation } from './mutations/RemoveCollectionMutation';
+import { RemovePosessionMutation } from './mutations/RemovePosessionMutation';
+import { RemoveWishMutation } from './mutations/RemoveWishMutation';
 
 
 const Query = new GraphQLObjectType({
@@ -90,6 +96,12 @@ const Mutation = new GraphQLObjectType({
         addGoods: AddGoodsMutation,
         addEvent: AddEventMutation,
         addItem: AddItemMutation,
+        addCollection: AddCollectionMutation,
+        addPosession: AddPosessionMutation,
+        addWish: AddWishMutation,
+        removeCollection: RemoveCollectionMutation,
+        removeWish: RemoveWishMutation,
+        removePosession: RemovePosessionMutation,        
     },
 });
 

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay'
 
 import Goods from './Goods';
+import {getNodesFromConnection} from '../utils';
 
 
 class GoodsList extends Component {
@@ -11,7 +12,7 @@ class GoodsList extends Component {
         const {event} = this.props;
         const {goodsList} = event;
 
-        const nodes = goodsList.edges.map(edge => edge.node);
+        const nodes = getNodesFromConnection(goodsList);
 
         return (
             <div>

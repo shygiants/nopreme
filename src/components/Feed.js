@@ -19,7 +19,8 @@ class Feed extends Component {
 
         return (
             <div>
-                {viewer.posesses.length === 0 ? 'No posession' : 'You have something'}
+                N
+                {/* {viewer.posesses.length === 0 ? 'No posession' : 'You have something'} */}
             </div>
         );
     }
@@ -30,18 +31,18 @@ export default createFragmentContainer(Feed, {
         fragment Feed_viewer on User {
             id
             name
-            collects {
-                id
-                idx
-            }
-            posesses  {
-                id
-                idx
-            }
-            wishes  {
-                id
-                idx
-            }
+            # collects {
+            #     id
+            #     idx
+            # }
+            # posesses  {
+            #     id
+            #     idx
+            # }
+            # wishes  {
+            #     id
+            #     idx
+            # }
         }
     `,
 });
