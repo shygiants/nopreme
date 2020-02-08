@@ -4,12 +4,15 @@ import React, {
 
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {Link} from 'found';
+import { Grommet } from 'grommet';
+
 
 class App extends Component {
     render() {
         const {viewer, children} = this.props;
 
         return (
+            <Grommet plain>
             <div>
                 <ul>
                     <li><Link to='/'>Home</Link></li>
@@ -19,6 +22,7 @@ class App extends Component {
                 <h3>Viewer: {viewer.name} {viewer.admin && '(ADMIN)'}</h3>
                 {children}
             </div>
+            </Grommet>
         );
     }
 }
