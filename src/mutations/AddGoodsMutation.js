@@ -22,7 +22,7 @@ const mutation = graphql`
 
 function sharedUpdater(store, event, artistName, newEdge) {
     const eventProxy = store.get(event.id);
-    const conn = ConnectionHandler.getConnection(eventProxy, 'GoodsList_goodsList', {artistName});
+    const conn = ConnectionHandler.getConnection(eventProxy, 'EventGoodsList_goodsList', {artistName});
     ConnectionHandler.insertEdgeAfter(conn, newEdge);
   }
 

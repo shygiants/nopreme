@@ -13,6 +13,7 @@ import {
     GraphQLGoods,
     GraphQLEventEdge,
     GraphQLItem,
+    GoodsConnection,
 } from './nodes';
 
 import {
@@ -21,6 +22,8 @@ import {
     getEventById,
     getGoodsById,
     getItemById,
+    getGoodsByArtistName,
+    getEventByGoodsId,
 } from '../database';
 
 import { AddGoodsMutation } from './mutations/AddGoodsMutation';
@@ -66,8 +69,16 @@ const Query = new GraphQLObjectType({
                 id: {
                     type: GraphQLID,
                 },
+                goodsId: {
+                    type: GraphQLID,
+                }
             },
-            resolve: (root, {id}) => getEventById(id),
+            resolve: (root, {id, goodsId}) => {
+                if (id !== undefined && id !== null)
+                    return getEventById(id);
+                else 
+                    return getEventByGoodsId(goodsId);
+            },
         },
         goods: {
             type: GraphQLGoods,
@@ -77,6 +88,15 @@ const Query = new GraphQLObjectType({
                 },
             },
             resolve: (root, {id}) => getGoodsById(id),
+        },
+        goodsList: {
+            type: GoodsConnection,
+            args: {
+                artistName: {
+                    type: GraphQLString,
+                },
+            },
+            resolve: (root, {artistName}) => getGoodsByArtistName(artistName),
         },
         item: {
             type: GraphQLItem,

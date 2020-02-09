@@ -1,49 +1,32 @@
 import React, {Component} from 'react';
-import {graphql, createFragmentContainer} from 'react-relay'
+import {graphql, createFragmentContainer,} from 'react-relay';
 
 import Goods from './Goods';
-import {getNodesFromConnection} from '../utils';
-
 
 class GoodsList extends Component {
-    
-
     render() {
-        const {event} = this.props;
-        const {goodsList} = event;
+        const {goodsList} = this.props;
 
-        const nodes = getNodesFromConnection(goodsList);
+        goodsList
 
         return (
             <div>
-                
                 <ul>
-                    {nodes.map(goods => <li key={goods.id}><Goods goods={goods} /></li>)}
+                    {goodsList.map(goods => (
+                        <li key={goods.id}><Goods goods={goods} /></li>
+                    ))}
                 </ul>
             </div>
         );
+
     }
 }
 
 export default createFragmentContainer(GoodsList, {
-    event: graphql`
-        fragment GoodsList_event on Event @argumentDefinitions(
-            artistName: {type: "String"}
-        ) {
+    goodsList: graphql`
+        fragment GoodsList_goodsList on Goods @relay(plural: true) {
             id
-            eventId
-            name
-            goodsList(
-                artistName: $artistName
-                first: 2147483647 # max GraphQLInt
-            ) @connection(key: "GoodsList_goodsList", filters: ["artistName"]) {
-                edges {
-                    node {
-                        id
-                        ...Goods_goods
-                    }
-                }
-            }
+            ...Goods_goods
         }
     `,
 });

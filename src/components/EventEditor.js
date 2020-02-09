@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
-import GoodsList from './GoodsList';
+import EventGoodsList from './EventGoodsList';
 import EventInfo from './EventInfo';
 
 import AddGoodsMutation from '../mutations/AddGoodsMutation';
@@ -30,7 +30,7 @@ class EventEditor extends Component {
                 <h2>굿즈 추가</h2>
                 <GoodsInput onSubmit={this.handleGoodsSave.bind(this)} />
                 <h2>굿즈 목록</h2>
-                <GoodsList event={event} />
+                <EventGoodsList event={event} />
             </div>
         );
     }
@@ -44,7 +44,7 @@ export default createFragmentContainer(EventEditor, {
             id
             eventId
             ...EventInfo_event @arguments(artistName: $artistName)
-            ...GoodsList_event @arguments(artistName: $artistName)
+            ...EventGoodsList_event @arguments(artistName: $artistName)
         }
     `,
     artist: graphql`

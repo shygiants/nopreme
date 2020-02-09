@@ -1,15 +1,22 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
+import Link from './styled-components/Link';
+
 class GoodsInfo extends Component {
     render() {
         const {event, goods} = this.props;
+        
+        const curr = location.hash.slice(1);
 
         return (
             <div>
                 <h1>{goods.name}</h1>
                 <img src={goods.img} />
-                <h2>{event.name}</h2>
+                <div>
+                    <Link to={curr + `/events/${event.eventId}`} label={event.name}/>
+                </div>
+                
                 <p>{goods.description}</p>
             </div>
         );
@@ -21,6 +28,7 @@ export default createFragmentContainer(GoodsInfo, {
         fragment GoodsInfo_event on Event {
             id
             name
+            eventId
         }
     `,
     goods: graphql`

@@ -1,18 +1,18 @@
 import React from 'react';
-import { Box, Anchor, Text } from 'grommet';
 
+import { Box, Text } from 'grommet';
 
+import Link from './Link';
 
 const Avatar = (props) =>(
     <Box direction="row" align="center">
-            <Box
+        <Box
             height="40px"
             width="40px"
             round="full"
             background="dark-6"
-        >
-        </Box>
-    <Text size ="small">{props.viewer.name} {props.viewer.admin && '(ADMIN)'}</Text>
+        />
+        <Text size ="small">{props.viewer.name} {props.viewer.admin && '(ADMIN)'}</Text>
     </Box>
 
 )
@@ -23,8 +23,8 @@ const HeaderLink = ({...rest}) =>(
         gap="medium"
         {...rest}
     >
-    <Anchor label="Home" href="#" />
-    <Anchor label="Browse" href="/#/browse" />
+        <Link to='/' label='Home' />
+        <Link to='/browse' label='Browse' />
     </Box>
 )
 

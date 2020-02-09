@@ -60,44 +60,30 @@ const Router = createFarceRouter({
                     query={graphql`
                         query app_ArtistApp_Query($artistName: String) {
                             artist(name: $artistName) {
-                                ...ArtistApp_artist
+                                ...ArtistApp_artist @arguments(artistName: $artistName)
                             }
                         }
                     `}
                     prepareVariables={() => ({artistName})}
                 />
                 <Route
-                    path='events/:eventId'
+                    path='/'
                     Component={Pop}
                 >
                     <Route
-                        Component={EventApp}
-                        query={graphql`
-                            query app_EventApp_Query($eventId: ID, $artistName: String) {
-                                artist(name: $artistName) {
-                                    ...EventApp_artist 
-                                }
-                                event(id: $eventId) {
-                                    ...EventApp_event @arguments(artistName: $artistName)
-                                }
-                            }
-                        `}
-                        prepareVariables={(params) => ({eventId: params.eventId, artistName})}
-                    />
-                    <Route
-                        path='/goods/:goodsId'
+                        path='goods/:goodsId'
                     >
                         <Route
                             Component={GoodsApp}
                             query={graphql`
-                                query app_GoodsApp_Query($goodsId: ID, $artistName: String, $eventId: ID) {
+                                query app_GoodsApp_Query($goodsId: ID, $artistName: String) {
                                     viewer {
                                         ...GoodsApp_viewer
                                     }
                                     artist(name: $artistName) {
                                         ...GoodsApp_artist 
                                     }
-                                    event(id: $eventId) {
+                                    event(goodsId: $goodsId) {
                                         ...GoodsApp_event
                                     }
                                     goods(id: $goodsId) {
@@ -105,7 +91,22 @@ const Router = createFarceRouter({
                                     }   
                                 }
                             `}
-                            prepareVariables={({goodsId, eventId}) => ({goodsId, artistName, eventId})}
+                            prepareVariables={({goodsId}) => ({goodsId, artistName})}
+                        />
+                        <Route
+                            path='events/:eventId'
+                            Component={EventApp}
+                            query={graphql`
+                                query app_EventApp_Query($eventId: ID, $artistName: String) {
+                                    artist(name: $artistName) {
+                                        ...EventApp_artist 
+                                    }
+                                    event(id: $eventId) {
+                                        ...EventApp_event @arguments(artistName: $artistName)
+                                    }
+                                }
+                            `}
+                            prepareVariables={(params) => ({eventId: params.eventId, artistName})}
                         />
                         <Route
                             path='/items/:itemId'
@@ -123,7 +124,11 @@ const Router = createFarceRouter({
                                 prepareVariables={({itemId, goodsId}) => ({itemId, goodsId})}
                         />
                     </Route>
+
                 </Route>
+
+
+                
             </Route>
             
         </Route>

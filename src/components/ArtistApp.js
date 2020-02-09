@@ -1,11 +1,19 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
-import EventList from './EventList';
+import GoodsList from './GoodsList';
+
+import {getNodesFromConnection} from '../utils';
 
 class ArtistApp extends Component {
     render() {
         const {artist} = this.props;
+
+        const nodes = getNodesFromConnection(artist.events);
+        const sortedEvents = nodes.sort((a, b) => new Date(b) - new Date(a));
+
+        const reducedGoodsList = sortedEvents.map(
+            ({goodsList}) => getNodesFromConnection(goodsList)).reduce((a, b) => a.concat(b));
 
         return (
             <div>
@@ -15,7 +23,8 @@ class ArtistApp extends Component {
                         <li key={member.memberId}>{member.name}</li>
                     ))}
                 </ul>
-                <EventList artist={artist} />
+
+                <GoodsList goodsList={reducedGoodsList} />
             </div>
         );
     }
@@ -23,7 +32,9 @@ class ArtistApp extends Component {
 
 export default createFragmentContainer(ArtistApp, {
     artist: graphql`
-        fragment ArtistApp_artist on Artist {
+        fragment ArtistApp_artist on Artist @argumentDefinitions(
+            artistName: {type: "String"}
+        ) {
             id
             artistId
             name
@@ -32,7 +43,27 @@ export default createFragmentContainer(ArtistApp, {
                 memberId
                 name
             }
-            ...EventList_artist
+            events(
+                first: 2147483647 # max GraphQLInt
+            ) @connection(key: "ArtistApp_events") {
+                edges {
+                    node {
+                        id
+                        date
+                        goodsList(
+                            artistName: $artistName
+                            first: 2147483647 # max GraphQLInt
+                        ) @connection(key: "ArtistApp_goodsList", filters: ["artistName"]) {
+                            edges {
+                                node {
+                                    id
+                                    ...GoodsList_goodsList
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     `,
 });

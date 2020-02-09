@@ -281,8 +281,9 @@ type Query {
   viewer: User
   user(id: ID): User
   artist(name: String): Artist
-  event(id: ID): Event
+  event(id: ID, goodsId: ID): Event
   goods(id: ID): Goods
+  goodsList(artistName: String): GoodsConnection
   item(id: ID): Item
 
   """Fetches an object given its ID"""

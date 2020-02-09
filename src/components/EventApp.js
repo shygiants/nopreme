@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
-import GoodsList from './GoodsList';
 import EventInfo from './EventInfo';
 
 class EventApp extends Component {
@@ -11,7 +10,6 @@ class EventApp extends Component {
         return (
             <div>
                 <EventInfo  artist={artist} event={event} />
-                <GoodsList event={event} />
             </div>
         );
     }
@@ -25,7 +23,6 @@ export default createFragmentContainer(EventApp, {
             id
             eventId
             ...EventInfo_event @arguments(artistName: $artistName)
-            ...GoodsList_event @arguments(artistName: $artistName)
         }
     `,
     artist: graphql`

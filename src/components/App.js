@@ -3,9 +3,8 @@ import React, {
 } from 'react';
 
 import {graphql, createFragmentContainer,} from 'react-relay';
-import {Link} from 'found';
 import {grommet} from 'grommet/themes';
-import {Grommet, Box, Header} from 'grommet'
+import {Grommet, Header} from 'grommet'
 
 import {Avatar, HeaderLink} from './styled-components/HeaderComponent';
 
@@ -21,15 +20,6 @@ class App extends Component {
                 </Header>
                 {children}
             </Grommet>
-            // <div>
-            //     <ul>
-            //         <li><Link to='/'>Home</Link></li>
-            //         <li><Link to='/browse'>Browse</Link></li>
-            //     </ul>
-                
-            //     <h3>Viewer: {viewer.name} {viewer.admin && '(ADMIN)'}</h3>
-            //     
-            // </div>
         );
     }
 }

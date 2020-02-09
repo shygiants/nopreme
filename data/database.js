@@ -163,6 +163,10 @@ export function getEventById(id) {
     return Event.findById(id).exec();
 }
 
+export function getEventByGoodsId(goodsId) {
+    return getGoodsById(goodsId).then(({event}) => getEventById(event));
+}
+
 export function addEvent({name, artists, description, date, img}) {
     const event = new Event({name, artists, description, date, img});
 

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay';
-import {Link} from 'found';
+import Link from './styled-components/Link';
 
 class Goods extends Component {
     render() {
@@ -8,7 +8,7 @@ class Goods extends Component {
 
         const curr = location.hash.slice(1);
 
-        return <Link to={curr + `/goods/${goods.goodsId}`}>{goods.name}</Link>;
+        return <Link to={curr + `/goods/${goods.goodsId}`} label={goods.name} />;
     }
 }
 

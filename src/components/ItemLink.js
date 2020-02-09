@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay';
-import {Link} from 'found';
+import Link from './styled-components/Link';
 
 class ItemLink extends Component {
     render() {
@@ -12,7 +12,7 @@ class ItemLink extends Component {
 
         return (
             <div>
-                <Link to={curr + `/items/${item.itemId}`}>{displayName} {item.idx}</Link>
+                <Link to={curr + `/items/${item.itemId}`} label={`${displayName} ${item.idx}`} />
                 <img src={item.img} />
             </div>
         );
