@@ -14,6 +14,7 @@ const mutation = graphql`
                     id
                     eventId
                     name
+
                 }              
             }
         }
@@ -26,14 +27,27 @@ function sharedUpdater(store, artist, newEdge) {
     ConnectionHandler.insertEdgeAfter(conn, newEdge);
   }
 
-function commit(environment, name, artist) {
+function commit(
+    environment, {
+    name, 
+    artist, 
+    description, 
+    date, 
+    img
+}) {
+
+    console.log(mutation);
     return commitMutation(
         environment, 
         {
             mutation,
             variables: {
                 input: {
-                    name, artistIds: [artist.artistId],
+                    name, 
+                    artistIds: [artist.artistId],
+                    description,
+                    date,
+                    img,
                 },
             },
             updater: store => {

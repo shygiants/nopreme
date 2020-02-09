@@ -15,7 +15,7 @@ import {
     getEventById,
     addEvent,
     getEventsByArtistId,
-    getUserById
+    isAdmin,
 } from '../../database';
 
 export const AddEventMutation = mutationWithClientMutationId({
@@ -27,6 +27,15 @@ export const AddEventMutation = mutationWithClientMutationId({
         artistIds: {
             type: new GraphQLNonNull(new GraphQLList(GraphQLID)),
         },
+        date: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        img: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        description: {
+            type: GraphQLString,
+        }
     },
     outputFields: {
         eventEdge: {
@@ -51,13 +60,22 @@ export const AddEventMutation = mutationWithClientMutationId({
     },
     mutateAndGetPayload: ({
         name,
-        artistIds
+        artistIds,
+        date,
+        img, 
+        description,
     }, {user: {id}}) => {
-        return getUserById(id).then(user => {
-            if (!user.admin)
+        return isAdmin(id).then(admin => {
+            if (!admin)
                 return null;
 
-            return addEvent(name, artistIds).then(eventId => ({eventId, artistIds}));
+            return addEvent({
+                name, 
+                artists: artistIds, 
+                date, 
+                img, 
+                description,
+            }).then(eventId => ({eventId, artistIds}));
         });
     }
 });

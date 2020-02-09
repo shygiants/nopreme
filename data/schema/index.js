@@ -32,6 +32,7 @@ import { AddWishMutation } from './mutations/AddWishMutation';
 import { RemoveCollectionMutation } from './mutations/RemoveCollectionMutation';
 import { RemovePosessionMutation } from './mutations/RemovePosessionMutation';
 import { RemoveWishMutation } from './mutations/RemoveWishMutation';
+import { ModifyItemMutation } from './mutations/ModifyItemMutation';
 
 
 const Query = new GraphQLObjectType({
@@ -102,6 +103,7 @@ const Mutation = new GraphQLObjectType({
         removeCollection: RemoveCollectionMutation,
         removeWish: RemoveWishMutation,
         removePosession: RemovePosessionMutation,        
+        modifyItem: ModifyItemMutation,
     },
 });
 

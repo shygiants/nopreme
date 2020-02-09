@@ -13,24 +13,30 @@ import {
     GraphQLItemEdge
 } from '../nodes';
 import {
-    addItem,
     getItemsByGoodsId,
     getItemById,
     isAdmin,
+    modifyItem,
 } from '../../database';
 
-export const AddItemMutation = mutationWithClientMutationId({
-    name: 'AddItem',
+export const ModifyItemMutation = mutationWithClientMutationId({
+    name: 'ModifyItem',
     inputFields: {
+        id: {
+            type: new GraphQLNonNull(GraphQLID),
+        },
         idx: {
-            type: new GraphQLNonNull(GraphQLInt)
+            type: GraphQLInt
         },
         memberIds: {
-            type: new GraphQLNonNull(new GraphQLList(GraphQLID))
+            type: new GraphQLList(GraphQLID)
         },
         goodsId: {
             type: new GraphQLNonNull(GraphQLID),
         },
+        img: {
+            type: GraphQLString,
+        }
     },
     outputFields: {
         itemEdge: {
@@ -52,15 +58,17 @@ export const AddItemMutation = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: ({
+        id,
         idx,
         memberIds,
         goodsId,
-    }, {user: {id}}) => {
-        return isAdmin(id).then(admin => {
+        img,
+    }, {user: {id: userId}}) => {
+        return isAdmin(userId).then(admin => {
             if (!admin)
                 return null;
 
-            return addItem(idx, memberIds, goodsId).then(itemId => ({
+            return modifyItem(id, {idx, memberIds, goodsId, img}).then(itemId => ({
                 itemId, goodsId,
             }));
         });

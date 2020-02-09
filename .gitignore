@@ -137,4 +137,4 @@ sketch
 docs
 __generated__
 docker/mongo/run_args.sh
-.dotenv
+gcp-credentials.json

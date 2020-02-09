@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay';
-import {Link} from 'found';
 
 import ToggleSwitch from './ToggleSwitch';
+import ItemLink from './ItemLink';
 import AddCollectionMutation from '../mutations/AddCollectionMutation';
 import AddPosessionMutation from '../mutations/AddPosessionMutation';
 import AddWishMutation from '../mutations/AddWishMutation';
@@ -46,10 +46,6 @@ class Item extends Component {
     render() {
         const {viewer, artist, item} = this.props;
 
-        const displayName = artist.members.length === item.members.length ? '단체' : item.members.map(member => member.name).join(', ');
-
-        const curr = location.hash.slice(1);
-
         const {collects, posesses, wishes} = viewer;
 
         const collectionNodes = getNodesFromConnection(collects);
@@ -63,7 +59,7 @@ class Item extends Component {
 
         return (
             <div>
-                <Link to={curr + `/items/${item.itemId}`}>{displayName} {item.idx}</Link>
+                <ItemLink artist={artist} item={item} />
                 <ToggleSwitch 
                     name={COLLECTION} 
                     on={isIn(collectionNodes, item.itemId)}
@@ -143,20 +139,14 @@ export default createFragmentContainer(Item, {
     artist: graphql`
         fragment Item_artist on Artist {
             id
-            members {
-                id
-            }
+            ...ItemLink_artist
         }
     `,
     item: graphql`
         fragment Item_item on Item {
             id
             itemId
-            idx
-            members {
-                id
-                name
-            }
+            ...ItemLink_item
         }
     `,
 });

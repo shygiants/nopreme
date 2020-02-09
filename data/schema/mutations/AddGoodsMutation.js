@@ -16,7 +16,8 @@ import {
     getGoodsById,
     getGoodsByEventId,
     getGoodsByEventArtistId,
-    getUserById
+    getUserById,
+    isAdmin,
 } from '../../database';
 
 export const AddGoodsMutation = mutationWithClientMutationId({
@@ -31,6 +32,12 @@ export const AddGoodsMutation = mutationWithClientMutationId({
         artistId: {
             type: new GraphQLNonNull(GraphQLID),
         },
+        img: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        description: {
+            type: GraphQLString,
+        }
     },
     outputFields: {
         goodsEdge: {
@@ -55,12 +62,20 @@ export const AddGoodsMutation = mutationWithClientMutationId({
         name,
         eventId,
         artistId,
+        description,
+        img
     }, {user: {id}}) => {
-        return getUserById(id).then(user => {
-            if (!user.admin)
+        return isAdmin(id).then(admin => {
+            if (!admin)
                 return null;
 
-            return addGoods(name, eventId, artistId).then(goodsId => ({
+            return addGoods({
+                name, 
+                event: eventId, 
+                artist: artistId,
+                description,
+                img,
+            }).then(goodsId => ({
                 goodsId, eventId, artistId,
             }));
         });

@@ -4,22 +4,41 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 import GoodsList from './GoodsList';
 import EventInfo from './EventInfo';
 
-class EventApp extends Component {
+import AddGoodsMutation from '../mutations/AddGoodsMutation';
+import GoodsInput from './GoodsInput';
+
+class EventEditor extends Component {
+
+    handleGoodsSave({name, description, img}) {
+        const {relay, event, artist} = this.props;
+        AddGoodsMutation.commit(
+            relay.environment, {
+                name, 
+                event, 
+                artist,
+                description, 
+                img,
+            });
+    }
+
     render() {
         const {artist, event} = this.props;
 
         return (
             <div>
                 <EventInfo  artist={artist} event={event} />
+                <h2>굿즈 추가</h2>
+                <GoodsInput onSubmit={this.handleGoodsSave.bind(this)} />
+                <h2>굿즈 목록</h2>
                 <GoodsList event={event} />
             </div>
         );
     }
 }
 
-export default createFragmentContainer(EventApp, {
+export default createFragmentContainer(EventEditor, {
     event: graphql`
-        fragment EventApp_event on Event @argumentDefinitions(
+        fragment EventEditor_event on Event @argumentDefinitions(
             artistName: {type: "String"},
         ) {
             id
@@ -29,7 +48,7 @@ export default createFragmentContainer(EventApp, {
         }
     `,
     artist: graphql`
-        fragment EventApp_artist on Artist {
+        fragment EventEditor_artist on Artist {
             id
             artistId
             name

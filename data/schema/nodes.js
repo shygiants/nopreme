@@ -136,6 +136,9 @@ const GraphQLItem = new GraphQLObjectType({
                 }));
             },
         },
+        img: {
+            type: GraphQLString,
+        },
     },
     interfaces: [nodeInterface],
 });
@@ -171,6 +174,12 @@ const GraphQLGoods = new GraphQLObjectType({
                     });
                 });
             }
+        },
+        img: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        description: {
+            type: GraphQLString,
         }
     },
     interfaces: [nodeInterface],
@@ -196,7 +205,14 @@ const GraphQLEvent = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString),
         },
         description: {
-            type: GraphQLString
+            type: GraphQLString,
+        },
+        date: {
+            type: GraphQLString,
+            resolve: event => event.date.toDateString(),
+        },
+        img: {
+            type: GraphQLString,
         },
         goodsList: {
             type: GoodsConnection,

@@ -44,6 +44,10 @@ const eventSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId, 
         ref: 'Artist' 
     }],
+    date: {
+        type: Date,
+    },
+    img: String,
     description: String,
 });
 
@@ -61,6 +65,7 @@ const goodsSchema = new mongoose.Schema({
         ref: 'Artist' 
     },
     description: String,
+    img: String,
 });
 
 export const Goods = mongoose.model('Goods', goodsSchema);
@@ -77,6 +82,7 @@ const itemSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId, 
         ref: 'Goods' 
     },
+    img: String,
 });
 
 export const Item = mongoose.model('Item', itemSchema);
@@ -127,6 +133,12 @@ export function addUser(name, openChatLink, accessToken) {
     });
 }
 
+export function isAdmin(id) {
+    return getUserById(id).then(user => {
+        return user.admin
+    });
+}
+
 export function getArtistById(id) {
     return Artist.findById(id).exec();
 }
@@ -151,8 +163,8 @@ export function getEventById(id) {
     return Event.findById(id).exec();
 }
 
-export function addEvent(name, artists) {
-    const event = new Event({name, artists});
+export function addEvent({name, artists, description, date, img}) {
+    const event = new Event({name, artists, description, date, img});
 
     return event.save().then(({_id}) => _id);
 }
@@ -185,8 +197,8 @@ export function getGoodsByArtistName(artistName) {
     });
 }
 
-export function addGoods(name, event, artist) {
-    const goods = new Goods({name, event, artist});
+export function addGoods({name, event, artist, description, img}) {
+    const goods = new Goods({name, event, artist, description, img});
 
     return goods.save().then(({_id}) => _id);
 }
@@ -207,8 +219,8 @@ export function getItemsByGoodsId(goodsId) {
     return Item.find({goods: goodsId}).exec();
 }
 
-export function addItem(idx, artists, goods) {
-    const item = new Item({idx, artists, goods});
+export function addItem({idx, artists, goods, img}) {
+    const item = new Item({idx, artists, goods, img});
 
     return item.save().then(({_id}) => _id);
 }
@@ -221,6 +233,18 @@ export function addItemsByNumber(number, artists, goods) {
     const promises = range(number).map(idx => new Item({idx, artists, goods}).save().then(({_id}) => _id))
 
     return Promise.all(promises);
+}
+
+export function modifyItem(id, {idx, artists, goods, img}) {
+    const update = {idx, artists, goods, img};
+
+    for (let [k, v] of Object.entries(update)) {
+        if (v === undefined || v === null) {
+            delete update[k];
+        }
+    }
+
+    return Item.findByIdAndUpdate(id, update, {useFindAndModify: true}).exec().then(({_id}) => _id);
 }
 
 export function getUserItemById(id) {

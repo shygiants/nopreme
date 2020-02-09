@@ -26,7 +26,13 @@ function sharedUpdater(store, event, artistName, newEdge) {
     ConnectionHandler.insertEdgeAfter(conn, newEdge);
   }
 
-function commit(environment, name, event, artist) {
+function commit(environment, {
+    name, 
+    event, 
+    artist,
+    img,
+    description
+}) {
     return commitMutation(
         environment, 
         {
@@ -36,6 +42,8 @@ function commit(environment, name, event, artist) {
                     name, 
                     eventId: event.eventId, 
                     artistId: artist.artistId,
+                    img,
+                    description,
                 },
             },
             updater: store => {

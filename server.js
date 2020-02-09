@@ -11,13 +11,20 @@ import graphqlHTTP from 'express-graphql';
 import mongoose from 'mongoose';
 import jwt from 'express-jwt';
 import jwtSign from 'jsonwebtoken';
+import Multer from 'multer';
+import {Storage} from '@google-cloud/storage';
+import bodyParser from 'body-parser';
+import uuidv4 from 'uuid/v4';
 
 import {schema} from './data/schema';
-import {addUser, getUserByKakaoId} from './data/database';
+import {addUser, getUserByKakaoId, isAdmin} from './data/database';
 import {getKakaoUserInfo} from './src/utils';
 
 const jwtSecret = process.env.JWT_SECRET;
 
+/////////////
+// MONGODB //
+/////////////
 mongoose.connect(`mongodb://${process.env.DB_HOST}/nopreme?authSource=admin`, {
     useNewUrlParser: true,
     user: process.env.DB_USER,
@@ -28,15 +35,28 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => console.log('DB Connected!'));
 
+/////////////
+// EXPRESS //
+/////////////
 const app = express();
+app.use(bodyParser.json());
+
+/////////////
+// WEB APP //
+/////////////
 app.use('/', express.static(path.resolve(__dirname, 'docs')));
+
+/////////////
+// GRAPHQL //
+/////////////
 app.use('/graphql', jwt({secret: jwtSecret}), graphqlHTTP({
   schema: schema,
   graphiql: true,
 }));
 
-app.use('/signin', express.static(path.resolve(__dirname, 'docs', 'signin')));
-
+////////////////
+// MIDDLEWARE //
+////////////////
 function kakaoAccessToken(req, res, next) {
   getKakaoUserInfo(req.body.accessToken).then(resp => {
     req.kakaoUser = resp;
@@ -47,7 +67,25 @@ function kakaoAccessToken(req, res, next) {
   });
 }
 
-app.post('/auth/signin', express.json(), kakaoAccessToken, (req, res) => {
+function onlyAdmin(req, res, next) {
+  const {user: {id}} = req;
+
+  isAdmin(id).then(admin => {
+    if (admin)
+      return next();
+
+    res.status(401).end();
+  }).catch(err => {
+    console.error(err);
+    res.status(401).end();
+  });
+}
+
+//////////
+// AUTH //
+//////////
+
+app.post('/auth/signin', kakaoAccessToken, (req, res) => {
   getUserByKakaoId(req.kakaoUser.id).then(user => {
     if (user !== null) {
       res.json({
@@ -61,7 +99,7 @@ app.post('/auth/signin', express.json(), kakaoAccessToken, (req, res) => {
   });
 });
 
-app.post('/auth/signup', express.json(), (req, res) => {
+app.post('/auth/signup', (req, res) => {
   const {nickname, openChatLink, accessToken} = req.body;
 
   addUser(nickname, openChatLink, accessToken).then(_id => {
@@ -73,9 +111,53 @@ app.post('/auth/signup', express.json(), (req, res) => {
 });
 
 // TODO: CORS
-app.post('/kakao/nickname', express.json(), kakaoAccessToken, (req, res) => {
-  res.json({nickname: req.kakaoUser.kakao_account.profile.nickname});
+app.post('/kakao/nickname', kakaoAccessToken, (req, res) => {
+  const {kakaoUser: {kakao_account: {profile: {nickname}}}} = req.body;
+  res.json({nickname});
 });
+
+/////////////
+// STORAGE //
+/////////////
+
+// Instantiate a storage client
+const storage = new Storage();
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+
+const multer = Multer({
+  storage: Multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // no larger than 5mb
+  },
+});
+
+// Process the file upload and upload to Google Cloud Storage.
+app.post('/upload', jwt({secret: jwtSecret}), onlyAdmin, multer.single('file'), (req, res, next) => {
+  if (!req.file) {
+    res.status(400).send('No file uploaded.');
+    return;
+  }
+
+  // Create a new blob in the bucket and upload the file data.
+  const filename = uuidv4() + path.extname(req.file.originalname);
+  const blob = bucket.file(filename);
+  const blobStream = blob.createWriteStream({
+    resumable: false,
+  });
+
+  blobStream.on('error', err => {
+    next(err);
+  });
+
+  blobStream.on('finish', () => {
+    // The public URL can be used to directly access the file via HTTP.
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+    res.json({publicUrl});
+  });
+
+  blobStream.end(req.file.buffer);
+});
+
 
 app.listen(4000);
 console.log('Running a GraphQL API server at http://localhost:4000/graphql');

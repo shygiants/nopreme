@@ -12,6 +12,9 @@ type AddCollectionPayload {
 input AddEventInput {
   name: String!
   artistIds: [ID]!
+  date: String!
+  img: String!
+  description: String
   clientMutationId: String
 }
 
@@ -24,6 +27,8 @@ input AddGoodsInput {
   name: String!
   eventId: ID!
   artistId: ID!
+  img: String!
+  description: String
   clientMutationId: String
 }
 
@@ -111,6 +116,8 @@ type Event implements Node {
   eventId: ID!
   name: String!
   description: String
+  date: String
+  img: String
   goodsList(artistId: ID = "any", artistName: String = "any", after: String, first: Int, before: String, last: Int): GoodsConnection
 }
 
@@ -138,6 +145,8 @@ type Goods implements Node {
   goodsId: ID!
   name: String!
   items(after: String, first: Int, before: String, last: Int): ItemConnection
+  img: String!
+  description: String
 }
 
 """A connection to a list of items."""
@@ -164,6 +173,7 @@ type Item implements Node {
   itemId: ID!
   idx: Int!
   members: [Member]!
+  img: String
 }
 
 """A connection to a list of items."""
@@ -193,6 +203,20 @@ type Member implements Node {
   description: String
 }
 
+input ModifyItemInput {
+  id: ID!
+  idx: Int
+  memberIds: [ID]
+  goodsId: ID!
+  img: String
+  clientMutationId: String
+}
+
+type ModifyItemPayload {
+  itemEdge: ItemEdge!
+  clientMutationId: String
+}
+
 type Mutation {
   addGoods(input: AddGoodsInput!): AddGoodsPayload
   addEvent(input: AddEventInput!): AddEventPayload
@@ -203,6 +227,7 @@ type Mutation {
   removeCollection(input: RemoveCollectionInput!): RemoveCollectionPayload
   removeWish(input: RemoveWishInput!): RemoveWishPayload
   removePosession(input: RemovePosessionInput!): RemovePosessionPayload
+  modifyItem(input: ModifyItemInput!): ModifyItemPayload
 }
 
 """An object with an ID"""
