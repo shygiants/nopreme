@@ -25,7 +25,9 @@ const jwtSecret = process.env.JWT_SECRET;
 /////////////
 // MONGODB //
 /////////////
-mongoose.connect(`mongodb://${process.env.DB_HOST}/nopreme?authSource=admin`, {
+let uri;
+uri = `mongodb+srv://${process.env.DB_HOST}/nopreme?retryWrites=true&w=majority`;
+mongoose.connect(uri, {
     useNewUrlParser: true,
     user: process.env.DB_USER,
     pass: process.env.DB_PASS,
