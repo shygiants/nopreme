@@ -106,7 +106,7 @@ app.post('/auth/signup', (req, res) => {
 
   addUser(nickname, openChatLink, accessToken).then(_id => {
     res.json({
-      token: jwtSign.sign({ 
+      token: jwtSign.sign({
         id: _id,
       }, jwtSecret)})
   });
@@ -114,7 +114,7 @@ app.post('/auth/signup', (req, res) => {
 
 // TODO: CORS
 app.post('/kakao/nickname', kakaoAccessToken, (req, res) => {
-  const {kakaoUser: {kakao_account: {profile: {nickname}}}} = req.body;
+  const {kakaoUser: {kakao_account: {profile: {nickname}}}} = req;
   res.json({nickname});
 });
 
