@@ -13,6 +13,7 @@ class ItemLink extends Component {
         return (
             <div>
                 <Link to={curr + `/items/${item.itemId}`}>{displayName} {item.idx}</Link>
+                <img src={item.img} />
             </div>
         );
 
@@ -33,6 +34,7 @@ export default createFragmentContainer(ItemLink, {
             id
             itemId
             idx
+            img
             members {
                 id
                 name
