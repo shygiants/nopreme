@@ -20,13 +20,13 @@ const mutation = graphql`
     }
 `;
 
-function sharedUpdater(store, goods, newEdge) {
-    const goodsProxy = store.get(goods.id);
-    const conn = ConnectionHandler.getConnection(goodsProxy, 'GoodsApp_items');
+function sharedUpdater(store, itemList, newEdge) {
+    const itemListProxy = store.get(itemList.id);
+    const conn = ConnectionHandler.getConnection(itemListProxy, 'GoodsApp_items');
     ConnectionHandler.insertEdgeAfter(conn, newEdge);
   }
 
-function commit(environment, idx, memberIds, goods) {
+function commit(environment, idx, memberIds, goodsId, itemList) {
     return commitMutation(
         environment, 
         {
@@ -35,13 +35,13 @@ function commit(environment, idx, memberIds, goods) {
                 input: {
                     idx, 
                     memberIds,
-                    goodsId: goods.goodsId,
+                    goodsId: goodsId,
                 },
             },
             updater: store => {
                 const payload = store.getRootField('addItem');
                 const newEdge = payload.getLinkedRecord('itemEdge');
-                sharedUpdater(store, goods, newEdge);
+                sharedUpdater(store, itemList, newEdge);
             }
         },
     );

@@ -3,24 +3,28 @@ import React, {
 } from 'react';
 import {graphql, createFragmentContainer} from 'react-relay';
 
+import MatchItem from './MatchItem';
+
 class Feed extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            event: null,
-            goods: null,
-            item: null,
-        };
-    }
-
     render() {
-        const {viewer} = this.props;
+        const {viewer, matches} = this.props;
 
         return (
             <div>
-                N
-                {/* {viewer.posesses.length === 0 ? 'No posession' : 'You have something'} */}
+                <ul>
+                    {matches.map(match => (
+                        <li key={match.wishItem.id+match.posessionItem.id+match.user.id}>
+                            <div>
+                                희망
+                                <MatchItem item={match.wishItem} />
+
+                                상대방 보유
+                                <MatchItem item={match.posessionItem} />
+                                <div>{match.user.name}</div>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
             </div>
         );
     }
@@ -31,18 +35,22 @@ export default createFragmentContainer(Feed, {
         fragment Feed_viewer on User {
             id
             name
-            # collects {
-            #     id
-            #     idx
-            # }
-            # posesses  {
-            #     id
-            #     idx
-            # }
-            # wishes  {
-            #     id
-            #     idx
-            # }
+        }
+    `,
+    matches: graphql`
+        fragment Feed_matches on Match @relay(plural: true) {
+            wishItem {
+                id
+                ...MatchItem_item
+            }
+            posessionItem {
+                id
+                ...MatchItem_item
+            }
+            user {
+                id
+                name
+            }
         }
     `,
 });

@@ -4,8 +4,8 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 
 class ItemInfo extends Component {
     render() {
-        const {goods, item} = this.props;
-        const {members} = item;
+        const {item} = this.props;
+        const {members, goods} = item;
 
         function memberComp(member) {
             return (<span>{member.name}</span>);
@@ -50,12 +50,10 @@ export default createFragmentContainer(ItemInfo, {
                 name
             }
             img
-        }
-    `,
-    goods: graphql`
-        fragment ItemInfo_goods on Goods {
-            id
-            name
+            goods {
+                id
+                name
+            }
         }
     `,
 });

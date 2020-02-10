@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
-import {getKakaoUserInfo} from '../src/utils';
+import {getKakaoUserInfo, intersection} from '../src/utils';
 
 
 const userSchema = new mongoose.Schema({
@@ -87,6 +87,12 @@ const itemSchema = new mongoose.Schema({
 
 export const Item = mongoose.model('Item', itemSchema);
 
+export const RelationTypeEnum = {
+    COLLECTION: 'Collection',
+    POSESSION: 'Posession',
+    WISH: 'Wish',
+}
+
 const userItemSchema = new mongoose.Schema({
     user: {
         type: Schema.Types.ObjectId,
@@ -100,8 +106,8 @@ const userItemSchema = new mongoose.Schema({
     relationType: {
         type: String,
         // TODO: Use enum
-        enum: ['Collection', 'Posession', 'Wish'],
-    }
+        enum: Object.values(RelationTypeEnum),
+    },
 });
 
 export const UserItem = mongoose.model('UserItem', userItemSchema);
@@ -263,6 +269,10 @@ export function getUserItemsByUserId(userId, relationType) {
     return UserItem.find({user: userId, relationType}).exec();
 }
 
+export function getUserItemsByItemIds(itemIds, relationType) {
+    return UserItem.find({item: {$in: itemIds}, relationType}).exec();
+}
+
 export function addUserItem(user, item, num, relationType) {
     const userItem = new UserItem({user, item, num, relationType});
 
@@ -271,4 +281,69 @@ export function addUserItem(user, item, num, relationType) {
 
 export function removeUserItem(user, item, relationType) {
     return UserItem.findOneAndDelete({user, item, relationType}).exec().then(({_id}) => _id);
+}
+
+export function getMatchesForUser(userId) {
+    return Promise.all([
+        getUserItemsByUserId(userId, RelationTypeEnum.WISH),
+        getUserItemsByUserId(userId, RelationTypeEnum.POSESSION),
+    ]).then(([userWishes, userPosessions]) => {
+        const userWishItemIds = userWishes.map(({item}) => item);
+        const userPosessionItemIds = userPosessions.map(({item}) => item);
+
+        return Promise.all([
+            UserItem.aggregate([{
+                $match: {
+                    item: {
+                        $in: userWishItemIds,
+                    },
+                    relationType: RelationTypeEnum.POSESSION,
+                }
+            }, {
+                $group: {
+                    _id: '$item',
+                    users: {
+                        $push: '$user',
+                    },
+                }
+            }]).exec(), 
+            UserItem.aggregate([{
+                $match: {
+                    item: {
+                        $in: userPosessionItemIds,
+                    },
+                    relationType: RelationTypeEnum.WISH,
+                }
+            }, {
+                $group: {
+                    _id: '$item',
+                    users: {
+                        $push: '$user',
+                    },
+                }
+            }]).exec(), 
+        ]).then(([usersPerWishItems, usersPerPosessionItems]) => {
+            let matches = [];
+
+            for (const usersPerWishItem of usersPerWishItems) {
+                for (const usersPerPosessionItem of usersPerPosessionItems) {
+                    const wishItem = usersPerWishItem._id;
+                    const posessionItem = usersPerPosessionItem._id;
+
+                    const usersPosesses = usersPerWishItem.users.map(objId => objId.toString());
+                    const usersWishes = usersPerPosessionItem.users.map(objId => objId.toString());
+
+                    const commonUsers = intersection(usersPosesses, usersWishes);
+
+                    matches = matches.concat(commonUsers.map(user => ({
+                        wishItem,
+                        posessionItem,
+                        user,
+                    })));
+                }
+            }
+
+            return matches;
+        });
+    });
 }

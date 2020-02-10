@@ -60,3 +60,7 @@ export function classify(arr, fieldName, comparator=strcmp) {
 export function getNodesFromConnection(connection) {
     return connection.edges.map(edge => edge.node);
 }
+
+export function intersection(arr1, arr2) {
+    return arr1.filter(value => -1 !== arr2.indexOf(value));
+}

@@ -49,6 +49,9 @@ const Router = createFarceRouter({
                         viewer {
                             ...Feed_viewer
                         }
+                        matches {
+                            ...Feed_matches
+                        }
                     }
                 `}
             />
@@ -88,7 +91,10 @@ const Router = createFarceRouter({
                                     }
                                     goods(id: $goodsId) {
                                         ...GoodsApp_goods
-                                    }   
+                                    }
+                                    itemList(goodsId: $goodsId) {
+                                        ...GoodsApp_itemList
+                                    }
                                 }
                             `}
                             prepareVariables={({goodsId}) => ({goodsId, artistName})}
@@ -112,16 +118,13 @@ const Router = createFarceRouter({
                             path='/items/:itemId'
                             Component={ItemApp}
                                 query={graphql`
-                                    query app_ItemApp_Query($itemId: ID, $goodsId: ID) {
+                                    query app_ItemApp_Query($itemId: ID) {
                                         item(id: $itemId) {
                                             ...ItemApp_item
                                         }
-                                        goods(id: $goodsId) {
-                                            ...ItemApp_goods
-                                        }
                                     }
                                 `}
-                                prepareVariables={({itemId, goodsId}) => ({itemId, goodsId})}
+                                prepareVariables={({itemId}) => ({itemId})}
                         />
                     </Route>
 

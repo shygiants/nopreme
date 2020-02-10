@@ -9,20 +9,19 @@ import ModifyItemMutation from '../mutations/ModifyItemMutation';
 
 class ItemEditor extends Component {
     handleItemSave({img}) {
-        const {relay, item, goods} = this.props;
+        const {relay, item} = this.props;
         ModifyItemMutation.commit(
             relay.environment, {
                 id: item.itemId,
-                goods,
                 img,
             });
     }
 
     render() {
-        const {goods, item} = this.props;
+        const {item} = this.props;
         return (
             <div>
-                <ItemInfo goods={goods} item={item} /> 
+                <ItemInfo item={item} /> 
                 <ItemInput onSubmit={this.handleItemSave.bind(this)} />
             </div>
         );
@@ -35,13 +34,6 @@ export default createFragmentContainer(ItemEditor, {
             id
             itemId
             ...ItemInfo_item
-        }
-    `,
-    goods: graphql`
-        fragment ItemEditor_goods on Goods {
-            id
-            goodsId
-            ...ItemInfo_goods
         }
     `,
 });

@@ -144,7 +144,6 @@ type Goods implements Node {
   id: ID!
   goodsId: ID!
   name: String!
-  items(after: String, first: Int, before: String, last: Int): ItemConnection
   img: String!
   description: String
 }
@@ -172,6 +171,7 @@ type Item implements Node {
   id: ID!
   itemId: ID!
   idx: Int!
+  goods: Goods!
   members: [Member]!
   img: String
 }
@@ -192,6 +192,18 @@ type ItemEdge {
 
   """A cursor for use in pagination"""
   cursor: String!
+}
+
+type ItemList implements Node {
+  """The ID of an object"""
+  id: ID!
+  items(after: String, first: Int, before: String, last: Int): ItemConnection
+}
+
+type Match {
+  wishItem: Item
+  posessionItem: Item
+  user: User
 }
 
 type Member implements Node {
@@ -279,10 +291,12 @@ type PosessionEdge {
 
 type Query {
   viewer: User
+  matches: [Match]!
   user(id: ID): User
   artist(name: String): Artist
   event(id: ID, goodsId: ID): Event
   goods(id: ID): Goods
+  itemList(goodsId: ID): ItemList
   goodsList(artistName: String): GoodsConnection
   item(id: ID): Item
 

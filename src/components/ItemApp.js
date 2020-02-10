@@ -6,9 +6,9 @@ import ItemInfo from './ItemInfo';
 
 class ItemApp extends Component {
     render() {
-        const {goods, item} = this.props;
+        const {item} = this.props;
         return (
-            <ItemInfo goods={goods} item={item} /> 
+            <ItemInfo item={item} /> 
         );
     }
 }
@@ -18,12 +18,6 @@ export default createFragmentContainer(ItemApp, {
         fragment ItemApp_item on Item {
             id
             ...ItemInfo_item
-        }
-    `,
-    goods: graphql`
-        fragment ItemApp_goods on Goods {
-            id
-            ...ItemInfo_goods
         }
     `,
 });

@@ -12,7 +12,7 @@ import {range, classify} from '../utils';
 class GoodsEditor extends Component {
 
     handleItemsSave({numPerMembers, numPerGroup}) {
-        const {relay, goods, artist} = this.props;
+        const {relay, goods, artist, itemList} = this.props;
 
         numPerMembers = Number(numPerMembers);
         numPerGroup = Number(numPerGroup);
@@ -20,21 +20,21 @@ class GoodsEditor extends Component {
         if (numPerMembers > 0) {
             artist.members.forEach(member => {
                 range(numPerMembers).forEach(idx => {
-                    AddItemMutation.commit(relay.environment, idx, [member.memberId], goods);
+                    AddItemMutation.commit(relay.environment, idx, [member.memberId], goods.goodsId, itemList);
                 });
             });
         }
 
         if (numPerGroup > 0) {
             range(numPerGroup).forEach(idx => {
-                AddItemMutation.commit(relay.environment, idx, artist.members.map(member => member.memberId), goods);
+                AddItemMutation.commit(relay.environment, idx, artist.members.map(member => member.memberId), goods.goodsId, itemList);
             });
         }
     }
 
     render() {
-        const {artist, event, goods} = this.props;
-        const {items} = goods;
+        const {artist, event, goods, itemList} = this.props;
+        const {items} = itemList;
 
         const nodes = items.edges.map(edge => edge.node);
         
@@ -97,6 +97,12 @@ export default createFragmentContainer(GoodsEditor, {
             id
             goodsId
             name
+            ...GoodsInfo_goods
+        }
+    `,
+    itemList: graphql`
+        fragment GoodsEditor_itemList on ItemList {
+            id
             items(
                 first: 2147483647 # max GraphQLInt
             ) @connection(key: "GoodsEditor_items") {
@@ -111,7 +117,6 @@ export default createFragmentContainer(GoodsEditor, {
                     }
                 }
             }
-            ...GoodsInfo_goods
         }
     `,
 });

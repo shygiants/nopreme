@@ -8,8 +8,8 @@ import {classify} from '../utils';
 
 class GoodsApp extends Component {
     render() {
-        const {viewer, artist, event, goods} = this.props;
-        const {items} = goods;
+        const {viewer, artist, event, goods, itemList} = this.props;
+        const {items} = itemList;
 
         const nodes = items.edges.map(edge => edge.node);
         
@@ -66,6 +66,12 @@ export default createFragmentContainer(GoodsApp, {
             id
             goodsId
             name
+            ...GoodsInfo_goods
+        }
+    `,
+    itemList: graphql`
+        fragment GoodsApp_itemList on ItemList {
+            id
             items(
                 first: 2147483647 # max GraphQLInt
             ) @connection(key: "GoodsApp_items") {
@@ -80,7 +86,6 @@ export default createFragmentContainer(GoodsApp, {
                     }
                 }
             }
-            ...GoodsInfo_goods
         }
     `,
 });

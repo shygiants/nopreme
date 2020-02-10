@@ -42,87 +42,72 @@ const Router = createFarceRouter({
                 }
             `}
         >
-            <Route 
-                Component={Feed}
+            <Route
+                Component={ArtistEditor}
                 query={graphql`
-                    query admin_Feed_Query {
-                        viewer {
-                            ...Feed_viewer
+                    query admin_ArtistEditor_Query($artistName: String) {
+                        artist(name: $artistName) {
+                            ...ArtistEditor_artist
                         }
                     }
                 `}
+                prepareVariables={() => ({artistName})}
             />
             <Route
-                path='browse'
+                path='events/:eventId'
+                Component={Pop}
             >
                 <Route
-                    Component={ArtistEditor}
+                    Component={EventEditor}
                     query={graphql`
-                        query admin_ArtistEditor_Query($artistName: String) {
+                        query admin_EventEditor_Query($eventId: ID, $artistName: String) {
                             artist(name: $artistName) {
-                                ...ArtistEditor_artist
+                                ...EventEditor_artist 
+                            }
+                            event(id: $eventId) {
+                                ...EventEditor_event @arguments(artistName: $artistName)
                             }
                         }
                     `}
-                    prepareVariables={() => ({artistName})}
+                    prepareVariables={(params) => ({eventId: params.eventId, artistName})}
                 />
                 <Route
-                    path='events/:eventId'
-                    Component={Pop}
+                    path='/goods/:goodsId'
                 >
                     <Route
-                        Component={EventEditor}
+                        Component={GoodsEditor}
                         query={graphql`
-                            query admin_EventEditor_Query($eventId: ID, $artistName: String) {
+                            query admin_GoodsEditor_Query($goodsId: ID, $artistName: String, $eventId: ID) {
                                 artist(name: $artistName) {
-                                    ...EventEditor_artist 
+                                    ...GoodsEditor_artist 
                                 }
                                 event(id: $eventId) {
-                                    ...EventEditor_event @arguments(artistName: $artistName)
+                                    ...GoodsEditor_event
+                                }
+                                goods(id: $goodsId) {
+                                    ...GoodsEditor_goods
+                                }
+                                itemList(goodsId: $goodsId) {
+                                    ...GoodsEditor_itemList
                                 }
                             }
                         `}
-                        prepareVariables={(params) => ({eventId: params.eventId, artistName})}
+                        prepareVariables={({goodsId, eventId}) => ({goodsId, artistName, eventId})}
                     />
                     <Route
-                        path='/goods/:goodsId'
-                    >
-                        <Route
-                            Component={GoodsEditor}
+                        path='/items/:itemId'
+                        Component={ItemEditor}
                             query={graphql`
-                                query admin_GoodsEditor_Query($goodsId: ID, $artistName: String, $eventId: ID) {
-                                    artist(name: $artistName) {
-                                        ...GoodsEditor_artist 
+                                query admin_ItemEditor_Query($itemId: ID) {
+                                    item(id: $itemId) {
+                                        ...ItemEditor_item
                                     }
-                                    event(id: $eventId) {
-                                        ...GoodsEditor_event
-                                    }
-                                    goods(id: $goodsId) {
-                                        ...GoodsEditor_goods
-                                    }   
                                 }
                             `}
-                            prepareVariables={({goodsId, eventId}) => ({goodsId, artistName, eventId})}
-                        />
-                        <Route
-                            path='/items/:itemId'
-                            Component={ItemEditor}
-                                query={graphql`
-                                    query admin_ItemEditor_Query($itemId: ID, $goodsId: ID) {
-                                        item(id: $itemId) {
-                                            ...ItemEditor_item
-                                        }
-                                        goods(id: $goodsId) {
-                                            ...ItemEditor_goods
-                                        }
-                                    }
-                                `}
-                                prepareVariables={({itemId, goodsId}) => ({itemId, goodsId})}
-                        />
-                    </Route>
+                            prepareVariables={({itemId}) => ({itemId})}
+                    />
                 </Route>
             </Route>
-            
         </Route>
     ),
 });

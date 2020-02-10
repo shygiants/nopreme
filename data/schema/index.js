@@ -14,6 +14,8 @@ import {
     GraphQLEventEdge,
     GraphQLItem,
     GoodsConnection,
+    GraphQLMatch,
+    GraphQLItemList,
 } from './nodes';
 
 import {
@@ -24,6 +26,7 @@ import {
     getItemById,
     getGoodsByArtistName,
     getEventByGoodsId,
+    getMatchesForUser,
 } from '../database';
 
 import { AddGoodsMutation } from './mutations/AddGoodsMutation';
@@ -36,7 +39,8 @@ import { RemoveCollectionMutation } from './mutations/RemoveCollectionMutation';
 import { RemovePosessionMutation } from './mutations/RemovePosessionMutation';
 import { RemoveWishMutation } from './mutations/RemoveWishMutation';
 import { ModifyItemMutation } from './mutations/ModifyItemMutation';
-
+import { GraphQLNonNull } from 'graphql';
+import { GraphQLList } from 'graphql';
 
 const Query = new GraphQLObjectType({
     name: 'Query',
@@ -44,6 +48,10 @@ const Query = new GraphQLObjectType({
         viewer: {
             type: GraphQLUser,
             resolve: (root, args, {user: {id}}) => getUserById(id),
+        },
+        matches: {
+            type: new GraphQLNonNull(new GraphQLList(GraphQLMatch)),
+            resolve: (root, args, {user: {id}}) => getMatchesForUser(id),
         },
         user: {
             type: GraphQLUser,
@@ -88,6 +96,15 @@ const Query = new GraphQLObjectType({
                 },
             },
             resolve: (root, {id}) => getGoodsById(id),
+        },
+        itemList: {
+            type: GraphQLItemList,
+            args: {
+                goodsId: {
+                    type: GraphQLID,
+                },
+            },
+            resolve: (root, {goodsId}) => ({goodsId}),
         },
         goodsList: {
             type: GoodsConnection,
