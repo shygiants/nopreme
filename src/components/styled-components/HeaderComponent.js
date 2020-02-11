@@ -2,10 +2,12 @@ import React from 'react';
 
 import { Box, Text } from 'grommet';
 
-import Link from './Link';
-
 const Avatar = (props) =>(
-    <Box direction="row" align="center">
+    <Box 
+        direction="row" 
+        align="center"
+        gap='xsmall'
+    >
         <Box
             height="40px"
             width="40px"
@@ -17,16 +19,5 @@ const Avatar = (props) =>(
 
 )
 
-const HeaderLink = ({...rest}) =>(
-    <Box 
-        direction = "row" 
-        gap="medium"
-        {...rest}
-    >
-        <Link to='/' label='Home' />
-        <Link to='/browse' label='Browse' />
-    </Box>
-)
-
-export { Avatar, HeaderLink }
+export { Avatar}
 

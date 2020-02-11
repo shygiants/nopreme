@@ -11,6 +11,7 @@ class Feed extends Component {
 
         return (
             <div>
+                {viewer.tutorialComplete || 'TUTORIAL'}
                 <ul>
                     {matches.map(match => (
                         <li key={match.wishItem.id+match.posessionItem.id+match.user.id}>

@@ -17,13 +17,6 @@ class ArtistApp extends Component {
 
         return (
             <div>
-                <h1>{artist.name}</h1>
-                <ul>
-                    {artist.members.map(member => (
-                        <li key={member.memberId}>{member.name}</li>
-                    ))}
-                </ul>
-
                 <GoodsList goodsList={reducedGoodsList} />
             </div>
         );

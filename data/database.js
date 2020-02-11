@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
         id: String,
         accessToken: String,
     },
+    tutorialComplete: {
+        type: Boolean,
+        default: false,
+    },
     admin: {
         type: Boolean,
         defualt: false,
@@ -125,14 +129,14 @@ export function getUserByKakaoId(kakaoId) {
     return User.findOne({'kakao.id': kakaoId}).exec();
 }
 
-export function addUser(name, openChatLink, accessToken) {
+export function addUser(name, accessToken) {
     return getKakaoUserInfo(accessToken).then(({id}) => {
         return getUserByKakaoId(id).then(user => {
             if (user !== null) {
                 throw new Error('User already exists');
             }
 
-            return new User({name, openChatLink, kakao: {
+            return new User({name, kakao: {
                 accessToken, id
             }}).save().then(({_id}) => _id);
         });
@@ -143,6 +147,10 @@ export function isAdmin(id) {
     return getUserById(id).then(user => {
         return user.admin
     });
+}
+
+export function nicknameExists(nickname) {
+    return User.findOne({name: nickname}).exec().then(user => user !== null);
 }
 
 export function getArtistById(id) {
