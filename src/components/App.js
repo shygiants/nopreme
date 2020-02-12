@@ -13,12 +13,12 @@ class App extends Component {
         const {viewer, children} = this.props;
 
         return (
-            <Grommet theme = {grommet}>
+            <Grommet theme={grommet} full={true}>
                 <Header>
                     <HeaderLink/>
                     <Avatar viewer = {viewer}/>
                 </Header>
-                {children}
+                {children}                
             </Grommet>
         );
     }

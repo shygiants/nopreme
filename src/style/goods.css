@@ -1,0 +1,47 @@
+
+.goods-card img{
+    border-radius: 10%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.goods-card .card-img{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+.goods-card{
+    width : 46vw;
+}
+@media (min-width:768px){
+    .goods-card{
+        width : 23vw;
+    }
+}
+
+.goods-card .card-text{
+    width : 90%;
+    font-size : 0.7rem;
+    line-height: 1.0rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: start ;
+    align-items: flex-start;
+    color : black;
+    white-space: pre-line;
+}
+.goods-card .goods-name{
+    padding-top: 0.2rem;
+}
+
+.goods-card .dummy{
+    padding-top: 0.2rem;
+    font-size : 0.6rem;
+    color : #909090;
+
+}
+
+a{
+    text-decoration: none;
+}

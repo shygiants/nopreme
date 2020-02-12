@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link as FoundLink}  from 'found';
-import { Anchor } from 'grommet';
+import { Text } from 'grommet'
 
 export default class Link extends Component {
     render() {
@@ -8,8 +8,10 @@ export default class Link extends Component {
 
         return (
             <FoundLink style={{textDecoration: 'none'}} to={to}>
-                {/* <Anchor label={label}/> */}
-                {label}
+                <Text 
+                    color='brand'
+                >{label}
+                </Text>
             </FoundLink>
         );
     }

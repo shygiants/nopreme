@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay';
 import Link from './styled-components/Link';
+import {Text} from 'grommet';
+import {GoodsCard} from './styled-components/Card'
 
 class Goods extends Component {
     render() {
         const {goods} = this.props;
-
-        const curr = location.hash.slice(1);
-
-        return <Link to={curr + `/goods/${goods.goodsId}`} label={goods.name} />;
+        return (
+            <GoodsCard goods = {goods}></GoodsCard>            
+        );
     }
 }
 
@@ -18,6 +19,7 @@ export default createFragmentContainer(Goods, {
             id
             goodsId
             name
+            img
         }
     `,
 });

@@ -1,0 +1,12 @@
+.goodsList .goodsList-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left:1rem;
+    padding-right:1rem;
+}
+
+.goodsList-header Button{
+    font-size: 1rem;
+    height: 80%;
+}
