@@ -5,6 +5,7 @@ import React, {
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {grommet} from 'grommet/themes';
 import {Grommet, Header, Main, Footer, Layer, Button, Box, Heading} from 'grommet';
+import {deepMerge} from 'grommet/utils'
 import { Menu } from 'grommet-icons';
 
 import MenuLayer from './MenuLayer';
@@ -22,6 +23,7 @@ class App extends Component {
         };
 
         grommet.global.colors.brand='#e5732f';
+        grommet.global.colors.focus='#e5732f';
     }
 
     setShow(show) {
@@ -58,7 +60,7 @@ class App extends Component {
                         </Heading>
                     </Box>
                 </Header>
-                <Main>
+                <Main background='light-1'>
                     <MenuLayer
                         viewer={viewer}
                         show={this.state.layer}

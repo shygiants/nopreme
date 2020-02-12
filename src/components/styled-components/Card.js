@@ -1,39 +1,38 @@
 import React from 'react';
-
-import { Box,Image, Text } from 'grommet';
-import {Link}  from 'found';
-import '../../style/goods.css'
-
+import { Box,Image, Text} from 'grommet';
 
 class GoodsCard extends React.Component{
-
     render(){
-        const {goods} = this.props;
-        const curr = location.hash.slice(1);
-
+        const {goods, onClick} = this.props;
         return (
-            <Link to={curr + `/goods/${goods.goodsId}`}>
                 <Box 
-                    className='goods-card'
+                    margin='small'
+                    pad='small'
+                    width='43vw'
                     align='center'
                     justify='center'
-                    hoverIndicator
                     pad='small'
-                    background='light-1'
+                    onClick={onClick}
                 >
                     <Box className='card-img'>
-                        <img src={goods.img} />
+                        <Image 
+                            src={goods.img} 
+                            fit='contain'
+                            fill
+                            style={{borderRadius:'10%'}}
+                        />
                     </Box>
-                    <Box className='card-text'>
-                        <span className='goods-name'>
+                    <Box>
+                        <Text 
+                            margin='small'
+                            size='xsmall' 
+                            truncate
+
+                        >
                             {goods.name}
-                        </span>
-                        <span className='dummy'>
-                            {goods.name}
-                        </span>
+                        </Text>
                     </Box>
                 </Box>
-            </Link>
         );
     }
 }
