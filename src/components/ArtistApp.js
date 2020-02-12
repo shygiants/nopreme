@@ -4,7 +4,6 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 import GoodsList from './GoodsList';
 
 import {getNodesFromConnection} from '../utils';
-import { Box } from 'grommet';
 
 class ArtistApp extends Component {
     render() {
@@ -14,12 +13,13 @@ class ArtistApp extends Component {
         const sortedEvents = nodes.sort((a, b) => new Date(b) - new Date(a));
 
         const reducedGoodsList = sortedEvents.map(
-            ({goodsList}) => getNodesFromConnection(goodsList)).reduce((a, b) => a.concat(b));
+            ({name, goodsList}) => getNodesFromConnection(goodsList).map(goods => ({...goods, eventName: name}))
+        ).reduce((a, b) => a.concat(b));
+
+        const eventNames = reducedGoodsList.map(({eventName}) => eventName);
 
         return (
-            <Box>
-                <GoodsList goodsList={reducedGoodsList} />
-            </Box>
+            <GoodsList goodsList={reducedGoodsList} events={eventNames} />
         );
     }
 }
@@ -43,6 +43,7 @@ export default createFragmentContainer(ArtistApp, {
                 edges {
                     node {
                         id
+                        name
                         date
                         goodsList(
                             artistName: $artistName

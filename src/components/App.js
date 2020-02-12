@@ -22,7 +22,10 @@ class App extends Component {
 
         return (
             <Grommet theme={grommet}>
-                <Header>
+                <Header
+                    pad={{horizontal: 'medium'}}
+                    elevation='xsmall'
+                >
                     <Link 
                         to='/'
                         label={(
@@ -45,7 +48,8 @@ class App extends Component {
                     </Box>
                 </Header>
                 <Main
-                    pad='medium'
+                    background='light-1'
+                    pad={{vertical: 'medium'}}
                 >
                     {children}
                 </Main>

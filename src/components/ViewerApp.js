@@ -18,6 +18,7 @@ class ViewerApp extends Component {
                 direction='column'
                 align='start'
                 gap='medium'
+                pad={{horizontal: 'medium'}}
             >
                 {viewer.name}
 

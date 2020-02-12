@@ -8,6 +8,7 @@ export default class Link extends Component {
 
         return (
             <FoundLink 
+                {...this.props}
                 as={component || Anchor} 
                 to={to} 
                 icon={icon} 

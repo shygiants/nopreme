@@ -1,4 +1,3 @@
-import '../css/main.css';
 import React, {
     Component
 } from 'react';
@@ -12,7 +11,7 @@ export default class Container extends Component {
 
         grommet.global.colors.brand='#e5732f';
     }
-    
+
     render() {
         const {children} = this.props;
 
