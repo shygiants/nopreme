@@ -5,7 +5,7 @@ import React, {
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {grommet} from 'grommet/themes';
 import {Grommet, Header, Main, Footer, Layer, Button, Box, Heading} from 'grommet';
-import { Menu, Search } from 'grommet-icons';
+import { Search } from 'grommet-icons';
 import Avatar from './Avatar';
 import Link from './Link';
 
@@ -14,6 +14,7 @@ class App extends Component {
         super(props);
 
         grommet.global.colors.brand='#e5732f';
+        grommet.global.colors.focus='#e5732f';
     }
 
     render() {

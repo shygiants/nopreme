@@ -4,6 +4,7 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 import GoodsList from './GoodsList';
 
 import {getNodesFromConnection} from '../utils';
+import { Box } from 'grommet';
 
 class ArtistApp extends Component {
     render() {
@@ -16,9 +17,9 @@ class ArtistApp extends Component {
             ({goodsList}) => getNodesFromConnection(goodsList)).reduce((a, b) => a.concat(b));
 
         return (
-            <div>
+            <Box>
                 <GoodsList goodsList={reducedGoodsList} />
-            </div>
+            </Box>
         );
     }
 }

@@ -1,22 +1,23 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
-
+import {Box, Grid, TextInput} from 'grommet';
 import Goods from './Goods';
+import { Search } from "grommet-icons";
 
 class GoodsList extends Component {
     render() {
         const {goodsList} = this.props;
-
-        goodsList
-
         return (
-            <div>
-                <ul>
-                    {goodsList.map(goods => (
-                        <li key={goods.id}><Goods goods={goods} /></li>
-                    ))}
-                </ul>
-            </div>
+            <Box
+            align='start'
+            justify='center'
+            direction='row'
+            wrap
+            >
+                {goodsList.map( (goods) =>(
+                    <div key={goods.id}><Goods goods = {goods}/></div>
+                ))}
+            </Box>
         );
 
     }

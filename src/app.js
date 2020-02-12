@@ -1,3 +1,5 @@
+import './css/main.css'
+
 import React, {
     Component
 } from 'react';
