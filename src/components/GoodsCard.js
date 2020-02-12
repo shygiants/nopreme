@@ -22,16 +22,9 @@ export default class GoodsCard extends Component{
                 <Box
                     direction='column'
                     align='start'
-                    margin={{vertical: 'small'}}
+                    margin={{top: 'small', bottom: 'medium'}}
                     overflow='hidden'
                 >
-                    <Text 
-                        size='xsmall' 
-                        color='dark-3'
-                        truncate
-                    >
-                        {event}
-                    </Text>
                     <Text 
                         size='xsmall' 
                         weight='bold'
@@ -39,6 +32,14 @@ export default class GoodsCard extends Component{
                     >
                         {goods.name}
                     </Text>
+                    <Text 
+                        size='xsmall' 
+                        color='dark-3'
+                        truncate
+                    >
+                        {event}
+                    </Text>
+                    
                 </Box>
             </Box>
         );
