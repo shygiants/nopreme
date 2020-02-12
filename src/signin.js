@@ -4,40 +4,19 @@ import React, {
 import {
     render
 } from 'react-dom';
-import { BrowserProtocol, queryMiddleware, HashProtocol } from 'farce';
-import {
-    createFarceRouter,
-    HttpError,
-    makeRouteConfig,
-    Redirect,
-    Route,
-    resolver,
-  } from 'found';
 
+import Container from './components/Container';
 import SignIn from './components/SignIn';
-import SignUp from './components/SignUp';
 
-const Router = createFarceRouter({
-    historyProtocol: new HashProtocol(),
-    historyMiddlewares: [queryMiddleware],
-    routeConfig: makeRouteConfig(
-        <Route
-            path='/'
-        >
-            <Route
-                Component={SignIn}
-            />
+class App extends Component {
+    render() {
+        return (
+            <Container>
+                <SignIn />
+            </Container>
 
-            <Route
-                path='signup'
-                Component={SignUp}
-            />
+        );
+    }
+}
 
-        </Route>
-
-    ),
-});
-
-
-
-render(<Router resolver={resolver} />, document.getElementById('root'));
+render(<App />, document.getElementById('root'));

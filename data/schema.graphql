@@ -342,6 +342,7 @@ type User implements Node {
   id: ID!
   userId: ID!
   name: String!
+  tutorialComplete: Boolean
   admin: Boolean
   collects(after: String, first: Int, before: String, last: Int): CollectionConnection
   posesses(after: String, first: Int, before: String, last: Int): PosessionConnection

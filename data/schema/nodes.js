@@ -433,6 +433,10 @@ const GraphQLUser = new GraphQLObjectType({
         name: {
             type: new GraphQLNonNull(GraphQLString),
         },
+        tutorialComplete: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+        },
         admin: {
             type: GraphQLBoolean,
             defaultValue: false,

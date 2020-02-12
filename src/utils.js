@@ -1,4 +1,6 @@
 import request from 'request-promise-native';
+import nameGenerator from '@afuggini/namegenerator';
+import {nicknameExists} from '../data/database';
 
 export function range(end) {
     return [...Array(end).keys()];
@@ -63,4 +65,12 @@ export function getNodesFromConnection(connection) {
 
 export function intersection(arr1, arr2) {
     return arr1.filter(value => -1 !== arr2.indexOf(value));
+}
+
+export async function generateNewNickname() {
+    const newNickname = nameGenerator('-');
+
+    while (await nicknameExists(newNickname)) {}
+
+    return newNickname;
 }

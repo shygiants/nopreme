@@ -18,7 +18,7 @@ import uuidv4 from 'uuid/v4';
 
 import {schema} from './data/schema';
 import {addUser, getUserByKakaoId, isAdmin} from './data/database';
-import {getKakaoUserInfo} from './src/utils';
+import {getKakaoUserInfo, generateNewNickname} from './src/utils';
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -60,7 +60,8 @@ app.use('/graphql', jwt({secret: jwtSecret}), graphqlHTTP({
 // MIDDLEWARE //
 ////////////////
 function kakaoAccessToken(req, res, next) {
-  getKakaoUserInfo(req.body.accessToken).then(resp => {
+  const {accessToken} = req.body;
+  getKakaoUserInfo(accessToken).then(resp => {
     req.kakaoUser = resp;
     next();
   }).catch(err => {
@@ -90,32 +91,24 @@ function onlyAdmin(req, res, next) {
 app.post('/auth/signin', kakaoAccessToken, (req, res) => {
   getUserByKakaoId(req.kakaoUser.id).then(user => {
     if (user !== null) {
+      // SIGN IN
       res.json({
         token: jwtSign.sign({ 
           id: user._id,
-        }, jwtSecret)})
-      return
-    } 
-
-    res.json({exists: false});
+        }, jwtSecret)});
+    } else {
+      // SIGN UP
+      // TODO: random
+      generateNewNickname().then(nickname => {
+        addUser(nickname, req.body.accessToken).then(_id => {
+          res.json({
+            token: jwtSign.sign({ 
+              id: _id,
+            }, jwtSecret)});
+        });
+      });
+    }
   });
-});
-
-app.post('/auth/signup', (req, res) => {
-  const {nickname, openChatLink, accessToken} = req.body;
-
-  addUser(nickname, openChatLink, accessToken).then(_id => {
-    res.json({
-      token: jwtSign.sign({
-        id: _id,
-      }, jwtSecret)})
-  });
-});
-
-// TODO: CORS
-app.post('/kakao/nickname', kakaoAccessToken, (req, res) => {
-  const {kakaoUser: {kakao_account: {profile: {nickname}}}} = req;
-  res.json({nickname});
 });
 
 /////////////
