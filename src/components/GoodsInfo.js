@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
-import Link from './styled-components/Link';
+import Link from './Link';
 
 class GoodsInfo extends Component {
     render() {

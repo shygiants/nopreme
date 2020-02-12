@@ -6,7 +6,7 @@ import {Grommet, Header, Main, Footer, Layer, Button, Box, Heading} from 'gromme
 import { Transaction, Search } from 'grommet-icons';
 
 import {Avatar,} from './styled-components/HeaderComponent';
-import Link from './styled-components/Link';
+import Link from './Link';
 
 
 

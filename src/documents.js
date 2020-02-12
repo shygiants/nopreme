@@ -27,7 +27,7 @@ const Router = createFarceRouter({
             Component={Container}
             path='/'
         >
-            <Redirect from='' to='terms-of-service' />
+            <Redirect from='/' to='/terms-of-service' />
             <Route
                 path='terms-of-service'
                 render={() => {

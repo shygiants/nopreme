@@ -112,6 +112,10 @@ const userItemSchema = new mongoose.Schema({
         // TODO: Use enum
         enum: Object.values(RelationTypeEnum),
     },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 export const UserItem = mongoose.model('UserItem', userItemSchema);

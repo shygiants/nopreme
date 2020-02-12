@@ -11,6 +11,7 @@ import {
   createRender,
   makeRouteConfig,
   Route,
+  Redirect,
 } from 'found';
 import { Resolver } from 'found-relay';
 
@@ -21,6 +22,7 @@ import GoodsApp from './components/GoodsApp';
 import ItemApp from './components/ItemApp';
 import Pop from './components/Pop';
 import Feed from './components/Feed';
+import ViewerApp from './components/ViewerApp';
 
 import {environment} from './environment';
 import { graphql } from 'react-relay';
@@ -133,7 +135,18 @@ const Router = createFarceRouter({
 
                 
             </Route>
-            
+
+            <Route
+                path='menu'
+                Component={ViewerApp}
+                query={graphql`
+                query app_ViewerApp_Query {
+                    viewer {
+                        ...ViewerApp_viewer
+                    }
+                }
+            `}
+            />
         </Route>
     ),
 });
