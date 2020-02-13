@@ -2,31 +2,26 @@ import React, {
     Component
 } from 'react';
 import {graphql, createFragmentContainer} from 'react-relay';
+import {Box} from 'grommet';
 
-import MatchItem from './MatchItem';
+import MatchCard from './MatchCard';
 
 class Feed extends Component {
     render() {
         const {viewer, matches} = this.props;
 
         return (
-            <div>
+            <Box
+                direction='column'
+                pad={{horizontal: 'medium'}}
+                align='center'
+                gap='medium'
+            >
                 {viewer.tutorialComplete || 'TUTORIAL'}
-                <ul>
-                    {matches.map(match => (
-                        <li key={match.wishItem.id+match.posessionItem.id+match.user.id}>
-                            <div>
-                                희망
-                                <MatchItem item={match.wishItem} />
-
-                                상대방 보유
-                                <MatchItem item={match.posessionItem} />
-                                <div>{match.user.name}</div>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                {matches.map(match => (
+                    <MatchCard key={match.wishItem.id+match.posessionItem.id+match.user.id} viewer={viewer} match={match} />                            
+                ))}
+            </Box>
         );
     }
 }
@@ -36,22 +31,21 @@ export default createFragmentContainer(Feed, {
         fragment Feed_viewer on User {
             id
             name
+            ...MatchCard_viewer
         }
     `,
     matches: graphql`
         fragment Feed_matches on Match @relay(plural: true) {
             wishItem {
                 id
-                ...MatchItem_item
             }
             posessionItem {
                 id
-                ...MatchItem_item
             }
             user {
                 id
-                name
             }
+            ...MatchCard_match
         }
     `,
 });

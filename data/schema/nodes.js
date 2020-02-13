@@ -436,10 +436,16 @@ const GraphQLUser = new GraphQLObjectType({
         tutorialComplete: {
             type: GraphQLBoolean,
             defaultValue: false,
+            resolve: (user, args, {user: {id}}) => {
+                return user._id.toString() !== id? null : user.tutorialComplete;
+            }
         },
         admin: {
             type: GraphQLBoolean,
             defaultValue: false,
+            resolve: (user, args, {user: {id}}) => {
+                return user._id.toString() !== id? null : user.admin;
+            }
         },
         collects: {
             type: CollectionConnection,

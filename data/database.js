@@ -141,7 +141,7 @@ export function addUser(name, accessToken) {
             }
 
             return new User({name, kakao: {
-                accessToken, id
+                accessToken, id,
             }}).save().then(({_id}) => _id);
         });
     });
@@ -310,15 +310,25 @@ export function getMatchesForUser(userId) {
                         $in: userWishItemIds,
                     },
                     relationType: RelationTypeEnum.POSESSION,
-                }
+                },
             }, {
                 $group: {
                     _id: '$item',
                     users: {
                         $push: '$user',
                     },
-                }
-            }]).exec(), 
+                },
+            }, {
+                $lookup: {
+                    from: 'items',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'item',
+                },
+            }, {
+                $unwind: '$item'
+
+            }, ]).exec(), 
             UserItem.aggregate([{
                 $match: {
                     item: {
@@ -333,12 +343,25 @@ export function getMatchesForUser(userId) {
                         $push: '$user',
                     },
                 }
-            }]).exec(), 
+            }, {
+                $lookup: {
+                    from: 'items',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'item',
+                },
+            }, {
+                $unwind: '$item'
+
+            },]).exec(), 
         ]).then(([usersPerWishItems, usersPerPosessionItems]) => {
             let matches = [];
 
             for (const usersPerWishItem of usersPerWishItems) {
                 for (const usersPerPosessionItem of usersPerPosessionItems) {
+                    if (usersPerWishItem.item.goods.toString() !== usersPerPosessionItem.item.goods.toString())
+                        break;
+
                     const wishItem = usersPerWishItem._id;
                     const posessionItem = usersPerPosessionItem._id;
 

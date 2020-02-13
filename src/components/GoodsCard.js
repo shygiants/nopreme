@@ -22,24 +22,31 @@ export default class GoodsCard extends Component{
                 <Box
                     direction='column'
                     align='start'
+                    fill='horizontal'
                     margin={{top: 'small', bottom: 'medium'}}
-                    overflow='hidden'
                 >
-                    <Text 
-                        size='xsmall' 
-                        weight='bold'
-                        truncate
+                    <Box
+                        direction='row'
                     >
-                        {goods.name}
-                    </Text>
-                    <Text 
-                        size='xsmall' 
-                        color='dark-3'
-                        truncate
+                        <Text 
+                            size='xsmall' 
+                            weight='bold'
+                            truncate
+                        >
+                            {goods.name}
+                        </Text>
+                    </Box>
+                    <Box
+                        direction='row'
                     >
-                        {event}
-                    </Text>
-                    
+                        <Text 
+                            size='xsmall' 
+                            color='dark-3'
+                            truncate
+                        >
+                            {event}
+                        </Text>
+                    </Box>
                 </Box>
             </Box>
         );

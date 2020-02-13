@@ -21,7 +21,7 @@ class App extends Component {
         const {viewer, children} = this.props;
 
         return (
-            <Grommet theme={grommet}>
+            <Grommet style={{height: '100vh'}} theme={grommet}>
                 <Header
                     pad={{horizontal: 'medium'}}
                     elevation='xsmall'
@@ -50,6 +50,7 @@ class App extends Component {
                 <Main
                     background='light-1'
                     pad={{vertical: 'medium'}}
+                    overflow='false'
                 >
                     {children}
                 </Main>
