@@ -14,7 +14,8 @@ import {
     getUserById,
     addUserItem,
     getUserItemsByUserId,
-    getUserItemById
+    getUserItemById,
+    RelationTypeEnum
 } from '../../database';
 
 export const AddWishMutation = mutationWithClientMutationId({
@@ -32,7 +33,7 @@ export const AddWishMutation = mutationWithClientMutationId({
         wishEdge: {
             type: new GraphQLNonNull(GraphQLWishEdge),
             resolve: ({wishId, userId}) => {
-                return Promise.all([getUserItemsByUserId(userId, 'Wish'), getUserItemById(wishId)]).then(values => {
+                return Promise.all([getUserItemsByUserId(userId, RelationTypeEnum.WISH), getUserItemById(wishId)]).then(values => {
                     const wishs = values[0];
                     const wish = values[1];
 
@@ -55,7 +56,7 @@ export const AddWishMutation = mutationWithClientMutationId({
         return getUserById(id).then(user => {
             const userId = user._id;
 
-            return addUserItem(userId, itemId, num, 'Wish').then(wishId => ({wishId, userId}));
+            return addUserItem(userId, itemId, num, RelationTypeEnum.WISH).then(wishId => ({wishId, userId}));
         });
     }
 });

@@ -56,6 +56,9 @@ const Router = createFarceRouter({
                         matches {
                             ...Feed_matches
                         }
+                        exchangeList {
+                            ...Feed_exchangeList
+                        }
                     }
                 `}
             />

@@ -6,6 +6,7 @@ import {
     GraphQLBoolean,
     GraphQLInt,
     GraphQLID,
+    GraphQLEnumType,
 } from 'graphql';
 
 import {
@@ -39,6 +40,10 @@ import {
     getUserItemsByUserId,
     getUserItemById,
     UserItem,
+    ExchangeStatusEnum,
+    getExchangeById,
+    getExchangesByRequestorId,
+    Exchange,
 } from '../database';
 // import { get } from 'mongoose';
 
@@ -63,6 +68,10 @@ const {
             return getUserItemById(id);
         } else if (type === 'ItemList') {
             return {goodsId: id};
+        } else if (type === 'Exchange') {
+            return getExchangeById(id);
+        } else if (type === 'ExchangeList') {
+            return {requestorId: id};
         }
 
         return null;
@@ -78,6 +87,8 @@ const {
             return GraphQLGoods;
         } else if (obj instanceof Item) {
             return GraphQLItem;
+        } else if (obj instanceof Exchange) {
+            return GraphQLExchange;
         } else if (obj instanceof UserItem) {
             switch (obj.relationType) {
                 case 'Collection':
@@ -94,6 +105,8 @@ const {
             }
         } else if (obj.hasOwnProperty('goodsId')) {
             return GraphQLItemList;
+        } else if (obj.hasOwnProperty('ExchangeList')) {
+            return GraphQLExchangeList;
         }
 
         return null;
@@ -343,6 +356,10 @@ const GraphQLCollection = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLID),
             resolve: collection => collection._id,
         },
+        userId: {
+            type: new GraphQLNonNull(GraphQLID),
+            resolve: collection => collection.user,
+        },
         item: {
             type: new GraphQLNonNull(GraphQLItem),
             resolve: collection => {
@@ -372,6 +389,10 @@ const GraphQLPosession = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLID),
             resolve: posession => posession._id,
         },
+        userId: {
+            type: new GraphQLNonNull(GraphQLID),
+            resolve: collection => collection.user,
+        },
         item: {
             type: new GraphQLNonNull(GraphQLItem),
             resolve: posession => {
@@ -400,6 +421,10 @@ const GraphQLWish = new GraphQLObjectType({
         wishId: {
             type: new GraphQLNonNull(GraphQLID),
             resolve: wish => wish._id,
+        },
+        userId: {
+            type: new GraphQLNonNull(GraphQLID),
+            resolve: collection => collection.user,
         },
         item: {
             type: new GraphQLNonNull(GraphQLItem),
@@ -432,6 +457,9 @@ const GraphQLUser = new GraphQLObjectType({
         },
         name: {
             type: new GraphQLNonNull(GraphQLString),
+        },
+        openChatLink: {
+            type: GraphQLString,
         },
         tutorialComplete: {
             type: GraphQLBoolean,
@@ -490,28 +518,105 @@ const GraphQLUser = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
-const GraphQLMatch  = new GraphQLObjectType({
+const GraphQLMatch = new GraphQLObjectType({
     name: 'Match',
     fields: {
         wishItem: {
-            type: GraphQLItem,
+            type: new GraphQLNonNull(GraphQLItem),
             resolve: match => getItemById(match.wishItem),
         },
         posessionItem: {
-            type: GraphQLItem,
+            type: new GraphQLNonNull(GraphQLItem),
             resolve: match => getItemById(match.posessionItem),
         },
         user: {
-            type: GraphQLUser,
+            type: new GraphQLNonNull(GraphQLUser),
             resolve: match => getUserById(match.user),
         },
     },
 });
 
+const ExchangeStatusType = new GraphQLEnumType({
+    name: 'ExchangeStatus',
+    values: {
+      PROGESSING: { value: ExchangeStatusEnum.PROGRESSING },
+      CANCELED: { value: ExchangeStatusEnum.CANCELED },
+      COMPLETE: { value: ExchangeStatusEnum.COMPLETE }
+    },
+});
+
+const GraphQLExchange = new GraphQLObjectType({
+    name: 'Exchange',
+    fields: {
+        id: globalIdField('Exchange', exchange => exchange._id),
+        exchangeId: {
+            type: new GraphQLNonNull(GraphQLID),
+            resolve: exchange => exchange._id,
+        },
+        requestor: {
+            type: new GraphQLNonNull(GraphQLUser),
+            resolve: exchange => getUserById(exchange.requestor),
+        },
+        acceptor: {
+            type: new GraphQLNonNull(GraphQLUser),
+            resolve: exchange => getUserById(exchange.acceptor),
+        },
+        reqPosessionItem: {
+            type: new GraphQLNonNull(GraphQLItem),
+            resolve: exchange => getItemById(exchange.reqPosessionItem),
+        },
+        accPosessionItem: {
+            type: new GraphQLNonNull(GraphQLItem),
+            resolve: exchange => getItemById(exchange.accPosessionItem),
+        },
+        num: {
+            type: new GraphQLNonNull(GraphQLInt),
+        },
+        createdAt: {
+            type: new GraphQLNonNull(GraphQLString),
+            resolve: exchange => exchange.createdAt.toDateString(),
+        },
+        status: {
+            type: new GraphQLNonNull(ExchangeStatusType),
+        },
+    },
+    interfaces: [nodeInterface],
+});
+
+const {
+    connectionType: ExchangeConnection,
+    edgeType: GraphQLExchangeEdge,
+} = connectionDefinitions({
+    name: 'Exchange',
+    nodeType: GraphQLExchange,
+});
+
+const GraphQLExchangeList = new GraphQLObjectType({
+    name: 'ExchangeList',
+    fields: {
+        id: globalIdField('ExchangeList', ({requestorId}) => requestorId),
+        exchanges: {
+            type: ExchangeConnection,
+            args: {
+                ...connectionArgs,
+            },
+            resolve: ({requestorId}, {after, before, first, last}) => {
+                return getExchangesByRequestorId(requestorId).then(exchanges => {
+                    return connectionFromArray([...exchanges], {
+                        after, before, first, last,
+                    });
+                });
+            },
+        },
+    },
+    interfaces: [nodeInterface],
+});
+
 export {
     GraphQLMatch,
-    GraphQLMember, GraphQLItem, GraphQLGoods, GraphQLItemList, GraphQLEvent, GraphQLArtist, GraphQLUser, GraphQLCollection, GraphQLPosession, GraphQLWish,
+    GraphQLMember, GraphQLItem, GraphQLGoods, GraphQLItemList, GraphQLEvent, GraphQLArtist, GraphQLUser, GraphQLCollection, GraphQLPosession, GraphQLWish, GraphQLExchange, GraphQLExchangeList,
     nodeInterface, nodeField, 
     EventConnection, GraphQLEventEdge, GoodsConnection, GraphQLGoodsEdge, ItemConnection, GraphQLItemEdge, 
     CollectionConnection, GraphQLCollectionEdge, PosessionConnection, GraphQLPosessionEdge, WishConnection, GraphQLWishEdge,
+    ExchangeConnection, GraphQLExchangeEdge,
 };

@@ -21,7 +21,7 @@ class MatchItem extends Component {
                     direction='row'
                     justify='start'
                     fill='horizontal'
-                    margin={{vertical: 'small'}}
+                    margin={{bottom: 'small'}}
                 >
                     <Text
                         size='xsmall'
@@ -48,7 +48,7 @@ class MatchItem extends Component {
                     direction='row'
                     justify='start'
                     fill='horizontal'
-                    margin={{vertical: 'small'}}
+                    margin={{top: 'small'}}
                 >
                     <Text
                         size='xsmall'

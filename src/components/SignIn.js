@@ -28,7 +28,11 @@ export default class SignIn extends Component {
 
     render() {
         const nopreme = <b><i>Nopreme</i></b>;
-        const premium = <Anchor href='https://dic.daum.net/word/view.do?wordid=kkw000937633&supid=kku011048313' label='플미' />;
+        const premium = (<Anchor 
+                            target='_blank' 
+                            href='https://dic.daum.net/word/view.do?wordid=kkw000937633&supid=kku011048313' 
+                            label='플미' 
+                        />);
         return (
             <Box
                 height='100vh'

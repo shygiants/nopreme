@@ -23,6 +23,19 @@ type AddEventPayload {
   clientMutationId: String
 }
 
+input AddExchangeInput {
+  wishItemId: ID!
+  posessionItemId: ID!
+  acceptorId: ID!
+  num: Int = 1
+  clientMutationId: String
+}
+
+type AddExchangePayload {
+  exchangeEdge: ExchangeEdge!
+  clientMutationId: String
+}
+
 input AddGoodsInput {
   name: String!
   eventId: ID!
@@ -88,6 +101,7 @@ type Collection implements Node {
   """The ID of an object"""
   id: ID!
   collectionId: ID!
+  userId: ID!
   item: Item!
   num: Int!
 }
@@ -137,6 +151,49 @@ type EventEdge {
 
   """A cursor for use in pagination"""
   cursor: String!
+}
+
+type Exchange implements Node {
+  """The ID of an object"""
+  id: ID!
+  exchangeId: ID!
+  requestor: User!
+  acceptor: User!
+  reqPosessionItem: Item!
+  accPosessionItem: Item!
+  num: Int!
+  createdAt: String!
+  status: ExchangeStatus!
+}
+
+"""A connection to a list of items."""
+type ExchangeConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ExchangeEdge]
+}
+
+"""An edge in a connection."""
+type ExchangeEdge {
+  """The item at the end of the edge"""
+  node: Exchange
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type ExchangeList implements Node {
+  """The ID of an object"""
+  id: ID!
+  exchanges(after: String, first: Int, before: String, last: Int): ExchangeConnection
+}
+
+enum ExchangeStatus {
+  PROGESSING
+  CANCELED
+  COMPLETE
 }
 
 type Goods implements Node {
@@ -201,9 +258,9 @@ type ItemList implements Node {
 }
 
 type Match {
-  wishItem: Item
-  posessionItem: Item
-  user: User
+  wishItem: Item!
+  posessionItem: Item!
+  user: User!
 }
 
 type Member implements Node {
@@ -240,6 +297,7 @@ type Mutation {
   removeWish(input: RemoveWishInput!): RemoveWishPayload
   removePosession(input: RemovePosessionInput!): RemovePosessionPayload
   modifyItem(input: ModifyItemInput!): ModifyItemPayload
+  addExchange(input: AddExchangeInput!): AddExchangePayload
 }
 
 """An object with an ID"""
@@ -267,6 +325,7 @@ type Posession implements Node {
   """The ID of an object"""
   id: ID!
   posessionId: ID!
+  userId: ID!
   item: Item!
   num: Int!
 }
@@ -292,6 +351,7 @@ type PosessionEdge {
 type Query {
   viewer: User
   matches: [Match]!
+  exchangeList: ExchangeList
   user(id: ID): User
   artist(name: String): Artist
   event(id: ID, goodsId: ID): Event
@@ -342,6 +402,7 @@ type User implements Node {
   id: ID!
   userId: ID!
   name: String!
+  openChatLink: String
   tutorialComplete: Boolean
   admin: Boolean
   collects(after: String, first: Int, before: String, last: Int): CollectionConnection
@@ -353,6 +414,7 @@ type Wish implements Node {
   """The ID of an object"""
   id: ID!
   wishId: ID!
+  userId: ID!
   item: Item!
   num: Int!
 }

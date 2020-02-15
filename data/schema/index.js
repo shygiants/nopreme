@@ -16,6 +16,7 @@ import {
     GoodsConnection,
     GraphQLMatch,
     GraphQLItemList,
+    GraphQLExchangeList,
 } from './nodes';
 
 import {
@@ -41,6 +42,7 @@ import { RemoveWishMutation } from './mutations/RemoveWishMutation';
 import { ModifyItemMutation } from './mutations/ModifyItemMutation';
 import { GraphQLNonNull } from 'graphql';
 import { GraphQLList } from 'graphql';
+import { AddExchangeMutation } from './mutations/AddExchangeMutation';
 
 const Query = new GraphQLObjectType({
     name: 'Query',
@@ -52,6 +54,10 @@ const Query = new GraphQLObjectType({
         matches: {
             type: new GraphQLNonNull(new GraphQLList(GraphQLMatch)),
             resolve: (root, args, {user: {id}}) => getMatchesForUser(id),
+        },
+        exchangeList: {
+            type: GraphQLExchangeList,
+            resolve: (root, args, {user: {id}}) => ({requestorId: id}),
         },
         user: {
             type: GraphQLUser,
@@ -141,6 +147,7 @@ const Mutation = new GraphQLObjectType({
         removeWish: RemoveWishMutation,
         removePosession: RemovePosessionMutation,        
         modifyItem: ModifyItemMutation,
+        addExchange: AddExchangeMutation,
     },
 });
 

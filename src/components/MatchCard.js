@@ -1,11 +1,18 @@
 import React, {Component} from 'react';
-import {Box, Image, Text} from 'grommet';
+import {Box, Text, Button} from 'grommet';
 import {graphql, createFragmentContainer} from 'react-relay';
 import {Transaction} from 'grommet-icons';
 
 import MatchItem from './MatchItem';
+import AddExchangeMutation from '../mutations/AddExchangeMutation';
 
 class MatchCard extends Component{
+    handleClick() {
+        const {match, onExchangeRequest} = this.props;
+
+        onExchangeRequest(match);
+    }
+
     render() {
         const {viewer, match} = this.props;
 
@@ -21,12 +28,13 @@ class MatchCard extends Component{
                 background='#FFFFFF'
                 fill='horizontal'
                 align='center'
-                pad={{vertical: 'medium'}}
+                pad='medium'
+                gap='small'
             >
                 <Box
                     direction='row'
                     align='center'
-                    justify='evenly'
+                    justify='between'
                     fill='horizontal'
                 >
 
@@ -48,6 +56,7 @@ class MatchCard extends Component{
                         {wishItem.goods.name}
                     </Text>
                 </Box>
+                <Button onClick={this.handleClick.bind(this)} fill='horizontal' label='교환 신청' />
             </Box>  
         );
     }
@@ -64,6 +73,7 @@ export default createFragmentContainer(MatchCard, {
         fragment MatchCard_match on Match {
             wishItem {
                 id
+                itemId
                 goods {
                     id
                     name
@@ -72,6 +82,7 @@ export default createFragmentContainer(MatchCard, {
             }
             posessionItem {
                 id
+                itemId
                 goods {
                     id
                     name
@@ -80,8 +91,10 @@ export default createFragmentContainer(MatchCard, {
             }
             user {
                 id
+                userId
+                openChatLink
                 ...MatchItem_user
             }
         }
-    `,
+    `
 })

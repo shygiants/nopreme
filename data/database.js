@@ -120,6 +120,42 @@ const userItemSchema = new mongoose.Schema({
 
 export const UserItem = mongoose.model('UserItem', userItemSchema);
 
+export const ExchangeStatusEnum = {
+    PROGRESSING: 'Progressing',
+    CANCELED: 'Canceled',
+    COMPLETE: 'Complete',
+}
+
+const exchangeSchema = new mongoose.Schema({
+    requestor: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    acceptor: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    reqPosessionItem: {
+        type: Schema.Types.ObjectId,
+        ref: 'Item',
+    },
+    accPosessionItem: {
+        type: Schema.Types.ObjectId,
+        ref: 'Item',
+    },
+    num: Number,
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    status: {
+        type: String,
+        enum: Object.values(ExchangeStatusEnum),
+    },
+});
+
+export const Exchange = mongoose.model('Exchange', exchangeSchema);
+
 export function isObjectId(idOrObj) {
     return idOrObj instanceof mongoose.Types.ObjectId
 }
@@ -381,4 +417,23 @@ export function getMatchesForUser(userId) {
             return matches;
         });
     });
+}
+
+export function addExchange({requestor, acceptor, reqPosessionItem, accPosessionItem, num=1}) {
+    return new Exchange({
+        requestor, 
+        acceptor,
+        reqPosessionItem, 
+        accPosessionItem, 
+        num,
+        status: ExchangeStatusEnum.PROGRESSING
+    }).save().then(({_id}) => _id);
+}
+
+export function getExchangeById(id) {
+    return Exchange.findById(id).exec();
+}
+
+export function getExchangesByRequestorId(requestorId) {
+    return Exchange.find({requestor: requestorId}).exec();
 }
