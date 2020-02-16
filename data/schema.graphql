@@ -192,7 +192,7 @@ type ExchangeList implements Node {
 
 enum ExchangeStatus {
   PROGESSING
-  CANCELED
+  REJECTED
   COMPLETE
 }
 
@@ -299,6 +299,7 @@ type Mutation {
   modifyItem(input: ModifyItemInput!): ModifyItemPayload
   addExchange(input: AddExchangeInput!): AddExchangePayload
   removeExchange(input: RemoveExchangeInput!): RemoveExchangePayload
+  rejectExchange(input: RejectExchangeInput!): RejectExchangePayload
 }
 
 """An object with an ID"""
@@ -360,12 +361,23 @@ type Query {
   itemList(goodsId: ID): ItemList
   goodsList(artistName: String): GoodsConnection
   item(id: ID): Item
+  exchange(id: ID): Exchange
 
   """Fetches an object given its ID"""
   node(
     """The ID of an object"""
     id: ID!
   ): Node
+}
+
+input RejectExchangeInput {
+  exchangeId: ID!
+  clientMutationId: String
+}
+
+type RejectExchangePayload {
+  rejectedExchangeId: ID!
+  clientMutationId: String
 }
 
 input RemoveCollectionInput {

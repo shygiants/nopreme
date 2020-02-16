@@ -17,6 +17,7 @@ import {
     GraphQLMatch,
     GraphQLItemList,
     GraphQLExchangeList,
+    GraphQLExchange,
 } from './nodes';
 
 import {
@@ -28,6 +29,8 @@ import {
     getGoodsByArtistName,
     getEventByGoodsId,
     getMatchesForUser,
+    getExchangeById,
+    isExchangeAccessibleTo,
 } from '../database';
 
 import { AddGoodsMutation } from './mutations/AddGoodsMutation';
@@ -44,6 +47,7 @@ import { GraphQLNonNull } from 'graphql';
 import { GraphQLList } from 'graphql';
 import { AddExchangeMutation } from './mutations/AddExchangeMutation';
 import { RemoveExchangeMutation } from './mutations/RemoveExchangeMutation';
+import { RejectExchangeMutation } from './mutations/RejectExchangeMutation';
 
 const Query = new GraphQLObjectType({
     name: 'Query',
@@ -58,7 +62,7 @@ const Query = new GraphQLObjectType({
         },
         exchangeList: {
             type: GraphQLExchangeList,
-            resolve: (root, args, {user: {id}}) => ({requestorId: id}),
+            resolve: (root, args, {user: {id}}) => ({userId: id}),
         },
         user: {
             type: GraphQLUser,
@@ -130,7 +134,23 @@ const Query = new GraphQLObjectType({
                 },
             },
             resolve: (root, {id}) => getItemById(id),
-        },        
+        },   
+        exchange: {
+            type: GraphQLExchange,
+            args: {
+                id: {
+                    type: GraphQLID,
+                },
+            },
+            resolve: (root, {id}, {user}) => {
+                return isExchangeAccessibleTo(id, user.id).then(isAccessible => {
+                    if (!isAccessible)
+                        return null;
+
+                    return getExchangeById(id);
+                });
+            },
+        },
         node: nodeField,
     }
 });
@@ -150,6 +170,7 @@ const Mutation = new GraphQLObjectType({
         modifyItem: ModifyItemMutation,
         addExchange: AddExchangeMutation,
         removeExchange: RemoveExchangeMutation,
+        rejectExchange: RejectExchangeMutation,
     },
 });
 

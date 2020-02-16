@@ -42,7 +42,7 @@ import {
     UserItem,
     ExchangeStatusEnum,
     getExchangeById,
-    getExchangesByRequestorId,
+    getExchangesByUserId,
     Exchange,
 } from '../database';
 // import { get } from 'mongoose';
@@ -71,7 +71,7 @@ const {
         } else if (type === 'Exchange') {
             return getExchangeById(id);
         } else if (type === 'ExchangeList') {
-            return {requestorId: id};
+            return {userId: id};
         }
 
         return null;
@@ -105,7 +105,7 @@ const {
             }
         } else if (obj.hasOwnProperty('goodsId')) {
             return GraphQLItemList;
-        } else if (obj.hasOwnProperty('ExchangeList')) {
+        } else if (obj.hasOwnProperty('userId')) {
             return GraphQLExchangeList;
         }
 
@@ -540,7 +540,7 @@ const ExchangeStatusType = new GraphQLEnumType({
     name: 'ExchangeStatus',
     values: {
       PROGESSING: { value: ExchangeStatusEnum.PROGRESSING },
-      CANCELED: { value: ExchangeStatusEnum.CANCELED },
+      REJECTED: { value: ExchangeStatusEnum.REJECTED },
       COMPLETE: { value: ExchangeStatusEnum.COMPLETE }
     },
 });
@@ -594,14 +594,14 @@ const {
 const GraphQLExchangeList = new GraphQLObjectType({
     name: 'ExchangeList',
     fields: {
-        id: globalIdField('ExchangeList', ({requestorId}) => requestorId),
+        id: globalIdField('ExchangeList', ({userId}) => userId),
         exchanges: {
             type: ExchangeConnection,
             args: {
                 ...connectionArgs,
             },
-            resolve: ({requestorId}, {after, before, first, last}) => {
-                return getExchangesByRequestorId(requestorId).then(exchanges => {
+            resolve: ({userId}, {after, before, first, last}) => {
+                return getExchangesByUserId(userId).then(exchanges => {
                     return connectionFromArray([...exchanges], {
                         after, before, first, last,
                     });

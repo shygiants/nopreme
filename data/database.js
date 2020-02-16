@@ -122,7 +122,7 @@ export const UserItem = mongoose.model('UserItem', userItemSchema);
 
 export const ExchangeStatusEnum = {
     PROGRESSING: 'Progressing',
-    CANCELED: 'Canceled',
+    REJECTED: 'Rejected',
     COMPLETE: 'Complete',
 }
 
@@ -438,7 +438,43 @@ export function getExchangesByRequestorId(requestorId) {
     return Exchange.find({requestor: requestorId}).exec();
 }
 
+export function getExchangesByUserId(
+    userId, 
+    reqStatus=[ExchangeStatusEnum.PROGRESSING, ExchangeStatusEnum.REJECTED], 
+    accStatus=ExchangeStatusEnum.PROGRESSING) {
+    return Exchange.find({$or: [{
+        requestor: userId,
+        status: reqStatus instanceof Array ? {$in: reqStatus} : reqStatus
+    }, {
+        acceptor: userId,
+        status: accStatus
+    }]}).exec();
+}
+
 export function removeExchange(id) {
     return Exchange.findByIdAndDelete(id).exec().then(({_id}) => _id);
 }
+
+export function rejectExchange(id) {
+    return Exchange.findByIdAndUpdate(id, {
+        status: ExchangeStatusEnum.REJECTED
+    }, {useFindAndModify: true}).exec().then(({_id}) => _id);
+}
+
+export function isExchangeRejectableBy(exchangeId, userId) {
+    return getExchangeById(exchangeId).then(exchange => {
+        const {acceptor} = exchange;
+
+        return acceptor._id.toString() === userId.toString();
+    });
+}
+
+export function isExchangeAccessibleTo(exchangeId, userId) {
+    return getExchangeById(exchangeId).then(exchange => {
+        const {requestor, acceptor} = exchange;
+
+        return [requestor, acceptor].some(id => id.toString() === userId.toString());
+    });
+}
+
 

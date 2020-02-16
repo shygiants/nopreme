@@ -28,6 +28,7 @@ import ViewerApp from './components/ViewerApp';
 
 import {environment} from './environment';
 import { graphql } from 'react-relay';
+import ExchangeApp from './components/ExchangeApp';
 
 const artistName = 'IZ*ONE';
 
@@ -62,6 +63,23 @@ const Router = createFarceRouter({
                     }
                 `}
             />
+
+            <Route
+                path='exchanges/:exchangeId'
+                Component={ExchangeApp}
+                query={graphql`
+                    query app_ExchangeApp_Query($exchangeId: ID) {
+                        viewer {
+                            ...ExchangeApp_viewer
+                        }
+                        exchange(id: $exchangeId) {
+                            ...ExchangeApp_exchange
+                        }
+                    }
+                `}
+                prepareVariables={({exchangeId}) => ({exchangeId})}
+            />
+
             <Route
                 path='browse'
             >

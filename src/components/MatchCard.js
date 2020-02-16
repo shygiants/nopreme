@@ -1,34 +1,70 @@
 import React, {Component} from 'react';
 import {Box, Text, Button} from 'grommet';
 import {graphql, createFragmentContainer} from 'react-relay';
+
 import {Transaction} from 'grommet-icons';
 
 import MatchItem from './MatchItem';
-import AddExchangeMutation from '../mutations/AddExchangeMutation';
 
-class MatchCard extends Component{
+class MatchCard extends Component {
     handleClick() {
-        const {match, onExchangeRequest, onExchangeCancel, exchange} = this.props;
+        const {viewer, match, onExchangeRequest, onExchangeCancel, onExchangeReject, exchange} = this.props;
 
-        exchange? onExchangeCancel(exchange) : onExchangeRequest(match);
+        if (!exchange) 
+            return onExchangeRequest(match);
+
+        switch (viewer.userId) {
+            case exchange.requestor.userId:
+                onExchangeCancel(exchange);
+                break;
+            case exchange.acceptor.userId:
+                onExchangeReject(exchange);
+                break;
+            default:
+                throw new Error();
+        }
+    }
+
+    handleRootClick() {
+        const {exchange, router} = this.props;
+
+        router.push(`/exchanges/${exchange.exchangeId}`);
+    }
+
+    getButtonLabel() {
+        const {viewer, exchange} = this.props;
+
+        if (!exchange) 
+            return '교환 신청';
+
+        switch (viewer.userId) {
+            case exchange.requestor.userId:
+                return '신청 취소';
+            case exchange.acceptor.userId:
+                return '신청 거절';
+            default:
+                throw new Error();
+        }
     }
 
     render() {
         const {viewer, match, exchange} = this.props;
 
-        let leftItem, rightItem, acc;
+        let leftItem, rightItem, acc, req;
         if (match !== null) {
             const {wishItem, posessionItem, user} = match;
-            leftItem = wishItem;
-            rightItem = posessionItem;
+            leftItem = posessionItem;
+            rightItem = wishItem;
             acc = user;
+            req = viewer;
         }
         
         if (exchange !== null) {
-            const {reqPosessionItem, accPosessionItem, acceptor} = exchange;
-            leftItem = accPosessionItem;
-            rightItem = reqPosessionItem;
+            const {reqPosessionItem, accPosessionItem, acceptor, requestor} = exchange;
+            leftItem = reqPosessionItem;
+            rightItem = accPosessionItem;
             acc = acceptor;
+            req = requestor;
         }
 
         if (leftItem.goods.name !== rightItem.goods.name)
@@ -45,19 +81,22 @@ class MatchCard extends Component{
                 gap='small'
             >
                 <Box
+                    onClick={exchange && this.handleRootClick.bind(this)}
+                    focusIndicator={false}
                     direction='row'
                     align='center'
                     justify='between'
                     fill='horizontal'
                 >
 
-                    <MatchItem user={viewer} item={leftItem} />
+                    <MatchItem user={req} item={leftItem} />
                     
                     <Transaction />
 
                     <MatchItem user={acc} item={rightItem} />
 
                 </Box>
+
                 <Box 
                     direction='row'
                 >
@@ -70,9 +109,32 @@ class MatchCard extends Component{
                     </Text>
                 </Box>
                 {exchange && (
-                    <Button href={exchange.acceptor.openChatLink} target='_blank' fill='horizontal' label='오픈 채팅으로 연락하기' />
+                    <Button 
+                        href={exchange.status !== 'REJECTED' ? exchange.acceptor.openChatLink : null} 
+                        target='_blank' 
+                        fill='horizontal' 
+                        primary
+                        color='#f7ce46'
+                        disabled={exchange.status === 'REJECTED'}
+                        label={(
+                            <Box
+                                direction='column'
+                                fill='horizontal'
+                                align='center'
+                            >       
+                                <Text
+                                    color='#1f1f1f'
+                                    textAlign='center'
+                                >
+                                    {exchange.status === 'REJECTED' ? '거절됨' : '오픈 채팅으로 연락하기'}
+                                </Text>
+                            </Box>
+                        )} />
                 )}
-                <Button onClick={this.handleClick.bind(this)} fill='horizontal' label={exchange? '신청 취소' : '교환 신청'} />
+                <Button 
+                    fill='horizontal' 
+                    onClick={this.handleClick.bind(this)} 
+                    label={this.getButtonLabel.bind(this)()} />
             </Box>  
         );
     }
@@ -82,6 +144,7 @@ export default createFragmentContainer(MatchCard, {
     viewer: graphql`
         fragment MatchCard_viewer on User {
             id
+            userId
             ...MatchItem_user
         }
     `,
@@ -123,6 +186,12 @@ export default createFragmentContainer(MatchCard, {
                 openChatLink
                 ...MatchItem_user                
             }
+            requestor {
+                id
+                userId
+                openChatLink
+                ...MatchItem_user                
+            }
             reqPosessionItem {
                 id
                 itemId
@@ -141,6 +210,7 @@ export default createFragmentContainer(MatchCard, {
                 }
                 ...MatchItem_item
             }
+            status
         }
     `,
 })

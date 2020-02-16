@@ -21,6 +21,7 @@ class MatchItem extends Component {
                     direction='row'
                     justify='start'
                     fill='horizontal'
+                    gap='xsmall'
                     margin={{bottom: 'small'}}
                 >
                     <Text
@@ -29,6 +30,12 @@ class MatchItem extends Component {
                         truncate
                     >
                         {user.name}
+                    </Text>
+                    <Text
+                        size='xsmall'
+                        truncate
+                    >
+                        보유
                     </Text>
                 </Box>
                 
