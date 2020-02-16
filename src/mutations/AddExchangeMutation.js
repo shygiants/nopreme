@@ -27,7 +27,7 @@ const mutation = graphql`
                         itemId
                     }
                     status
-                    ...ExchangeLayer_exchange
+                    ...MatchCard_exchange
                 }
             }
         }

@@ -8,18 +8,31 @@ import AddExchangeMutation from '../mutations/AddExchangeMutation';
 
 class MatchCard extends Component{
     handleClick() {
-        const {match, onExchangeRequest} = this.props;
+        const {match, onExchangeRequest, onExchangeCancel, exchange} = this.props;
 
-        onExchangeRequest(match);
+        exchange? onExchangeCancel(exchange) : onExchangeRequest(match);
     }
 
     render() {
-        const {viewer, match} = this.props;
+        const {viewer, match, exchange} = this.props;
 
-        const {wishItem, posessionItem, user} = match
+        let leftItem, rightItem, acc;
+        if (match !== null) {
+            const {wishItem, posessionItem, user} = match;
+            leftItem = wishItem;
+            rightItem = posessionItem;
+            acc = user;
+        }
+        
+        if (exchange !== null) {
+            const {reqPosessionItem, accPosessionItem, acceptor} = exchange;
+            leftItem = accPosessionItem;
+            rightItem = reqPosessionItem;
+            acc = acceptor;
+        }
 
-        if (wishItem.goods.name !== posessionItem.goods.name)
-            throw new Error('`wishItem` and `posessionItem` should be the same goods');
+        if (leftItem.goods.name !== rightItem.goods.name)
+            throw new Error('`leftItem` and `rightItem` should be the same goods');
 
         return (
             <Box
@@ -38,11 +51,11 @@ class MatchCard extends Component{
                     fill='horizontal'
                 >
 
-                    <MatchItem user={viewer} item={wishItem} />
+                    <MatchItem user={viewer} item={leftItem} />
                     
                     <Transaction />
 
-                    <MatchItem user={user} item={posessionItem} />
+                    <MatchItem user={acc} item={rightItem} />
 
                 </Box>
                 <Box 
@@ -53,10 +66,13 @@ class MatchCard extends Component{
                         color='dark-3'
                         truncate
                     >
-                        {wishItem.goods.name}
+                        {leftItem.goods.name}
                     </Text>
                 </Box>
-                <Button onClick={this.handleClick.bind(this)} fill='horizontal' label='교환 신청' />
+                {exchange && (
+                    <Button href={exchange.acceptor.openChatLink} target='_blank' fill='horizontal' label='오픈 채팅으로 연락하기' />
+                )}
+                <Button onClick={this.handleClick.bind(this)} fill='horizontal' label={exchange? '신청 취소' : '교환 신청'} />
             </Box>  
         );
     }
@@ -96,5 +112,35 @@ export default createFragmentContainer(MatchCard, {
                 ...MatchItem_user
             }
         }
-    `
+    `,
+    exchange: graphql`
+        fragment MatchCard_exchange on Exchange {
+            id
+            exchangeId
+            acceptor {
+                id
+                userId
+                openChatLink
+                ...MatchItem_user                
+            }
+            reqPosessionItem {
+                id
+                itemId
+                goods {
+                    id
+                    name
+                }
+                ...MatchItem_item
+            }
+            accPosessionItem {
+                id
+                itemId
+                goods {
+                    id
+                    name
+                }
+                ...MatchItem_item
+            }
+        }
+    `,
 })

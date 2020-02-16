@@ -43,6 +43,7 @@ import { ModifyItemMutation } from './mutations/ModifyItemMutation';
 import { GraphQLNonNull } from 'graphql';
 import { GraphQLList } from 'graphql';
 import { AddExchangeMutation } from './mutations/AddExchangeMutation';
+import { RemoveExchangeMutation } from './mutations/RemoveExchangeMutation';
 
 const Query = new GraphQLObjectType({
     name: 'Query',
@@ -148,6 +149,7 @@ const Mutation = new GraphQLObjectType({
         removePosession: RemovePosessionMutation,        
         modifyItem: ModifyItemMutation,
         addExchange: AddExchangeMutation,
+        removeExchange: RemoveExchangeMutation,
     },
 });
 

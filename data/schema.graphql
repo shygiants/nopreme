@@ -298,6 +298,7 @@ type Mutation {
   removePosession(input: RemovePosessionInput!): RemovePosessionPayload
   modifyItem(input: ModifyItemInput!): ModifyItemPayload
   addExchange(input: AddExchangeInput!): AddExchangePayload
+  removeExchange(input: RemoveExchangeInput!): RemoveExchangePayload
 }
 
 """An object with an ID"""
@@ -374,6 +375,16 @@ input RemoveCollectionInput {
 
 type RemoveCollectionPayload {
   deletedCollectionId: ID!
+  clientMutationId: String
+}
+
+input RemoveExchangeInput {
+  exchangeId: ID!
+  clientMutationId: String
+}
+
+type RemoveExchangePayload {
+  deletedExchangeId: ID!
   clientMutationId: String
 }
 

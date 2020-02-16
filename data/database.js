@@ -437,3 +437,8 @@ export function getExchangeById(id) {
 export function getExchangesByRequestorId(requestorId) {
     return Exchange.find({requestor: requestorId}).exec();
 }
+
+export function removeExchange(id) {
+    return Exchange.findByIdAndDelete(id).exec().then(({_id}) => _id);
+}
+

@@ -8,20 +8,25 @@ import {Grommet, Header, Main, Footer, Layer, Button, Box, Heading} from 'gromme
 import { Search } from 'grommet-icons';
 import Avatar from './Avatar';
 import Link from './Link';
+import {deepMerge} from 'grommet/utils';
+
+const customGrommet = deepMerge(grommet, {
+    global: {
+        colors: {
+            brand: '#e5732f'
+        }
+    },
+    tab: {
+        margin: '3px'
+    }
+});
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-
-        grommet.global.colors.brand='#e5732f';
-        grommet.global.colors.focus='#e5732f';
-    }
-
     render() {
         const {viewer, children} = this.props;
 
         return (
-            <Grommet style={{height: '100vh'}} theme={grommet}>
+            <Grommet style={{height: '100vh'}} theme={customGrommet}>
                 <Header
                     pad={{horizontal: 'medium'}}
                     elevation='xsmall'
