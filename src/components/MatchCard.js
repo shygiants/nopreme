@@ -1,12 +1,28 @@
 import React, {Component} from 'react';
-import {Box, Text, Button} from 'grommet';
+import {Box, Text, Button, TextInput, Layer} from 'grommet';
 import {graphql, createFragmentContainer} from 'react-relay';
-
-import {Transaction} from 'grommet-icons';
+import {Transaction, StatusGood, FormClose} from 'grommet-icons';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 import MatchItem from './MatchItem';
 
 class MatchCard extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            copied: false,
+        }
+    }
+
+    handleCopy() {
+        this.setState({copied: true});
+    }
+
+    handleClose() {
+        this.setState({copied: false});
+    }
+
     handleClick() {
         const {viewer, match, onExchangeRequest, onExchangeCancel, onExchangeReject, exchange} = this.props;
 
@@ -108,6 +124,54 @@ class MatchCard extends Component {
                         {leftItem.goods.name}
                     </Text>
                 </Box>
+
+
+                {exchange && (
+                    <Box
+                        direction='row'
+                        gap='small'
+                        align='center'
+                        fill='horizontal'
+                    >
+                        <TextInput id='foo' size='small' value={`http://localhost:4000/#/exchanges/${exchange.exchangeId}`}></TextInput>
+                        <CopyToClipboard 
+                            text={`http://localhost:4000/#/exchanges/${exchange.exchangeId}`}
+                            onCopy={this.handleCopy.bind(this)}>
+                            <Button fill='horizontal' label='복사' />
+                        </CopyToClipboard>
+
+                    </Box>
+                )}
+
+                {this.state.copied && (
+                    <Layer
+                        position="top"
+                        full='horizontal'
+                        modal={false}
+                        margin={{ vertical: "medium", horizontal: "small" }}
+                        onEsc={this.handleClose.bind(this)}
+                        responsive={false}
+                        plain
+                    >
+                        <Box
+                            align="center"
+                            direction="row"
+                            gap="small"
+                            justify="between"
+                            round="medium"
+                            elevation="medium"
+                            pad={{ vertical: "xsmall", horizontal: "small" }}
+                            background="status-ok"
+                        >
+                            <Box align="center" direction="row" gap="xsmall">
+                                <StatusGood />
+                                <Text>링크 복사 완료! 오픈 채팅방에 공유하세요.</Text>
+                            </Box>
+                            <Button icon={<FormClose />} onClick={this.handleClose.bind(this)} plain />
+                        </Box>
+                    </Layer>
+                )}
+
                 {exchange && (
                     <Button 
                         href={exchange.status !== 'REJECTED' ? exchange.acceptor.openChatLink : null} 
