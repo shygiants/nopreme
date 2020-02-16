@@ -24,9 +24,9 @@ class GoodsApp extends Component {
         }
 
         return (
-            <Box pad={{horizontal: 'medium'}}>
+            <Box>
                 <GoodsInfo event={event} goods={goods}/> 
-                <Accordion multiple>
+                <Accordion multiple pad={{horizontal: 'medium'}}>
                     {memberCombs.map(memberComb => (
                         <AccordionPanel key={memberComb} label={displayMemberComb(memberComb)}>
                             <Box direction='column' align='center'>

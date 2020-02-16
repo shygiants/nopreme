@@ -11,24 +11,31 @@ class GoodsInfo extends Component {
         const curr = location.hash.slice(1);
 
         return (
-            <Box>
-                <Heading 
-                    level='6'
-                    truncate
-                    margin='0'
-                >
-                    {goods.name}
-                </Heading>
+            <Box
+                direction='column'
+                gap='small'
+            >
                 <Box
-                    height='50vw'
+                    height='100vw'
                     width='100vw'
                 >
                     <Image src={goods.img} fill fit='contain'></Image>
                 </Box>
-                <Box>
+                <Box
+                    direction='column'
+                    gap='small'
+                    pad={{horizontal: 'medium'}}
+                >
+                    <Heading 
+                        level='2'
+                        truncate
+                        margin={{vertical: 'small'}}
+                    >
+                        {goods.name}
+                    </Heading>
                     <Link to={curr + `/events/${event.eventId}`} label={event.name}/>
+                    <Text size='xsmall' color='dark-3'>{goods.description}</Text>
                 </Box>
-                <Text size='xsmall' color='dark-3'>{goods.description}</Text>
             </Box>
         );
     }
