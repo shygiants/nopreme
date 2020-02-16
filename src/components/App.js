@@ -5,7 +5,7 @@ import React, {
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {grommet} from 'grommet/themes';
 import {Grommet, Header, Main, Footer, Layer, Button, Box, Heading} from 'grommet';
-import { Search } from 'grommet-icons';
+import { Search, User } from 'grommet-icons';
 import Avatar from './Avatar';
 import Link from './Link';
 import {deepMerge} from 'grommet/utils';
@@ -54,7 +54,8 @@ class App extends Component {
                         align='center'
                     >
                         <Link icon={<Search />} to='/browse' />
-                        <Link to='/menu' label={<Avatar viewer={viewer}/>} />
+                        <Link icon={<User />} to='/menu' />
+                        {/* <Link to='/menu' label={<Avatar viewer={viewer}/>} /> */}
                         
                     </Box>
                 </Header>

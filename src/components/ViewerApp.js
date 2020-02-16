@@ -22,7 +22,7 @@ class ViewerApp extends Component {
             >
                 {viewer.name}
 
-                <Link to='' icon={<User />} label='프로필' />
+                <Link to='/profile' icon={<User />} label='프로필' />
 
                 <Anchor href='/documents' icon={<CircleQuestion />} label='고객센터' />
                 <Link to='' icon={<Support />} label='문의' />

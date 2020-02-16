@@ -29,6 +29,7 @@ import ViewerApp from './components/ViewerApp';
 import {environment} from './environment';
 import { graphql } from 'react-relay';
 import ExchangeApp from './components/ExchangeApp';
+import Profile from './components/Profile';
 
 const artistName = 'IZ*ONE';
 
@@ -163,12 +164,24 @@ const Router = createFarceRouter({
                 path='menu'
                 Component={ViewerApp}
                 query={graphql`
-                query app_ViewerApp_Query {
-                    viewer {
-                        ...ViewerApp_viewer
+                    query app_ViewerApp_Query {
+                        viewer {
+                            ...ViewerApp_viewer
+                        }
                     }
-                }
-            `}
+                `}
+            />
+
+            <Route
+                path='profile'
+                Component={Profile}
+                query={graphql`
+                    query app_Profile_Query {
+                        viewer {
+                            ...Profile_viewer
+                        }
+                    }
+                `}
             />
         </Route>
     ),
