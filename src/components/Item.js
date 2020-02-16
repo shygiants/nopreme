@@ -1,86 +1,27 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay';
-
-import ToggleSwitch from './ToggleSwitch';
-import ItemLink from './ItemLink';
-import AddCollectionMutation from '../mutations/AddCollectionMutation';
-import AddPosessionMutation from '../mutations/AddPosessionMutation';
-import AddWishMutation from '../mutations/AddWishMutation';
-import RemoveCollectionMutation from '../mutations/RemoveCollectionMutation';
-import {getNodesFromConnection} from '../utils';
-import RemovePosessionMutation from '../mutations/RemovePosessionMutation';
-import RemoveWishMutation from '../mutations/RemoveWishMutation';
+import Link from './Link';
+import ItemCard from './ItemCard';
 
 const COLLECTION = 'collection';
 const POSESSION = 'posession';
 const WISH = 'wish';
 
 class Item extends Component {
-    handleCheck(event) {
-        const target = event.target;
-        const checked = target.checked;
-        const name = target.name;
-
-        const {relay, item, viewer} = this.props;
-
-        let mutation;
-        switch (name) {
-            case COLLECTION:
-                mutation = checked ? AddCollectionMutation : RemoveCollectionMutation;
-                mutation.commit(relay.environment, item, viewer);
-                break;
-            case POSESSION:
-                mutation = checked ? AddPosessionMutation : RemovePosessionMutation;
-                mutation.commit(relay.environment, item, viewer);
-                break;
-            case WISH:
-                mutation = checked ? AddWishMutation : RemoveWishMutation;
-                mutation.commit(relay.environment, item, viewer);
-                break;
-            default:
-                throw new Error('Invalid `name`');
-        }
-
-    }
-
     render() {
-        const {viewer, artist, item} = this.props;
-
-        const {collects, posesses, wishes} = viewer;
-
-        const collectionNodes = getNodesFromConnection(collects);
-        const posessionNodes = getNodesFromConnection(posesses);
-        const wishNodes = getNodesFromConnection(wishes);
-
-        function isIn(coll, elem) {
-            const ids = coll.map(e => e.item.itemId);
-            return ids.includes(elem);
-        }
+        const {viewer, artist, item, relay} = this.props;
+        const curr = location.hash.slice(1);
 
         return (
-            <div>
-                <ItemLink artist={artist} item={item} />
-                <ToggleSwitch 
-                    name={COLLECTION} 
-                    on={isIn(collectionNodes, item.itemId)}
-                    onChange={this.handleCheck.bind(this)}
-                    label='수집'
-                />
-                <ToggleSwitch 
-                    name={POSESSION} 
-                    on={isIn(posessionNodes, item.itemId)}
-                    onChange={this.handleCheck.bind(this)}
-                    label='보유'
-                />
-                <ToggleSwitch 
-                    name={WISH} 
-                    on={isIn(wishNodes, item.itemId)}
-                    onChange={this.handleCheck.bind(this)}
-                    label='희망'
-                />
-            </div>
+            <Link 
+                component={ItemCard}
+                artist={artist}
+                item={item}
+                viewer={viewer}
+                relay={relay}
+                to={curr + `/items/${item.itemId}`}
+            />
         );
-
     }
 }
 
@@ -139,14 +80,21 @@ export default createFragmentContainer(Item, {
     artist: graphql`
         fragment Item_artist on Artist {
             id
-            ...ItemLink_artist
+            members {
+                id
+            }
         }
     `,
     item: graphql`
         fragment Item_item on Item {
             id
             itemId
-            ...ItemLink_item
+            idx
+            img
+            members {
+                id
+                name
+            }
         }
     `,
 });

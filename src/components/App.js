@@ -14,6 +14,12 @@ const customGrommet = deepMerge(grommet, {
     global: {
         colors: {
             brand: '#e5732f'
+        },
+        focus: {
+            border: {
+                size: 'xsmall',
+                color: 'brand'
+            }
         }
     },
     tab: {
@@ -55,7 +61,6 @@ class App extends Component {
                 <Main
                     background='light-1'
                     pad={{vertical: 'medium'}}
-                    overflow='false'
                 >
                     {children}
                 </Main>

@@ -5,6 +5,7 @@ import ItemList from './ItemList';
 import GoodsInfo from './GoodsInfo';
 
 import {classify} from '../utils';
+import { Box, Heading, Accordion, AccordionPanel } from 'grommet';
 
 class GoodsApp extends Component {
     render() {
@@ -23,16 +24,18 @@ class GoodsApp extends Component {
         }
 
         return (
-            <div>
+            <Box pad={{horizontal: 'medium'}}>
                 <GoodsInfo event={event} goods={goods}/> 
-
-                {memberCombs.map(memberComb => (
-                    <div key={memberComb}>
-                        <h3>{displayMemberComb(memberComb)}</h3>
-                        <ItemList viewer={viewer} artist={artist} items={classified.get(memberComb)} />
-                    </div>
-                ))}
-            </div>
+                <Accordion multiple>
+                    {memberCombs.map(memberComb => (
+                        <AccordionPanel key={memberComb} label={displayMemberComb(memberComb)}>
+                            <Box direction='column' align='center'>
+                                <ItemList viewer={viewer} artist={artist} items={classified.get(memberComb)} />
+                            </Box>
+                        </AccordionPanel>
+                    ))}
+                </Accordion>
+            </Box>
         );
     }
 }

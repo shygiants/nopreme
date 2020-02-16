@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay'
 
 import Item from './Item';
+import { Box } from 'grommet';
 
 class ItemList extends Component {
     render() {
@@ -10,11 +11,18 @@ class ItemList extends Component {
         const sortedItems = items.sort((f, s) => f.idx - s.idx);
 
         return (
-            <div>
-                <ul>
-                    {sortedItems.map(item => <li key={item.id}><Item viewer={viewer} artist={artist} item={item} /></li>)}
-                </ul>
-            </div>
+            <Box
+                align='start'
+                direction='row'
+                wrap
+                justify='start'
+                gap='small'
+                pad={{vertical: 'small'}}
+            >
+                {sortedItems.map((item) =>(
+                    <Item key={item.id} viewer={viewer} artist={artist} item={item} />
+                ))}
+            </Box>
         );
     }
 }
