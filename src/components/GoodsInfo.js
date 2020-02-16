@@ -15,6 +15,7 @@ class GoodsInfo extends Component {
                 <Heading 
                     level='6'
                     truncate
+                    margin='0'
                 >
                     {goods.name}
                 </Heading>
