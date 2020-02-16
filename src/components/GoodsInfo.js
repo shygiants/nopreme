@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
 import Link from './Link';
+import { Heading, Box, Image, Text } from 'grommet';
 
 class GoodsInfo extends Component {
     render() {
@@ -10,15 +11,24 @@ class GoodsInfo extends Component {
         const curr = location.hash.slice(1);
 
         return (
-            <div>
-                <h1>{goods.name}</h1>
-                <img src={goods.img} />
-                <div>
+            <Box>
+                <Heading 
+                    level='6'
+                    truncate
+                >
+                    {goods.name}
+                </Heading>
+                <Box
+                    height='50vw'
+                    width='100vw'
+                >
+                    <Image src={goods.img} fill fit='contain'></Image>
+                </Box>
+                <Box>
                     <Link to={curr + `/events/${event.eventId}`} label={event.name}/>
-                </div>
-                
-                <p>{goods.description}</p>
-            </div>
+                </Box>
+                <Text size='xsmall' color='dark-3'>{goods.description}</Text>
+            </Box>
         );
     }
 }

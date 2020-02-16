@@ -22,16 +22,28 @@ import {getKakaoUserInfo, generateNewNickname} from './src/utils';
 
 const jwtSecret = process.env.JWT_SECRET;
 
+
 /////////////
 // MONGODB //
 /////////////
 let uri;
 uri = `mongodb+srv://${process.env.DB_HOST}/nopreme?retryWrites=true&w=majority`;
+const starbucks = true;
+if (starbucks) {
+  const replica = [
+    'nopreme-shard-00-00-hezsg.gcp.mongodb.net:27017',
+    'nopreme-shard-00-01-hezsg.gcp.mongodb.net:27017',
+    'nopreme-shard-00-02-hezsg.gcp.mongodb.net:27017'
+  ];
+  uri = `mongodb://${replica.join(',')}/nopreme?ssl=true&replicaSet=nopreme-shard-0&authSource=admin&retryWrites=true&w=majority`;
+}
+
 mongoose.connect(uri, {
     useNewUrlParser: true,
     user: process.env.DB_USER,
     pass: process.env.DB_PASS,
 });
+
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));

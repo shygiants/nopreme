@@ -16,7 +16,6 @@ class ItemLink extends Component {
                 <img src={item.img} />
             </div>
         );
-
     }
 }
 
