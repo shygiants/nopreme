@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
 import Link from './Link';
-import {Box, Anchor} from 'grommet';
+import {Box, Anchor, Text} from 'grommet';
 import {Configure, User, Logout, CircleQuestion} from 'grommet-icons';
 
 class ViewerApp extends Component {
@@ -20,7 +20,9 @@ class ViewerApp extends Component {
                 gap='medium'
                 pad={{horizontal: 'medium'}}
             >
-                {viewer.name}
+                <Box direction='row-reverse' fill='horizontal'>
+                    <Text color='brand'>{viewer.name}</Text>
+                </Box>
 
                 <Link to='/profile' icon={<User />} label='프로필' />
 
