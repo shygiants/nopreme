@@ -30,6 +30,7 @@ import {environment} from './environment';
 import { graphql } from 'react-relay';
 import ExchangeApp from './components/ExchangeApp';
 import Profile from './components/Profile';
+import Settings from './components/Settings';
 
 const artistName = 'IZ*ONE';
 
@@ -179,6 +180,18 @@ const Router = createFarceRouter({
                     query app_Profile_Query {
                         viewer {
                             ...Profile_viewer
+                        }
+                    }
+                `}
+            />
+
+            <Route
+                path='settings'
+                Component={Settings}
+                query={graphql`
+                    query app_Settings_Query {
+                        viewer {
+                            ...Settings_viewer
                         }
                     }
                 `}

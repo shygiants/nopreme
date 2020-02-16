@@ -19,7 +19,7 @@ class GoodsInfo extends Component {
                     height='100vw'
                     width='100vw'
                 >
-                    <Image src={goods.img} fill fit='contain'></Image>
+                    <Image src={goods.img} fill fit='contain' />
                 </Box>
                 <Box
                     direction='column'

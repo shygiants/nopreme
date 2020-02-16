@@ -28,7 +28,7 @@ class ViewerApp extends Component {
 
                 <Anchor target='_blank' href='/documents' icon={<CircleQuestion />} label='문의' />
 
-                <Link to='' icon={<Configure />} label='설정' />
+                <Link to='/settings' icon={<Configure />} label='설정' />
                 <Link to='/' icon={<Logout />} label='로그 아웃' onClick={this.logout} />
                 
             </Box>
