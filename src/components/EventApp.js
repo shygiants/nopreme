@@ -8,9 +8,7 @@ class EventApp extends Component {
         const {artist, event} = this.props;
 
         return (
-            <div>
-                <EventInfo  artist={artist} event={event} />
-            </div>
+            <EventInfo artist={artist} event={event} />
         );
     }
 }

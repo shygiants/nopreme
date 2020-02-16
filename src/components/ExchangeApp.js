@@ -116,7 +116,6 @@ export default createFragmentContainer(ExchangeApp, {
         fragment ExchangeApp_viewer on User {
             id
             userId
-            ...MatchItem_user
         }
     `,
     exchange: graphql`

@@ -1,3 +1,5 @@
+import './css/documents/main.css'
+
 import React, {
     Component
 } from 'react';
@@ -18,6 +20,7 @@ import Container from './components/Container';
 import {Paragraph} from 'grommet'
 
 import termsOfService from '../resources/documents/terms-of-service.txt';
+import TalkChannel from './components/TalkChannel';
 
 const Router = createFarceRouter({
     historyProtocol: new HashProtocol(),
@@ -27,7 +30,11 @@ const Router = createFarceRouter({
             Component={Container}
             path='/'
         >
-            <Redirect from='/' to='/terms-of-service' />
+            <Redirect from='/' to='/talk-channel' />
+            <Route
+                Component={TalkChannel}
+                path='talk-channel'
+            />
             <Route
                 path='terms-of-service'
                 render={() => {

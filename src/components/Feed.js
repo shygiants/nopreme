@@ -164,6 +164,13 @@ class Feed extends Component {
                                 onExchangeReject={this.handleExchangeReject.bind(this)}
                             />                            
                         ))}
+                        {validMatches.length === 0 && (
+                            <Box
+                                margin='large'
+                            >
+                                <Text>조건에 맞는 매칭이 없습니다</Text>
+                            </Box>
+                        )}
                     </Box>
                 </Tab>
                 <Tab 
@@ -187,6 +194,13 @@ class Feed extends Component {
                                 onExchangeReject={this.handleExchangeReject.bind(this)}
                             />                            
                         ))}
+                        {requested.length === 0 && (
+                            <Box
+                                margin='large'
+                            >
+                                <Text>보낸 교환 신청이 없습니다</Text>
+                            </Box>
+                        )}
                     </Box>
                 </Tab>
                 <Tab 
@@ -210,6 +224,13 @@ class Feed extends Component {
                                 onExchangeReject={this.handleExchangeReject.bind(this)}
                             />                            
                         ))}
+                        {accepted.length === 0 && (
+                            <Box
+                                margin='large'
+                            >
+                                <Text>받은 교환 신청이 없습니다</Text>
+                            </Box>
+                        )}
                     </Box>
                 </Tab>
             </Tabs>

@@ -1,18 +1,47 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
+import { Heading, Box, Image, Text } from 'grommet';
+
 class EventInfo extends Component {
     render() {
         const {artist, event} = this.props;
 
         return (
-            <div>
-                <h1>{event.name}</h1>
-                <img src={event.img} />
-                <h2>{artist.name}</h2>
-                <h3>{event.date}</h3>
-                <p>{event.description}</p>
-            </div>
+            <Box
+                direction='column'
+                gap='small'
+            >
+                <Box
+                    height='100vw'
+                    width='100vw'
+                >
+                    <Image src={event.img} fill fit='contain' />
+                </Box>
+                <Box
+                    direction='column'
+                    gap='small'
+                    pad={{horizontal: 'medium'}}
+                >
+                    <Heading
+                        level='2'
+                        truncate
+                        margin={{vertical: 'small'}}
+                    >
+                        {event.name}
+                    </Heading>
+                    <Heading
+                        level='3'
+                        truncate
+                        margin='0'
+                    >
+                        {artist.name}
+                    </Heading>
+                    <Text>{event.date}</Text>
+                    <Text size='xsmall' color='dark-3'>{event.description}</Text>
+
+                </Box>
+            </Box>
         );
     }
 }

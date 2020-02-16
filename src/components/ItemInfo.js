@@ -1,41 +1,42 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
+import { Heading, Box, Image, Text } from 'grommet';
 
 class ItemInfo extends Component {
     render() {
         const {item} = this.props;
         const {members, goods} = item;
 
-        function memberComp(member) {
-            return (<span>{member.name}</span>);
-        }
+        const memberName = members.map(member => member.name).join(',');
 
-        let comp;
-        if (members.length == 1) {
-            comp = (
-                <div>
-                    {memberComp(members[0])}
-                </div>
-            );
-        } else {
-            comp = (
-                <div>
-                    <ul>
-                        {members.map(member => (
-                            <li key={member.id}>{memberComp(member)}</li>
-                        ))}
-                    </ul>
-                </div>
-            );
-        }
         return (
-            <div>
-                <h1>IDX: {item.idx}</h1>
-                <h2>{goods.name}</h2>
-                {comp}
-                <img src={item.img} />
-            </div>
+            <Box
+                direction='column'
+                gap='small'
+            >
+                <Box
+                    height='100vw'
+                    width='100vw'
+                >
+                    <Image src={item.img} fill fit='contain' />
+                </Box>
+                <Box
+                    direction='column'
+                    gap='small'
+                    pad={{horizontal: 'medium'}}
+                >
+                    <Heading 
+                        level='2'
+                        truncate
+                        margin={{vertical: 'small'}}
+                    >
+                        {`${memberName} ${item.idx}`}
+                    </Heading>
+                    
+                    <Text size='xsmall' color='dark-3'>{goods.name}</Text>
+                </Box>
+            </Box>
         );
     }
 }
