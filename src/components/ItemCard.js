@@ -125,6 +125,11 @@ export default class ItemCard extends Component{
                     ref={this.wishRef} 
                 >
                     <ToggleSwitch
+                        name={COLLECTION} 
+                        on={isIn(collectionNodes, item.itemId)}
+                        onChange={this.handleCheck.bind(this)}
+                    />
+                    <ToggleSwitch
                         name={POSESSION} 
                         on={isIn(posessionNodes, item.itemId)}
                         onChange={this.handleCheck.bind(this)}

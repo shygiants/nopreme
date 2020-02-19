@@ -234,6 +234,9 @@ type Item implements Node {
   goods: Goods!
   members: [Member]!
   img: String
+  collected: Boolean!
+  posessed: Boolean!
+  wished: Boolean!
 }
 
 """A connection to a list of items."""

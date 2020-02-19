@@ -46,6 +46,7 @@ import {
     Exchange,
     RelationTypeEnum,
     getUserItemsByUserGoodsId,
+    getUserItemByIds,
 } from '../database';
 // import { get } from 'mongoose';
 
@@ -190,6 +191,27 @@ const GraphQLItem = new GraphQLObjectType({
         },
         img: {
             type: GraphQLString,
+        },
+        collected: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+            resolve: (item, args, {user: {id}}) => {
+                return getUserItemByIds(
+                    id, item._id, RelationTypeEnum.COLLECTION).then(userItem => userItem !== null);
+            }
+        },
+        posessed: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+            resolve: (item, args, {user: {id}}) => {
+                return getUserItemByIds(
+                    id, item._id, RelationTypeEnum.POSESSION).then(userItem => userItem !== null);
+            }
+        },
+        wished: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+            resolve: (item, args, {user: {id}}) => {
+                return getUserItemByIds(
+                    id, item._id, RelationTypeEnum.WISH).then(userItem => userItem !== null);
+            }
         },
     },
     interfaces: [nodeInterface],

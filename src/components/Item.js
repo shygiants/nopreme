@@ -107,6 +107,9 @@ export default createFragmentContainer(Item, {
                 id
                 goodsId
             }
+            collected
+            posessed
+            wished
         }
     `,
 });
