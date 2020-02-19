@@ -108,7 +108,7 @@ const Router = createFarceRouter({
                             query={graphql`
                                 query app_GoodsApp_Query($goodsId: ID, $artistName: String) {
                                     viewer {
-                                        ...GoodsApp_viewer
+                                        ...GoodsApp_viewer @arguments(goodsId: $goodsId)
                                     }
                                     artist(name: $artistName) {
                                         ...GoodsApp_artist 

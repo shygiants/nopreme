@@ -7,19 +7,19 @@ import {
     GraphQLID,
 } from 'graphql';
 import {
-    isExchangeRejectableBy,
-    rejectExchange,
+    isExchangeAccessibleTo,
+    resolveExchange,
 } from '../../database';
 
-export const RejectExchangeMutation = mutationWithClientMutationId({
-    name: 'RejectExchange',
+export const ResolveExchangeMutation = mutationWithClientMutationId({
+    name: 'ResolveExchange',
     inputFields: {
         exchangeId: {
             type: new GraphQLNonNull(GraphQLID),
         },
     },
     outputFields: {
-        rejectedExchangeId: {
+        resolvedExchangeId: {
             type: new GraphQLNonNull(GraphQLID),
             resolve: ({exchangeId}) => toGlobalId('Exchange', exchangeId),
         },
@@ -27,11 +27,12 @@ export const RejectExchangeMutation = mutationWithClientMutationId({
     mutateAndGetPayload: ({
         exchangeId,
     }, {user: {id: userId}}) => {
-        return isExchangeRejectableBy(exchangeId, userId).then(rejectable => {
-            if (!rejectable) 
+        return isExchangeAccessibleTo(exchangeId, userId).then(accessible => {
+            if (!accessible)
                 return null;
 
-            return rejectExchange(exchangeId).then(exchangeId => ({exchangeId}));
+            return resolveExchange(
+                exchangeId, userId).then(resolvedExchangeId => ({exchangeId: resolvedExchangeId}));
         });
     },
 });

@@ -104,6 +104,7 @@ type Collection implements Node {
   userId: ID!
   item: Item!
   num: Int!
+  isInExchange: Boolean!
 }
 
 """A connection to a list of items."""
@@ -163,6 +164,8 @@ type Exchange implements Node {
   accPosessionItem: Item!
   num: Int!
   createdAt: String!
+  approvedByRequestor: Boolean!
+  approvedByAcceptor: Boolean!
   status: ExchangeStatus!
 }
 
@@ -300,6 +303,7 @@ type Mutation {
   addExchange(input: AddExchangeInput!): AddExchangePayload
   removeExchange(input: RemoveExchangeInput!): RemoveExchangePayload
   rejectExchange(input: RejectExchangeInput!): RejectExchangePayload
+  resolveExchange(input: ResolveExchangeInput!): ResolveExchangePayload
 }
 
 """An object with an ID"""
@@ -330,6 +334,7 @@ type Posession implements Node {
   userId: ID!
   item: Item!
   num: Int!
+  isInExchange: Boolean!
 }
 
 """A connection to a list of items."""
@@ -420,6 +425,16 @@ type RemoveWishPayload {
   clientMutationId: String
 }
 
+input ResolveExchangeInput {
+  exchangeId: ID!
+  clientMutationId: String
+}
+
+type ResolveExchangePayload {
+  resolvedExchangeId: ID!
+  clientMutationId: String
+}
+
 type User implements Node {
   """The ID of an object"""
   id: ID!
@@ -428,9 +443,9 @@ type User implements Node {
   openChatLink: String
   tutorialComplete: Boolean
   admin: Boolean
-  collects(after: String, first: Int, before: String, last: Int): CollectionConnection
-  posesses(after: String, first: Int, before: String, last: Int): PosessionConnection
-  wishes(after: String, first: Int, before: String, last: Int): WishConnection
+  collects(goodsId: ID = "any", after: String, first: Int, before: String, last: Int): CollectionConnection
+  posesses(goodsId: ID = "any", after: String, first: Int, before: String, last: Int): PosessionConnection
+  wishes(goodsId: ID = "any", after: String, first: Int, before: String, last: Int): WishConnection
 }
 
 type Wish implements Node {
@@ -440,6 +455,7 @@ type Wish implements Node {
   userId: ID!
   item: Item!
   num: Int!
+  isInExchange: Boolean!
 }
 
 """A connection to a list of items."""

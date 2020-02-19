@@ -13,6 +13,7 @@ const mutation = graphql`
 `;
 
 function sharedUpdater(store, exchangeList, deletedExchangeId) {
+    if (exchangeList === undefined) return;
     const exchangeListProxy = store.get(exchangeList.id);
     const conn = ConnectionHandler.getConnection(exchangeListProxy, 'Feed_exchanges');
     ConnectionHandler.deleteNode(conn, deletedExchangeId);

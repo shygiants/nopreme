@@ -9,6 +9,7 @@ import AddExchangeMutation from '../mutations/AddExchangeMutation';
 import {getNodesFromConnection} from '../utils';
 import RemoveExchangeMutation from '../mutations/RemoveExchangeMutation';
 import RejectExchangeMutation from '../mutations/RejectExchangeMutation';
+import ResolveExchangeMutation from '../mutations/ResolveExchangeMutation';
 
 class Feed extends Component {
     constructor(props) {
@@ -46,6 +47,11 @@ class Feed extends Component {
     handleExchangeReject(exchange) {
         const {relay, exchangeList} = this.props;
         RejectExchangeMutation.commit(relay.environment, exchange, exchangeList);
+    }
+
+    handleExchangeApproval(exchange) {
+        const {relay, exchangeList} = this.props;
+        ResolveExchangeMutation.commit(relay.environment, exchange, exchangeList);
     }
 
     render() {
@@ -162,6 +168,7 @@ class Feed extends Component {
                                 onExchangeRequest={this.handleExchangeRequest.bind(this)}
                                 onExchangeCancel={this.handleExchangeCancel.bind(this)}
                                 onExchangeReject={this.handleExchangeReject.bind(this)}
+                                onExchangeApproval={this.handleExchangeApproval.bind(this)}
                             />                            
                         ))}
                         {validMatches.length === 0 && (
@@ -192,6 +199,7 @@ class Feed extends Component {
                                 onExchangeRequest={this.handleExchangeRequest.bind(this)}
                                 onExchangeCancel={this.handleExchangeCancel.bind(this)}
                                 onExchangeReject={this.handleExchangeReject.bind(this)}
+                                onExchangeApproval={this.handleExchangeApproval.bind(this)}
                             />                            
                         ))}
                         {requested.length === 0 && (
@@ -222,6 +230,7 @@ class Feed extends Component {
                                 onExchangeRequest={this.handleExchangeRequest.bind(this)}
                                 onExchangeCancel={this.handleExchangeCancel.bind(this)}
                                 onExchangeReject={this.handleExchangeReject.bind(this)}
+                                onExchangeApproval={this.handleExchangeApproval.bind(this)}
                             />                            
                         ))}
                         {accepted.length === 0 && (

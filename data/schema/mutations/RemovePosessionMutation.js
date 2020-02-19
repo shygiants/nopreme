@@ -8,7 +8,9 @@ import {
 } from 'graphql';
 import {
     getUserById,
-    removeUserItem
+    removeUserItem,
+    isUserItemRemovable,
+    RelationTypeEnum
 } from '../../database';
 
 export const RemovePosessionMutation = mutationWithClientMutationId({
@@ -30,7 +32,11 @@ export const RemovePosessionMutation = mutationWithClientMutationId({
         return getUserById(id).then(user => {
             const userId = user._id;
 
-            return removeUserItem(userId, itemId, 'Posession').then(userItemId => ({userItemId}));
+            return isUserItemRemovable(userId, itemId, RelationTypeEnum.POSESSION).then(removable => {
+                if (!removable) return null;
+
+                return removeUserItem(userId, itemId, RelationTypeEnum.POSESSION).then(userItemId => ({userItemId}));
+            });
         });
     },
 });

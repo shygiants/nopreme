@@ -25,9 +25,9 @@ const mutation = graphql`
     }
 `;
 
-function sharedUpdater(store, viewer, newEdge) {
+function sharedUpdater(store, viewer, goodsId, newEdge) {
     const viewerProxy = store.get(viewer.id);
-    const conn = ConnectionHandler.getConnection(viewerProxy, 'Item_posesses');
+    const conn = ConnectionHandler.getConnection(viewerProxy, 'Item_posesses', {goodsId});
     ConnectionHandler.insertEdgeAfter(conn, newEdge);
   }
 
@@ -44,7 +44,7 @@ function commit(environment, item, viewer, num=1) {
             updater: store => {
                 const payload = store.getRootField('addPosession');
                 const newEdge = payload.getLinkedRecord('posessionEdge');
-                sharedUpdater(store, viewer, newEdge);
+                sharedUpdater(store, viewer, item.goods.goodsId, newEdge);
             }
         },
     );

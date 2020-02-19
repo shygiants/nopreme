@@ -2,111 +2,95 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {Box, Text, Button} from 'grommet';
 
-import {Transaction} from 'grommet-icons';
-
-import MatchItem from './MatchItem';
+import MatchCard from './MatchCard';
+import RemoveExchangeMutation from '../mutations/RemoveExchangeMutation';
+import RejectExchangeMutation from '../mutations/RejectExchangeMutation';
+import ResolveExchangeMutation from '../mutations/ResolveExchangeMutation';
 
 class ExchangeApp extends Component {
-
-    handleClick() {
-        // const {viewer, match, onExchangeRequest, onExchangeCancel, onExchangeReject, exchange} = this.props;
-
-        // if (!exchange) 
-        //     return onExchangeRequest(match);
-
-        // switch (viewer.userId) {
-        //     case exchange.requestor.userId:
-        //         onExchangeCancel(exchange);
-        //         break;
-        //     case exchange.acceptor.userId:
-        //         onExchangeReject(exchange);
-        //         break;
-        //     default:
-        //         throw new Error();
-        // }
-    }
-
-    getButtonLabel() {
+    get isExchangeAccepted() {
         const {viewer, exchange} = this.props;
-
-        if (!exchange) 
-            return '교환 신청';
 
         switch (viewer.userId) {
             case exchange.requestor.userId:
-                return '신청 취소';
+                return false;
             case exchange.acceptor.userId:
-                return '신청 거절';
+                return true;
             default:
-                throw new Error();
+                throw new Error('Invalid value');
         }
     }
 
-    render() {
+    get isExchangeRejected() {
         const {exchange} = this.props;
 
-        const {reqPosessionItem, accPosessionItem, acceptor, requestor} = exchange;
+        return exchange.status === 'REJECTED';
+    }
+
+    get isExchangeComplete() {
+        const {exchange} = this.props;
+
+        return exchange.status === 'COMPLETE';
+    }
+
+    get isExchangeApprovedByAcceptor() {
+        const {exchange} = this.props;
+
+        return exchange.approvedByAcceptor;
+    }
+
+    handleExchangeCancel(exchange) {
+        const {relay} = this.props;
+        RemoveExchangeMutation.commit(relay.environment, exchange);
+        this.moveToHome();
+    }
+
+    handleExchangeReject(exchange) {
+        const {relay} = this.props;
+        RejectExchangeMutation.commit(relay.environment, exchange);
+        this.moveToHome();
+    }
+
+    handleExchangeApproval(exchange) {
+        const {relay} = this.props;
+        ResolveExchangeMutation.commit(relay.environment, exchange);
+        this.moveToHome();
+    }
+
+    moveToHome() {
+        window.location = '/';
+    }
+
+    render() {
+        const {viewer, exchange} = this.props;
+
+        const completeComp = (
+            <Box pad='large'>
+                <Text>이미 완료된 교환입니다.</Text>
+                <Button onClick={this.moveToHome.bind(this)} label='홈으로' />
+            </Box>
+        );
+
+        if (this.isExchangeComplete) {
+            return completeComp;
+        }
+
+        if (this.isExchangeAccepted) {
+            // Accepted
+            if (this.isExchangeApprovedByAcceptor || this.isExchangeRejected) {
+                return completeComp;
+            }
+        }
 
         return (
-            <Box
-                direction='column'
-                fill='horizontal'
-                align='center'
-                pad='medium'
-                gap='small'
-            >
-                <Box
-                    direction='row'
-                    align='center'
-                    justify='between'
-                    fill='horizontal'
-                >
-
-                    <MatchItem user={requestor} item={reqPosessionItem} />
-                    
-                    <Transaction />
-
-                    <MatchItem user={acceptor} item={accPosessionItem} />
-
-                </Box>
-
-                <Box 
-                    direction='row'
-                >
-                    <Text 
-                        size='xsmall' 
-                        color='dark-3'
-                        truncate
-                    >
-                        {reqPosessionItem.goods.name}
-                    </Text>
-                </Box>
-                <Button 
-                    href={exchange.status !== 'REJECTED' ? exchange.acceptor.openChatLink : null} 
-                    target='_blank' 
-                    fill='horizontal' 
-                    primary
-                    color='#f7ce46'
-                    disabled={exchange.status === 'REJECTED'}
-                    label={(
-                        <Box
-                            direction='column'
-                            fill='horizontal'
-                            align='center'
-                        >       
-                            <Text
-                                color='#1f1f1f'
-                                textAlign='center'
-                            >
-                                {exchange.status === 'REJECTED' ? '거절됨' : '오픈 채팅으로 연락하기'}
-                            </Text>
-                        </Box>
-                    )} />
-                <Button 
-                    fill='horizontal' 
-                    onClick={this.handleClick.bind(this)} 
-                    label={this.getButtonLabel.bind(this)()} />
-            </Box>  
+            <MatchCard 
+                viewer={viewer} 
+                exchange={exchange}
+                match={null}
+                onExchangeCancel={this.handleExchangeCancel.bind(this)}
+                onExchangeReject={this.handleExchangeReject.bind(this)}
+                onExchangeApproval={this.handleExchangeApproval.bind(this)}
+            />   
         );
     }
 }
@@ -116,42 +100,22 @@ export default createFragmentContainer(ExchangeApp, {
         fragment ExchangeApp_viewer on User {
             id
             userId
+            ...MatchCard_viewer
         }
     `,
     exchange: graphql`
         fragment ExchangeApp_exchange on Exchange {
             id
-            exchangeId
-            acceptor {
-                id
-                userId
-                openChatLink
-                ...MatchItem_user                
-            }
+            ...MatchCard_exchange
             requestor {
                 id
                 userId
-                openChatLink
-                ...MatchItem_user                
             }
-            reqPosessionItem {
+            acceptor {
                 id
-                itemId
-                goods {
-                    id
-                    name
-                }
-                ...MatchItem_item
+                userId
             }
-            accPosessionItem {
-                id
-                itemId
-                goods {
-                    id
-                    name
-                }
-                ...MatchItem_item
-            }
+            approvedByAcceptor
             status
         }
     `,

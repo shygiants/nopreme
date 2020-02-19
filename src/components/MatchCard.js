@@ -1,44 +1,54 @@
-import React, {Component} from 'react';
-import {Box, Text, Button, TextInput, Layer} from 'grommet';
+import React, {Component, createRef} from 'react';
+import {Box, Text, Button, Menu, Stack} from 'grommet';
 import {graphql, createFragmentContainer} from 'react-relay';
-import {Transaction, StatusGood, FormClose} from 'grommet-icons';
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+import {Transaction, LinkNext, Flag, More} from 'grommet-icons';
 
+import CopyToClipboard from './CopyToClipboard';
 import MatchItem from './MatchItem';
+import Dialog from './Dialog';
+import UserItemCard from './UserItemCard';
 
 class MatchCard extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            copied: false,
-        }
+            resolving: false,
+        };
+
+        this.mainButton = this.mainButton.bind(this);
+        this.subButton = this.subButton.bind(this);
+        this.approvalTryDialog = this.approvalTryDialog.bind(this);
     }
 
-    handleCopy() {
-        this.setState({copied: true});
-    }
-
-    handleClose() {
-        this.setState({copied: false});
-    }
-
-    handleClick() {
-        const {viewer, match, onExchangeRequest, onExchangeCancel, onExchangeReject, exchange} = this.props;
-
-        if (!exchange) 
-            return onExchangeRequest(match);
+    get isExchangeAccepted() {
+        const {viewer, exchange} = this.props;
 
         switch (viewer.userId) {
             case exchange.requestor.userId:
-                onExchangeCancel(exchange);
-                break;
+                return false;
             case exchange.acceptor.userId:
-                onExchangeReject(exchange);
-                break;
+                return true;
             default:
-                throw new Error();
+                throw new Error('Invalid value');
         }
+    }
+
+    get isExchangeRejected() {
+        const {exchange} = this.props;
+
+        return exchange.status === 'REJECTED';
+    }
+
+    get isExchangeApprovedByAcceptor() {
+        const {exchange} = this.props;
+
+        return exchange.approvedByAcceptor;
+    }
+
+    handleReport() {
+        // TODO: Report
+
     }
 
     handleRootClick() {
@@ -47,24 +57,216 @@ class MatchCard extends Component {
         router.push(`/exchanges/${exchange.exchangeId}`);
     }
 
-    getButtonLabel() {
+    getApprovalButtonLabel() {
         const {viewer, exchange} = this.props;
-
-        if (!exchange) 
-            return '교환 신청';
 
         switch (viewer.userId) {
             case exchange.requestor.userId:
-                return '신청 취소';
+                // return '교환 승인';
+                if (exchange.approvedByAcceptor)
+                    return '교환 승인';
+                else if (exchange.approvedByRequestor)
+                    return '승인 대기중';
+                else
+                    return '교환 결과 미리 반영';
             case exchange.acceptor.userId:
-                return '신청 거절';
+                return '교환 승인';
             default:
                 throw new Error();
         }
     }
 
+    handleApprovalTry() {
+        this.setState({
+            resolving: true,
+        });
+    }
+
+    handleClose() {
+        this.setState({
+            resolving: false,
+        });
+    }
+
+    handleApproval(actionName) {
+        const {exchange, onExchangeApproval} = this.props;
+
+        switch (actionName) {
+            case 'cancel':
+                break;
+            case 'approve':
+                onExchangeApproval(exchange);
+                break;
+            default: 
+                throw new Error();
+        }
+
+        this.handleClose();
+    }
+
+    mainButton() {
+        const {exchange} = this.props;
+
+        if (!exchange) return false;
+
+        let options;
+
+        if (this.isExchangeAccepted) {
+            // Accepted
+            options = {
+                label: '교환 승인',
+                onClick: this.handleApprovalTry.bind(this),
+            }
+
+        } else {
+            // Requested
+            options = {
+                color: '#f7ce46' // kakao
+            }
+
+            if (this.isExchangeRejected) {
+                options = {
+                    ...options,
+                    disabled: true,
+                    label: '거절됨',
+                };
+            } else if (this.isExchangeApprovedByAcceptor) {
+                // Resolve exchange
+                options = {
+                    label: '교환 승인 확인',
+                    onClick: this.handleApprovalTry.bind(this),
+                };
+
+            } else {
+                // This is open chat button
+                options = {
+                    ...options, 
+                    href: exchange.acceptor.openChatLink,
+                    target: '_blank',
+                    label: (
+                        <Box
+                            direction='column'
+                            fill='horizontal'
+                            align='center'
+                        >       
+                            <Text
+                                color='#1f1f1f'
+                                textAlign='center'
+                            >
+                                오픈 채팅으로 연락하기
+                            </Text>
+                        </Box>
+                    )
+                };
+            }
+        }
+
+        return (
+            <Button 
+                fill='horizontal' 
+                primary
+                {...options}
+            />
+        );
+    }
+
+    subButton() {
+        const {match, exchange, onExchangeRequest, onExchangeCancel, onExchangeReject} = this.props;
+
+        let options;
+
+        if (!exchange) {
+            options = {
+                label: '교환 신청',
+                onClick: () => onExchangeRequest(match),
+            };
+        } else {
+            if (this.isExchangeAccepted) {
+                // Accepted
+                options = {
+                    label: '교환 거절',
+                    onClick: () => onExchangeReject(exchange),
+                };
+            } else {
+                // Requested
+                options = {
+                    onClick: () => onExchangeCancel(exchange),
+                    label: this.isExchangeRejected ? '확인' : '신청 취소',
+                }
+            }
+        }
+
+        return (
+            <Button
+                fill='horizontal'
+                {...options}
+            />
+        );
+    }
+
+    approvalTryDialog() {
+        const {resolving} = this.state;
+        const {exchange} = this.props;
+
+        let posessionItem, wishItem;
+        if (this.isExchangeAccepted) {
+            posessionItem = exchange.accPosessionItem;
+            wishItem = exchange.reqPosessionItem;
+        } else {
+            posessionItem = exchange.reqPosessionItem;
+            wishItem = exchange.accPosessionItem;
+        }
+
+        return (
+            <Dialog 
+                show={resolving}
+                title='교환 승인'
+                message={(
+                    <Box
+                        direction='column'
+                        align='center'
+                        gap='xsmall'
+                    > 
+                        <Box
+                            direction='row'
+                            align='center'
+                            gap='small'
+                        >
+                            <UserItemCard
+                                item={posessionItem}
+                                relationType='보유'
+                            />
+                            <UserItemCard
+                                item={wishItem}
+                                relationType='희망'
+                            />
+
+                            <LinkNext />
+
+                            <UserItemCard
+                                item={wishItem}
+                                relationType='수집'
+                            />
+                        </Box>
+                        <Text>위의 사항을 반영합니다.</Text>
+                    </Box>
+                )}
+                actions={[{
+                    name: 'cancel',
+                    label: '취소',
+                }, {
+                    name: 'approve',
+                    label: '확인',
+                    primary: true,
+                }]}
+                onAction={this.handleApproval.bind(this)}
+                onClose={this.handleClose.bind(this)}
+        />);
+    }
+
     render() {
-        const {viewer, match, exchange} = this.props;
+        const {resolving} = this.state;
+        const {viewer, match, exchange, router} = this.props;
 
         let leftItem, rightItem, acc, req;
         if (match !== null) {
@@ -87,119 +289,72 @@ class MatchCard extends Component {
             throw new Error('`leftItem` and `rightItem` should be the same goods');
 
         return (
-            <Box
-                direction='column'
-                round='medium'
-                background='#FFFFFF'
-                fill='horizontal'
-                align='center'
-                pad='medium'
-                gap='small'
+            <Stack 
+                anchor="top-right"
+                fill
             >
                 <Box
-                    onClick={exchange && this.handleRootClick.bind(this)}
-                    focusIndicator={false}
-                    direction='row'
+                    direction='column'
+                    round='medium'
+                    background='#FFFFFF'
                     align='center'
-                    justify='between'
-                    fill='horizontal'
+                    pad='medium'
+                    gap='small'
                 >
-
-                    <MatchItem user={req} item={leftItem} />
-                    
-                    <Transaction />
-
-                    <MatchItem user={acc} item={rightItem} />
-
-                </Box>
-
-                <Box 
-                    direction='row'
-                >
-                    <Text 
-                        size='xsmall' 
-                        color='dark-3'
-                        truncate
-                    >
-                        {leftItem.goods.name}
-                    </Text>
-                </Box>
-
-
-                {exchange && (
                     <Box
+                        onClick={exchange && router && this.handleRootClick.bind(this)}
+                        focusIndicator={false}
                         direction='row'
-                        gap='small'
                         align='center'
+                        justify='between'
                         fill='horizontal'
                     >
-                        <TextInput id='foo' size='small' value={`http://localhost:4000/#/exchanges/${exchange.exchangeId}`}></TextInput>
-                        <CopyToClipboard 
-                            text={`http://localhost:4000/#/exchanges/${exchange.exchangeId}`}
-                            onCopy={this.handleCopy.bind(this)}>
-                            <Button fill='horizontal' label='복사' />
-                        </CopyToClipboard>
+
+                        <MatchItem user={req} item={leftItem} />
+                        
+                        <Transaction />
+
+                        <MatchItem user={acc} item={rightItem} />
 
                     </Box>
-                )}
 
-                {this.state.copied && (
-                    <Layer
-                        position="top"
-                        full='horizontal'
-                        modal={false}
-                        margin={{ vertical: "medium", horizontal: "small" }}
-                        onEsc={this.handleClose.bind(this)}
-                        responsive={false}
-                        plain
+                    <Box 
+                        direction='row'
                     >
-                        <Box
-                            align="center"
-                            direction="row"
-                            gap="small"
-                            justify="between"
-                            round="medium"
-                            elevation="medium"
-                            pad={{ vertical: "xsmall", horizontal: "small" }}
-                            background="status-ok"
+                        <Text 
+                            size='xsmall' 
+                            color='dark-3'
+                            truncate
                         >
-                            <Box align="center" direction="row" gap="xsmall">
-                                <StatusGood />
-                                <Text>링크 복사 완료! 오픈 채팅방에 공유하세요.</Text>
-                            </Box>
-                            <Button icon={<FormClose />} onClick={this.handleClose.bind(this)} plain />
-                        </Box>
-                    </Layer>
-                )}
+                            {leftItem.goods.name}
+                        </Text>
+                    </Box>
 
-                {exchange && (
-                    <Button 
-                        href={exchange.status !== 'REJECTED' ? exchange.acceptor.openChatLink : null} 
-                        target='_blank' 
-                        fill='horizontal' 
-                        primary
-                        color='#f7ce46'
-                        disabled={exchange.status === 'REJECTED'}
-                        label={(
-                            <Box
-                                direction='column'
-                                fill='horizontal'
-                                align='center'
-                            >       
-                                <Text
-                                    color='#1f1f1f'
-                                    textAlign='center'
-                                >
-                                    {exchange.status === 'REJECTED' ? '거절됨' : '오픈 채팅으로 연락하기'}
-                                </Text>
-                            </Box>
-                        )} />
-                )}
-                <Button 
-                    fill='horizontal' 
-                    onClick={this.handleClick.bind(this)} 
-                    label={this.getButtonLabel.bind(this)()} />
-            </Box>  
+                    
+                    {exchange && !this.isExchangeAccepted && !this.isExchangeRejected && !this.isExchangeApprovedByAcceptor && (
+                        <CopyToClipboard value={`http://localhost:4000/#/exchanges/${exchange.exchangeId}`} />
+                    )}
+
+                    {this.mainButton()}
+                    {this.subButton()}
+                    {exchange && this.approvalTryDialog()}
+
+                </Box>  
+                <Menu
+                    dropAlign={{right: 'right', top: 'bottom'}}
+                    size='small'
+                    label={<Box pad='xsmall'><More size='18px'/></Box>}
+                    icon={false}
+                    items={[{
+                        label: '신고하기', 
+                        onClick: this.handleReport.bind(this), 
+                        icon: (
+                            <Box pad='small' align='center'><Flag size='small'/></Box>
+                        )
+                    }]}
+                />
+            </Stack>
+            
         );
     }
 }
@@ -244,6 +399,8 @@ export default createFragmentContainer(MatchCard, {
         fragment MatchCard_exchange on Exchange {
             id
             exchangeId
+            approvedByRequestor
+            approvedByAcceptor
             acceptor {
                 id
                 userId
@@ -264,6 +421,7 @@ export default createFragmentContainer(MatchCard, {
                     name
                 }
                 ...MatchItem_item
+                ...UserItemCard_item
             }
             accPosessionItem {
                 id
@@ -273,6 +431,7 @@ export default createFragmentContainer(MatchCard, {
                     name
                 }
                 ...MatchItem_item
+                ...UserItemCard_item
             }
             status
         }

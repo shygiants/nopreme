@@ -14,7 +14,10 @@ import {
     getUserById,
     addUserItem,
     getUserItemsByUserId,
-    getUserItemById
+    getUserItemById,
+    getItemById,
+    RelationTypeEnum,
+    getUserItemsByUserGoodsId
 } from '../../database';
 
 export const AddCollectionMutation = mutationWithClientMutationId({
@@ -31,8 +34,8 @@ export const AddCollectionMutation = mutationWithClientMutationId({
     outputFields: {
         collectionEdge: {
             type: new GraphQLNonNull(GraphQLCollectionEdge),
-            resolve: ({collectionId, userId}) => {
-                return Promise.all([getUserItemsByUserId(userId, 'Collection'), getUserItemById(collectionId)]).then(values => {
+            resolve: ({collectionId, userId, goodsId}) => {
+                return Promise.all([getUserItemsByUserGoodsId(userId, goodsId, RelationTypeEnum.COLLECTION), getUserItemById(collectionId)]).then(values => {
                     const collections = values[0];
                     const collection = values[1];
 
@@ -55,7 +58,9 @@ export const AddCollectionMutation = mutationWithClientMutationId({
         return getUserById(id).then(user => {
             const userId = user._id;
 
-            return addUserItem(userId, itemId, num, 'Collection').then(collectionId => ({collectionId, userId}));
+            return getItemById(itemId).then(item => {
+                return addUserItem(userId, itemId, num, RelationTypeEnum.COLLECTION).then(collectionId => ({collectionId, userId, goodsId: item.goods}));
+            });
         });
     }
 });

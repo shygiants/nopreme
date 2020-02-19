@@ -8,7 +8,7 @@ export default class KakaoLogin extends Component {
         super(props);
 
         // 사용할 앱의 JavaScript 키를 설정해 주세요.
-        Kakao.init(process.env.KAKAO_JS_KEY);
+        // Kakao.init(process.env.KAKAO_JS_KEY);
     }
 
     componentDidMount() {

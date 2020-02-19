@@ -25,9 +25,9 @@ const mutation = graphql`
     }
 `;
 
-function sharedUpdater(store, viewer, newEdge) {
+function sharedUpdater(store, viewer, goodsId, newEdge) {
     const viewerProxy = store.get(viewer.id);
-    const conn = ConnectionHandler.getConnection(viewerProxy, 'Item_wishes');
+    const conn = ConnectionHandler.getConnection(viewerProxy, 'Item_wishes', {goodsId});
     ConnectionHandler.insertEdgeAfter(conn, newEdge);
   }
 
@@ -44,7 +44,7 @@ function commit(environment, item, viewer, num=1) {
             updater: store => {
                 const payload = store.getRootField('addWish');
                 const newEdge = payload.getLinkedRecord('wishEdge');
-                sharedUpdater(store, viewer, newEdge);
+                sharedUpdater(store, viewer, item.goods.goodsId, newEdge);
             }
         },
     );

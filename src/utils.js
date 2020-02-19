@@ -34,6 +34,22 @@ export function buildGetter(fieldName) {
 
     return getter;
 }
+
+export function getUniqueValues(arr, fieldName, comparator=strcmp) {
+    const getter = buildGetter(fieldName);
+
+    const values = arr.map(getter);
+
+    function reduce(elem) {
+        if (elem instanceof Array) 
+            return elem.sort(comparator).join(',');
+
+        return elem;
+    }
+
+    return [...new Set(values.map(reduce))].map(val => val.split(','));
+}
+
 export function classify(arr, fieldName, comparator=strcmp) {
     const getter = buildGetter(fieldName);
 

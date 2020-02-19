@@ -27,12 +27,15 @@ class Item extends Component {
 
 export default createFragmentContainer(Item, {
     viewer: graphql`
-        fragment Item_viewer on User {
+        fragment Item_viewer on User @argumentDefinitions(
+            goodsId: {type: "ID"}
+        ) {
             id
             userId
             collects(
+                goodsId: $goodsId
                 first: 2147483647 # max GraphQLInt
-            ) @connection(key: "Item_collects") {
+            ) @connection(key: "Item_collects", filters: ["goodsId"]) {
                 edges {
                     node {
                         id
@@ -42,12 +45,14 @@ export default createFragmentContainer(Item, {
                             idx
                         }
                         num
+                        isInExchange
                     }
                 }
             }
             posesses(
+                goodsId: $goodsId
                 first: 2147483647 # max GraphQLInt
-            ) @connection(key: "Item_posesses") {
+            ) @connection(key: "Item_posesses", filters: ["goodsId"]) {
                 edges {
                     node {
                         id
@@ -57,12 +62,14 @@ export default createFragmentContainer(Item, {
                             idx
                         }
                         num
+                        isInExchange
                     }
                 }
             }
             wishes(
+                goodsId: $goodsId
                 first: 2147483647 # max GraphQLInt
-            ) @connection(key: "Item_wishes") {
+            ) @connection(key: "Item_wishes", filters: ["goodsId"]) {
                 edges {
                     node {
                         id
@@ -72,6 +79,7 @@ export default createFragmentContainer(Item, {
                             idx
                         }
                         num
+                        isInExchange
                     }
                 }
             }
@@ -94,6 +102,10 @@ export default createFragmentContainer(Item, {
             members {
                 id
                 name
+            }
+            goods {
+                id
+                goodsId
             }
         }
     `,

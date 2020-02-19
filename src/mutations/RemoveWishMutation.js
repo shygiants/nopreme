@@ -12,9 +12,9 @@ const mutation = graphql`
     }
 `;
 
-function sharedUpdater(store, viewer, deletedWishId) {
+function sharedUpdater(store, viewer, goodsId, deletedWishId) {
     const viewerProxy = store.get(viewer.id);
-    const conn = ConnectionHandler.getConnection(viewerProxy, 'Item_wishes');
+    const conn = ConnectionHandler.getConnection(viewerProxy, 'Item_wishes', {goodsId});
     ConnectionHandler.deleteNode(conn, deletedWishId);
   }
 
@@ -31,7 +31,7 @@ function commit(environment, item, viewer) {
             updater: store => {
                 const payload = store.getRootField('removeWish');
                 const deletedWishId = payload.getValue('deletedWishId');
-                sharedUpdater(store, viewer, deletedWishId);
+                sharedUpdater(store, viewer, item.goods.goodsId, deletedWishId);
             }
         },
     );

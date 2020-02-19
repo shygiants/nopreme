@@ -5,18 +5,18 @@ import {
 import {ConnectionHandler} from 'relay-runtime';
 
 const mutation = graphql`
-    mutation RejectExchangeMutation($input: RejectExchangeInput!) {
-        rejectExchange(input: $input) {
-            rejectedExchangeId
+    mutation ResolveExchangeMutation($input: ResolveExchangeInput!) {
+        resolveExchange(input: $input) {
+            resolvedExchangeId
         }
     }
 `;
 
-function sharedUpdater(store, exchangeList, rejectedExchangeId) {
+function sharedUpdater(store, exchangeList, resolvedExchangeId) {
     if (exchangeList === undefined) return;
     const exchangeListProxy = store.get(exchangeList.id);
     const conn = ConnectionHandler.getConnection(exchangeListProxy, 'Feed_exchanges');
-    ConnectionHandler.deleteNode(conn, rejectedExchangeId);
+    ConnectionHandler.deleteNode(conn, resolvedExchangeId);
   }
 
 function commit(environment, exchange, exchangeList) {
@@ -30,9 +30,9 @@ function commit(environment, exchange, exchangeList) {
                 },
             },
             updater: store => {
-                const payload = store.getRootField('rejectExchange');
-                const rejectedExchangeId = payload.getValue('rejectedExchangeId');
-                sharedUpdater(store, exchangeList, rejectedExchangeId);
+                const payload = store.getRootField('resolveExchange');
+                const resolvedExchangeId = payload.getValue('resolvedExchangeId');
+                sharedUpdater(store, exchangeList, resolvedExchangeId);
             }
         },
     );

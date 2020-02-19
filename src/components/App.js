@@ -73,7 +73,7 @@ class App extends Component {
 export default createFragmentContainer(App, {
     viewer: graphql`
         fragment App_viewer on User {
-            ...MenuLayer_viewer
+            id
         }
     `,
 });

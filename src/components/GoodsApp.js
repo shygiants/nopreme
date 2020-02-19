@@ -42,8 +42,10 @@ class GoodsApp extends Component {
 
 export default createFragmentContainer(GoodsApp, {
     viewer: graphql`
-        fragment GoodsApp_viewer on User {
-            ...ItemList_viewer
+        fragment GoodsApp_viewer on User @argumentDefinitions(
+            goodsId: {type: "ID"},
+        ) {
+            ...ItemList_viewer @arguments(goodsId: $goodsId)
         }
     `,
     artist: graphql`

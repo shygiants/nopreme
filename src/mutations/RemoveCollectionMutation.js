@@ -12,9 +12,9 @@ const mutation = graphql`
     }
 `;
 
-function sharedUpdater(store, viewer, deletedCollectionId) {
+function sharedUpdater(store, viewer, goodsId, deletedCollectionId) {
     const viewerProxy = store.get(viewer.id);
-    const conn = ConnectionHandler.getConnection(viewerProxy, 'Item_collects');
+    const conn = ConnectionHandler.getConnection(viewerProxy, 'Item_collects', {goodsId});
     ConnectionHandler.deleteNode(conn, deletedCollectionId);
   }
 
@@ -31,7 +31,7 @@ function commit(environment, item, viewer) {
             updater: store => {
                 const payload = store.getRootField('removeCollection');
                 const deletedCollectionId = payload.getValue('deletedCollectionId');
-                sharedUpdater(store, viewer, deletedCollectionId);
+                sharedUpdater(store, viewer, item.goods.goodsId, deletedCollectionId);
             }
         },
     );

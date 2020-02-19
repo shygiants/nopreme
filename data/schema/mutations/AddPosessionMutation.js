@@ -14,7 +14,10 @@ import {
     getUserById,
     addUserItem,
     getUserItemsByUserId,
-    getUserItemById
+    getUserItemById,
+    getItemById,
+    getUserItemsByUserGoodsId,
+    RelationTypeEnum
 } from '../../database';
 
 export const AddPosessionMutation = mutationWithClientMutationId({
@@ -31,8 +34,8 @@ export const AddPosessionMutation = mutationWithClientMutationId({
     outputFields: {
         posessionEdge: {
             type: new GraphQLNonNull(GraphQLPosessionEdge),
-            resolve: ({posessionId, userId}) => {
-                return Promise.all([getUserItemsByUserId(userId, 'Posession'), getUserItemById(posessionId)]).then(values => {
+            resolve: ({posessionId, userId, goodsId}) => {
+                return Promise.all([getUserItemsByUserGoodsId(userId, goodsId, RelationTypeEnum.POSESSION), getUserItemById(posessionId)]).then(values => {
                     const posessions = values[0];
                     const posession = values[1];
 
@@ -55,7 +58,9 @@ export const AddPosessionMutation = mutationWithClientMutationId({
         return getUserById(id).then(user => {
             const userId = user._id;
 
-            return addUserItem(userId, itemId, num, 'Posession').then(posessionId => ({posessionId, userId}));
+            return getItemById(itemId).then(item => {
+                return addUserItem(userId, itemId, num, RelationTypeEnum.POSESSION).then(posessionId => ({posessionId, userId, goodsId: item.goods}));
+            });
         });
     }
 });

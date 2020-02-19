@@ -44,6 +44,8 @@ import {
     getExchangeById,
     getExchangesByUserId,
     Exchange,
+    RelationTypeEnum,
+    getUserItemsByUserGoodsId,
 } from '../database';
 // import { get } from 'mongoose';
 
@@ -368,7 +370,11 @@ const GraphQLCollection = new GraphQLObjectType({
         },
         num: {
             type: new GraphQLNonNull(GraphQLInt),
-        }
+        },
+        isInExchange: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+            resolve: collection => false,
+        },
     },
     interfaces: [nodeInterface],
 });
@@ -401,7 +407,11 @@ const GraphQLPosession = new GraphQLObjectType({
         },
         num: {
             type: new GraphQLNonNull(GraphQLInt),
-        }
+        },
+        isInExchange: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+            resolve: posession => posession.exchange !== undefined
+        },
     },
     interfaces: [nodeInterface],
 });
@@ -434,7 +444,11 @@ const GraphQLWish = new GraphQLObjectType({
         },
         num: {
             type: new GraphQLNonNull(GraphQLInt),
-        }
+        },
+        isInExchange: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+            resolve: wish => wish.exchange !== undefined
+        },
     },
     interfaces: [nodeInterface],
 });
@@ -478,40 +492,76 @@ const GraphQLUser = new GraphQLObjectType({
         collects: {
             type: CollectionConnection,
             args: {
+                goodsId: {
+                    type: GraphQLID,
+                    defaultValue: 'any',
+                },
                 ...connectionArgs,
             },
-            resolve: (user, {after, before, first, last}) => {
-                return getUserItemsByUserId(user._id, 'Collection').then(collections => {
-                    return connectionFromArray([...collections], {
-                        after, before, first, last,
-                    })
-                });
+            resolve: (user, {goodsId, after, before, first, last}) => {
+                if (goodsId !== 'any') {
+                    return getUserItemsByUserGoodsId(user._id, goodsId, 'Collection').then(collections => {
+                        return connectionFromArray([...collections], {
+                            after, before, first, last,
+                        });
+                    });
+                } else {
+                    return getUserItemsByUserId(user._id, 'Collection').then(collections => {
+                        return connectionFromArray([...collections], {
+                            after, before, first, last,
+                        });
+                    });
+                }
             },
         },
         posesses: {
             type: PosessionConnection,
             args: {
+                goodsId: {
+                    type: GraphQLID,
+                    defaultValue: 'any',
+                },
                 ...connectionArgs,
             },
-            resolve: (user, {after, before, first, last}) => {
-                return getUserItemsByUserId(user._id, 'Posession').then(posessions => {
-                    return connectionFromArray([...posessions], {
-                        after, before, first, last,
-                    })
-                });
+            resolve: (user, {goodsId, after, before, first, last}) => {
+                if (goodsId !== 'any') {
+                    return getUserItemsByUserGoodsId(user._id, goodsId, 'Posession').then(posessions => {
+                        return connectionFromArray([...posessions], {
+                            after, before, first, last,
+                        });
+                    });
+                } else {
+                    return getUserItemsByUserId(user._id, 'Posession').then(posessions => {
+                        return connectionFromArray([...posessions], {
+                            after, before, first, last,
+                        });
+                    });
+                }
             },
         },
         wishes: {
             type: WishConnection,
             args: {
+                goodsId: {
+                    type: GraphQLID,
+                    defaultValue: 'any',
+                },
                 ...connectionArgs,
             },
-            resolve: (user, {after, before, first, last}) => {
-                return getUserItemsByUserId(user._id, 'Wish').then(wishes => {
-                    return connectionFromArray([...wishes], {
-                        after, before, first, last,
-                    })
-                });
+            resolve: (user, {goodsId, after, before, first, last}) => {
+                if (goodsId !== 'any') {
+                    return getUserItemsByUserGoodsId(user._id, goodsId, 'Wish').then(wishes => {
+                        return connectionFromArray([...wishes], {
+                            after, before, first, last,
+                        });
+                    });
+                } else {
+                    return getUserItemsByUserId(user._id, 'Wish').then(wishes => {
+                        return connectionFromArray([...wishes], {
+                            after, before, first, last,
+                        });
+                    });
+                }
             },
         },
     },
@@ -575,6 +625,12 @@ const GraphQLExchange = new GraphQLObjectType({
         createdAt: {
             type: new GraphQLNonNull(GraphQLString),
             resolve: exchange => exchange.createdAt.toDateString(),
+        },
+        approvedByRequestor: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+        },
+        approvedByAcceptor: {
+            type: new GraphQLNonNull(GraphQLBoolean),
         },
         status: {
             type: new GraphQLNonNull(ExchangeStatusType),

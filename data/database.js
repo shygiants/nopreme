@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { SchemaType } from 'mongoose';
 const Schema = mongoose.Schema;
 
 import {getKakaoUserInfo, intersection} from '../src/utils';
@@ -116,6 +116,10 @@ const userItemSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    exchange: {
+        type: Schema.Types.ObjectId,
+        ref: 'Exchange',
+    }
 });
 
 export const UserItem = mongoose.model('UserItem', userItemSchema);
@@ -142,6 +146,14 @@ const exchangeSchema = new mongoose.Schema({
     accPosessionItem: {
         type: Schema.Types.ObjectId,
         ref: 'Item',
+    },
+    approvedByRequestor: {
+        type: Boolean,
+        default: false,
+    },
+    approvedByAcceptor: {
+        type: Boolean,
+        default: false,
     },
     num: Number,
     createdAt: {
@@ -317,8 +329,36 @@ export function getUserItemsByUserId(userId, relationType) {
     return UserItem.find({user: userId, relationType}).exec();
 }
 
+export function getUserItemsNotInExchangeByUserId(userId, relationType) {
+    return UserItem.find({
+        user: userId, 
+        relationType,
+        exchange: {$exists: false},
+    }).exec();
+}
+
+export function getUserItemsByUserGoodsId(userId, goodsId, relationType) {
+    return getItemsByGoodsId(goodsId).then(items => {
+        const itemIds = items.map(item => item._id);
+
+        return UserItem.find({
+            user: userId, 
+            item: {$in: itemIds},
+            relationType
+        }).exec();
+    });
+}
+
 export function getUserItemsByItemIds(itemIds, relationType) {
     return UserItem.find({item: {$in: itemIds}, relationType}).exec();
+}
+
+export function getUserItemsByExchangeId(exchangeId) {
+    return UserItem.find({exchange: exchangeId}).exec();
+}
+
+export function getUserItemsByUserExchangeId(exchangeId, acceptorId) {
+    return UserItem.find({exchange: exchangeId, user: acceptorId});
 }
 
 export function addUserItem(user, item, num, relationType) {
@@ -327,14 +367,22 @@ export function addUserItem(user, item, num, relationType) {
     return userItem.save().then(({_id}) => _id);
 }
 
+export function isUserItemRemovable(user, item, relationType) {
+    return UserItem.find({user, item, relationType}).exec().then(userItem => {
+        return !userItem.hasOwnProperty('exchange');
+    });
+}
+
 export function removeUserItem(user, item, relationType) {
-    return UserItem.findOneAndDelete({user, item, relationType}).exec().then(({_id}) => _id);
+    return UserItem.findOneAndDelete({
+        user, item, relationType,
+    }).exec().then(({_id}) => _id);
 }
 
 export function getMatchesForUser(userId) {
     return Promise.all([
-        getUserItemsByUserId(userId, RelationTypeEnum.WISH),
-        getUserItemsByUserId(userId, RelationTypeEnum.POSESSION),
+        getUserItemsNotInExchangeByUserId(userId, RelationTypeEnum.WISH),
+        getUserItemsNotInExchangeByUserId(userId, RelationTypeEnum.POSESSION),
     ]).then(([userWishes, userPosessions]) => {
         const userWishItemIds = userWishes.map(({item}) => item);
         const userPosessionItemIds = userPosessions.map(({item}) => item);
@@ -346,6 +394,7 @@ export function getMatchesForUser(userId) {
                         $in: userWishItemIds,
                     },
                     relationType: RelationTypeEnum.POSESSION,
+                    exchange: {$exists: false},
                 },
             }, {
                 $group: {
@@ -371,6 +420,7 @@ export function getMatchesForUser(userId) {
                         $in: userPosessionItemIds,
                     },
                     relationType: RelationTypeEnum.WISH,
+                    exchange: {$exists: false},
                 }
             }, {
                 $group: {
@@ -427,7 +477,21 @@ export function addExchange({requestor, acceptor, reqPosessionItem, accPosession
         accPosessionItem, 
         num,
         status: ExchangeStatusEnum.PROGRESSING
-    }).save().then(({_id}) => _id);
+    }).save().then(exchange => {
+        const exchangeId = exchange._id;
+
+        return Promise.all([
+            getUserItemByIds(requestor, reqPosessionItem, RelationTypeEnum.POSESSION),
+            getUserItemByIds(requestor, accPosessionItem, RelationTypeEnum.WISH),
+            getUserItemByIds(acceptor, accPosessionItem, RelationTypeEnum.POSESSION),
+            getUserItemByIds(acceptor, reqPosessionItem, RelationTypeEnum.WISH),
+        ]).then(userItems => {
+            return Promise.all(userItems.map(userItem => {
+                userItem.exchange = exchangeId;
+                return userItem.save();
+            })).then(() => exchangeId);
+        });
+    });
 }
 
 export function getExchangeById(id) {
@@ -447,19 +511,76 @@ export function getExchangesByUserId(
         status: reqStatus instanceof Array ? {$in: reqStatus} : reqStatus
     }, {
         acceptor: userId,
+        approvedByAcceptor: false,
         status: accStatus
     }]}).exec();
 }
 
 export function removeExchange(id) {
-    return Exchange.findByIdAndDelete(id).exec().then(({_id}) => _id);
+    return getUserItemsByExchangeId(id).then(userItems => {
+        return Promise.all(userItems.map(userItem => {
+            userItem.exchange = undefined;
+            return userItem.save();
+        })).then(userItems => {
+            return Exchange.findByIdAndDelete(id).exec().then(({_id}) => _id);
+        });
+    });
 }
 
 export function rejectExchange(id) {
-    return Exchange.findByIdAndUpdate(id, {
-        status: ExchangeStatusEnum.REJECTED
-    }, {useFindAndModify: true}).exec().then(({_id}) => _id);
+    return getExchangeById(id).then(exchange => {
+        return getUserItemsByUserExchangeId(id, exchange.acceptor).then(userItems => {
+            return Promise.all(userItems.map(userItem => {
+                userItem.exchange = undefined;
+                return userItem.save();
+            })).then(userItems => {
+                return Exchange.findByIdAndUpdate(id, {
+                    status: ExchangeStatusEnum.REJECTED
+                }, {useFindAndModify: true}).exec().then(({_id}) => _id);
+            })
+        });
+    });
 }
+
+export function resolveExchange(id, user) {
+    return getExchangeById(id).then(exchange => {
+        const {requestor, acceptor, reqPosessionItem, accPosessionItem, num} = exchange;
+
+        let toAddUser, toAddItem, toRemoveItem;
+        switch (user.toString()) {
+            case requestor.toString():
+                toAddUser = requestor;
+                toAddItem = accPosessionItem;
+                toRemoveItem = reqPosessionItem;
+                exchange.approvedByRequestor = true;
+                break;
+            case acceptor.toString():
+                toAddUser = acceptor;
+                toAddItem = reqPosessionItem;
+                toRemoveItem = accPosessionItem;
+                exchange.approvedByAcceptor = true;
+                break;
+            default:
+                throw new Error('Either requestor or acceptor can resolve the exchange');
+        }
+
+        if (exchange.approvedByAcceptor && exchange.approvedByRequestor) {
+            exchange.status = ExchangeStatusEnum.COMPLETE;
+        }
+
+        return exchange.save().then(savedExchange => {
+            const resolvedExchangeId = savedExchange._id;
+
+            return getUserItemByIds(toAddUser, toAddItem, RelationTypeEnum.WISH).then(wish => {
+                wish.relationType = RelationTypeEnum.COLLECTION;
+                return wish.save().then(collection => {
+                    return removeUserItem(toAddUser, toRemoveItem, RelationTypeEnum.POSESSION).then(posession => resolvedExchangeId);
+                });
+            });
+        });
+    });
+}
+
 
 export function isExchangeRejectableBy(exchangeId, userId) {
     return getExchangeById(exchangeId).then(exchange => {

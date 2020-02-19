@@ -5,15 +5,15 @@ import {
     render
 } from 'react-dom';
 
-import Container from './components/Container';
+import CleanContainer from './components/CleanContainer';
 import SignIn from './components/SignIn';
 
 class App extends Component {
     render() {
         return (
-            <Container>
+            <CleanContainer>
                 <SignIn />
-            </Container>
+            </CleanContainer>
 
         );
     }

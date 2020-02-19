@@ -29,8 +29,10 @@ class ItemList extends Component {
 
 export default createFragmentContainer(ItemList, {
     viewer: graphql`
-        fragment ItemList_viewer on User {
-            ...Item_viewer
+        fragment ItemList_viewer on User @argumentDefinitions(
+            goodsId: {type: "ID"}
+        ) {
+            ...Item_viewer @arguments(goodsId: $goodsId)
         }
     `,
     artist: graphql`
