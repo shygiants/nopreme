@@ -29,8 +29,14 @@ const customGrommet = deepMerge(grommet, {
 
 class App extends Component {
     render() {
-        const {viewer, children} = this.props;
+        const {router, viewer, children} = this.props;
 
+        if (viewer.openChatLink === undefined || viewer.openChatLink === null) {
+            if (location.hash !== '#/profile') {
+                router.push('/profile');
+            }
+        }
+            
         return (
             <Grommet style={{height: '100vh'}} theme={customGrommet}>
                 <Header
@@ -74,6 +80,7 @@ export default createFragmentContainer(App, {
     viewer: graphql`
         fragment App_viewer on User {
             id
+            openChatLink
         }
     `,
 });

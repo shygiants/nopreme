@@ -10,6 +10,8 @@ import {getNodesFromConnection} from '../utils';
 import RemoveExchangeMutation from '../mutations/RemoveExchangeMutation';
 import RejectExchangeMutation from '../mutations/RejectExchangeMutation';
 import ResolveExchangeMutation from '../mutations/ResolveExchangeMutation';
+import Link from './Link';
+import CopyToClipboard from './CopyToClipboard';
 
 class Feed extends Component {
     constructor(props) {
@@ -174,8 +176,13 @@ class Feed extends Component {
                         {validMatches.length === 0 && (
                             <Box
                                 margin='large'
+                                direction='column'
+                                gap='small'
                             >
                                 <Text>조건에 맞는 매칭이 없습니다</Text>
+                                <Text><Link to='/browse' label='이 곳' />에서 굿즈 수집/보유/희망 현황을 더 입력해주세요.</Text>
+                                <Text>더 많은 팬들이 <i><b>Nopreme</b></i>을 알 수 있게 아래의 링크를 복사해서 공유해주세요.</Text>
+                                <CopyToClipboard value={`http://${process.env.PUBLIC_URL}`} />
                             </Box>
                         )}
                     </Box>

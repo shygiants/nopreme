@@ -13,12 +13,20 @@ export default class GoodsCard extends Component{
                 onClick={onClick}
                 focusIndicator={false}
             >
-                <Image 
-                    src={goods.img} 
-                    fit='contain'
-                    fill
-                    style={{borderRadius:'10%'}}
-                />
+                <Box
+                    height='46vw'
+                    width='46vw'
+                    round='medium'
+                    background='light-2'
+                >
+                    <Image 
+                        src={goods.img} 
+                        fit='contain'
+                        fill
+                        style={{borderRadius:'10%'}}
+                    />
+                </Box>
+                
                 <Box
                     direction='column'
                     align='start'

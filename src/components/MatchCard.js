@@ -14,11 +14,15 @@ class MatchCard extends Component {
 
         this.state = {
             resolving: false,
+            confirmingReject: false, 
+            confirmingCancel: false,
         };
 
         this.mainButton = this.mainButton.bind(this);
         this.subButton = this.subButton.bind(this);
         this.approvalTryDialog = this.approvalTryDialog.bind(this);
+        this.confirmDialog = this.confirmDialog.bind(this);
+        this.handleClose = this.handleClose.bind(this);
     }
 
     get isExchangeAccepted() {
@@ -85,6 +89,8 @@ class MatchCard extends Component {
     handleClose() {
         this.setState({
             resolving: false,
+            confirmingReject: false, 
+            confirmingCancel: false,
         });
     }
 
@@ -185,12 +191,12 @@ class MatchCard extends Component {
                 // Accepted
                 options = {
                     label: '교환 거절',
-                    onClick: () => onExchangeReject(exchange),
+                    onClick: () => this.setState({confirmingReject: true}),
                 };
             } else {
                 // Requested
                 options = {
-                    onClick: () => onExchangeCancel(exchange),
+                    onClick: () => this.isExchangeRejected ? onExchangeCancel(exchange) : this.setState({confirmingCancel: true}),
                     label: this.isExchangeRejected ? '확인' : '신청 취소',
                 }
             }
@@ -260,7 +266,41 @@ class MatchCard extends Component {
                     primary: true,
                 }]}
                 onAction={this.handleApproval.bind(this)}
-                onClose={this.handleClose.bind(this)}
+                onClose={this.handleClose}
+        />);
+    }
+
+    confirmDialog() {
+        const {confirmingReject, confirmingCancel} = this.state;
+        const {onExchangeReject, onExchangeCancel, exchange} = this.props;
+
+        const confirming = confirmingReject || confirmingCancel;
+        let task, onAction; 
+        if (confirmingReject) {
+            task = '거절';
+            onAction = onExchangeReject;
+        }
+            
+        if (confirmingCancel) {
+            task = '취소';
+            onAction = onExchangeCancel;
+        }
+
+        return (
+            <Dialog 
+                show={confirming}
+                title={`교환 신청 ${task}`}
+                message={`정말 교환 신청을 ${task}하시겠습니까?`}
+                actions={[{
+                    name: 'no',
+                    label: '아니오',
+                }, {
+                    name: 'yes',
+                    label: '예',
+                    primary: true,
+                }]}
+                onAction={actionName => actionName === 'yes' ? onAction(exchange) : this.handleClose()}
+                onClose={this.handleClose}
         />);
     }
 
@@ -332,12 +372,13 @@ class MatchCard extends Component {
 
                     
                     {exchange && !this.isExchangeAccepted && !this.isExchangeRejected && !this.isExchangeApprovedByAcceptor && (
-                        <CopyToClipboard value={`http://localhost:4000/#/exchanges/${exchange.exchangeId}`} />
+                        <CopyToClipboard value={`http://${process.env.PUBLIC_URL}/#/exchanges/${exchange.exchangeId}`} />
                     )}
 
                     {this.mainButton()}
                     {this.subButton()}
                     {exchange && this.approvalTryDialog()}
+                    {exchange && this.confirmDialog()}
 
                 </Box>  
                 <Menu

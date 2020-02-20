@@ -3,6 +3,8 @@ import {Box, Text, Button, TextInput} from 'grommet';
 import {graphql, createFragmentContainer} from 'react-relay';
 import debounce from 'lodash.debounce';
 
+import ModifyUserMutation from '../mutations/ModifyUserMutation';
+
 
 const nameStatusText = {
     available:'사용할 수 있는 닉네임 입니다',
@@ -27,71 +29,56 @@ class Profile extends Component {
 
         this.state = {
             name: viewer.name,
-            openChatLink: viewer.openChatLink,
+            openChatLink: viewer.openChatLink || '',
             linkStatus: '',  
             nameStatus: '',   
         };
 
-        //마지막 input발생 후 500ms뒤에 실행합니다
-        this.debounceHandleNameChange = debounce(this.debounceHandleNameChange, 300);
+        // 마지막 input발생 후 500ms뒤에 실행합니다
         this.debounceHandleOpenChatLinkChange = debounce(this.debounceHandleOpenChatLinkChange, 300);
     }
 
-    handleNameChange(e) {
-        let newValue = e.target.value;
+    handleNameChange({target: {value}}) {
         this.setState({
-            name: newValue
+            name: value
         });
-        this.debounceHandleNameChange(e.target);
     }
 
-    debounceHandleNameChange(target){
-        //디바운싱 로직 - 닉네임 중복 체크는 여기서 하면 됩니다
-        console.log(target.value);
-        // if(true){
-        //     this.setState({
-        //         nameStatus: 'available'
-        //     })
-        // }else{
-        //     this.setState({
-        //         nameStatus: 'unavailable'
-        //     })
-        // }
-    }
-
-
-    handleOpenChatLinkChange(e){
-        let newValue = e.target.value;
+    handleOpenChatLinkChange({target: {value}}){
         this.setState({
-            openChatLink: newValue
+            openChatLink: value
         });
-        this.debounceHandleOpenChatLinkChange(e.target);
+
+        this.debounceHandleOpenChatLinkChange(value);
     }
 
-    debounceHandleOpenChatLinkChange(target){
-        const pattern = "^https?:\/\/(open\.kakao\.com)\/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)$"
+    debounceHandleOpenChatLinkChange(value){
+        const pattern = "^https?:\/\/(open\.kakao\.com)\/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)$";
         let chatLinkPattern = new RegExp(pattern);
-        if(chatLinkPattern.test(target.value)){
+
+        if (chatLinkPattern.test(value)) {
             this.setState({
                 linkStatus: 'available'
-            })
-        }else{
+            });
+        } else {
             this.setState({
                 linkStatus: 'unavailable'
-            })
+            });
         }
     }
 
-    /**
-     * 각 inputField에서 엔터 입력이 발생할 경우 해당 필드값
-     * 수정 요청을 보내기 위한 이벤트 핸들러입니다. 
-     * @param {event} e 
-     */
-    handleKeyDown(e){
-        if(e.key === 'Enter'){
-            console.log(e.target.name +":"+e.target.value);
-            //수정 요청 로직
-        }
+    handleSubmit() {
+        const {name, openChatLink} = this.state;
+        const {relay, router} = this.props;
+
+        ModifyUserMutation.commit(relay.environment, {name, openChatLink}).then(resp => {
+            router.go(-1);
+        }).catch(err => {
+            this.setState({
+                nameStatus: 'unavailable',
+            });
+
+        });
     }
 
     render() {
@@ -115,7 +102,6 @@ class Profile extends Component {
                         focusIndicator={false}
                         size='small'
                         onChange={this.handleNameChange.bind(this)}
-                        onKeyDown={this.handleKeyDown.bind(this)}
                     />
                     <Text
                         size='xsmall'
@@ -135,7 +121,6 @@ class Profile extends Component {
                         focusIndicator={false}
                         size='small'
                         onChange={this.handleOpenChatLinkChange.bind(this)}
-                        onKeyDown={this.handleKeyDown.bind(this)}
                     />
                     <Text 
                         size='xsmall' 
@@ -144,7 +129,12 @@ class Profile extends Component {
                         {linkStatusText[linkStatus]}
                     </Text>
                 </Box>
-
+                <Button disabled={
+                    (linkStatus === 'unavailable' || 
+                    linkStatus === '' || 
+                    openChatLink === viewer.openChatLink) &&
+                    name === viewer.name
+                } label='변경' onClick={this.handleSubmit.bind(this)} />
             </Box>
         );
     }

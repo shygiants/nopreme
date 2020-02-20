@@ -5,14 +5,17 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "NODE_ENV=development babel-node server.js",
-    "relay": "NODE_ENV=development relay-compiler --src ./src --schema ./data/schema.graphql --artifactDirectory ./__generated__/relay",
+    "start": "node dist/server.js",
+    "build-server": "babel lib -d dist",
+    "serve": "babel-node server.js",
+    "relay": "relay-compiler --src ./src --schema ./lib/data/schema.graphql --artifactDirectory ./__generated__/relay",
     "clean-relay": "rm -rf __generated__",
-    "build": "NODE_ENV=development parcel build src/entries/**/*.html src/entries/*.html -d docs/",
+    "build": "parcel build src/entries/**/*.html src/entries/*.html -d docs/",
     "clean": "rm -rf dist docs .cache",
-    "update-schema": "NODE_ENV=development babel-node ./scripts/updateSchema.js",
+    "update-schema": "babel-node ./scripts/updateSchema.js",
     "help": "babel-node --help",
-    "watch": "NODE_ENV=development parcel watch src/entries/**/*.html src/entries/*.html -d docs/"
+    "watch": "parcel watch src/entries/**/*.html src/entries/*.html -d docs/",
+    "gcp-build": "npm run update-schema && npm run relay && npm run build && npm run build-server"
   },
   "keywords": [],
   "author": "Sanghoon Yoon",
@@ -52,8 +55,9 @@
     "uuid": "^3.4.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/node": "^7.8.4",
     "@babel/core": "^7.8.3",
-    "@babel/node": "^7.8.3",
     "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
     "parcel-plugin-txt": "^1.0.3"

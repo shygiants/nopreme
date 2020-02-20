@@ -16,7 +16,7 @@ export default class SignUp extends Component {
             body: JSON.stringify({nickname, openChatLink, accessToken}),
         }).then((res) => res.json()).then(({token}) => {
             localStorage.setItem('jwt', token);
-            window.location.href = 'http://localhost:4000';
+            window.location.href = `http://${process.env.PUBLIC_URL}`;
         }).catch(console.error);
     }
 
@@ -24,7 +24,7 @@ export default class SignUp extends Component {
         const accessToken = localStorage.getItem('kakao-jwt');
 
         if (accessToken === null) {
-            window.location.href = 'http://localhost:4000/signin';
+            window.location.href = `http://${process.env.PUBLIC_URL}/signin`;
             return;
         }
         // TODO: CORS

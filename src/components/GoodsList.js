@@ -16,9 +16,6 @@ class GoodsList extends Component {
                 {goodsList.map((goods, idx) =>(
                     <Goods key={goods.id} goods={goods} event={events[idx]} />
                 ))}
-                {goodsList.map((goods, idx) =>(
-                    <Goods key={goods.id+'a'} goods={goods} event={events[idx]} />
-                ))}
             </Box>
         );
 

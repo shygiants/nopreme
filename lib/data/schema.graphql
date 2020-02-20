@@ -282,13 +282,24 @@ input ModifyItemInput {
   id: ID!
   idx: Int
   memberIds: [ID]
-  goodsId: ID!
+  goodsId: ID
   img: String
   clientMutationId: String
 }
 
 type ModifyItemPayload {
   itemEdge: ItemEdge!
+  clientMutationId: String
+}
+
+input ModifyUserInput {
+  name: String
+  openChatLink: String
+  clientMutationId: String
+}
+
+type ModifyUserPayload {
+  user: User!
   clientMutationId: String
 }
 
@@ -307,6 +318,7 @@ type Mutation {
   removeExchange(input: RemoveExchangeInput!): RemoveExchangePayload
   rejectExchange(input: RejectExchangeInput!): RejectExchangePayload
   resolveExchange(input: ResolveExchangeInput!): ResolveExchangePayload
+  modifyUser(input: ModifyUserInput!): ModifyUserPayload
 }
 
 """An object with an ID"""

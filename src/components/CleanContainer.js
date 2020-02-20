@@ -11,8 +11,6 @@ export default class Container extends Component {
         super(props);
 
         grommet.global.colors.brand='#e5732f';
-
-        Kakao.init(process.env.KAKAO_JS_KEY);
     }
 
     render() {

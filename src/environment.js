@@ -19,14 +19,15 @@ import {
 } from 'react-relay-network-modern';
 import uuidv4 from 'uuid/v4';
 
-const __DEV__ = true;
+const __DEV__ = process.env.NODE_ENV === 'development';
 
 const store = new Store(new RecordSource());
 const network = new RelayNetworkLayer([
-    // cacheMiddleware({
-    //     size: 100, // max 100 requests
-    //     ttl: 900000, // 15 minutes
-    // }),
+    cacheMiddleware({
+        size: 100, // max 100 requests
+        ttl: 900000, // 15 minutes
+        clearOnMutation: true,
+    }),
     urlMiddleware({
         url: (req) => Promise.resolve('/graphql'),
     }),
@@ -53,7 +54,7 @@ const network = new RelayNetworkLayer([
             console.log('[client.js] resolve token refresh', req);
 
             localStorage.removeItem('jwt');
-            window.location.href = 'http://localhost:4000/signin';
+            window.location.href = `http://${process.env.PUBLIC_URL}/signin`;
         },
     }),
     progressMiddleware({

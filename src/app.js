@@ -185,7 +185,7 @@ const Router = createFarceRouter({
                 `}
             />
 
-            <Route
+            {/* <Route
                 path='settings'
                 Component={Settings}
                 query={graphql`
@@ -195,7 +195,7 @@ const Router = createFarceRouter({
                         }
                     }
                 `}
-            />
+            /> */}
         </Route>
     ),
 });

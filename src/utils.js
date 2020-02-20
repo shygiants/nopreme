@@ -1,20 +1,6 @@
-import request from 'request-promise-native';
-import nameGenerator from '@afuggini/namegenerator';
-import {nicknameExists} from '../data/database';
-
 export function range(end) {
     return [...Array(end).keys()];
 }
-
-export function getKakaoUserInfo(accessToken) {
-    return request({
-      uri: 'https://kapi.kakao.com/v2/user/me',
-      json: true,
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
-  }
 
 export function strcmp(f, s) {
     return f.localeCompare(s);
@@ -81,12 +67,4 @@ export function getNodesFromConnection(connection) {
 
 export function intersection(arr1, arr2) {
     return arr1.filter(value => -1 !== arr2.indexOf(value));
-}
-
-export async function generateNewNickname() {
-    const newNickname = nameGenerator('-');
-
-    while (await nicknameExists(newNickname)) {}
-
-    return newNickname;
 }
