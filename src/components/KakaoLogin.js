@@ -4,13 +4,6 @@ import React, {
 import {Box, Text, Anchor} from 'grommet';
 
 export default class KakaoLogin extends Component {
-    constructor(props) {
-        super(props);
-
-        // 사용할 앱의 JavaScript 키를 설정해 주세요.
-        Kakao.init(process.env.KAKAO_JS_KEY);
-    }
-
     componentDidMount() {
         // 카카오 로그인 버튼을 생성합니다.
         Kakao.Auth.createLoginButton({

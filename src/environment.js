@@ -19,7 +19,8 @@ import {
 } from 'react-relay-network-modern';
 import uuidv4 from 'uuid/v4';
 
-const __DEV__ = process.env.NODE_ENV === 'development';
+// const __DEV__ = process.env.NODE_ENV === 'development';
+const __DEV__ = false;
 
 const store = new Store(new RecordSource());
 const network = new RelayNetworkLayer([
@@ -71,10 +72,10 @@ const network = new RelayNetworkLayer([
         req.fetchOpts.credentials = 'same-origin'; // allow to send cookies (sending credentials to same domains)
         // req.fetchOpts.credentials = 'include'; // allow to send cookies for CORS (sending credentials to other domains)
   
-        console.log('RelayRequest', req);
+        // console.log('RelayRequest', req);
   
         const res = await next(req);
-        console.log('RelayResponse', res);
+        // console.log('RelayResponse', res);
   
         return res;
     },

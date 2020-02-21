@@ -17,17 +17,20 @@ class GoodsApp extends Component {
         const classified = classify(nodes, 'members.name');
         const memberCombs = [...classified.keys()];
 
+        const sortedMembers = [...artist.members].sort((a, b) => Number.parseInt(a.birthday) - Number.parseInt(b.birthday)).map(member => member.name);
         function displayMemberComb(memberComb) {
             const memberNames = memberComb.split(',');
 
             return memberNames.length === artist.members.length ? '단체' : memberComb;
         }
 
+        const keys = sortedMembers.concat(memberCombs.filter(mc => !sortedMembers.includes(mc)));
+
         return (
             <Box>
                 <GoodsInfo event={event} goods={goods}/> 
                 <Accordion multiple pad={{horizontal: 'medium'}}>
-                    {memberCombs.map(memberComb => (
+                    {keys.map(memberComb => (
                         <AccordionPanel key={memberComb} label={displayMemberComb(memberComb)}>
                             <Box direction='column' align='center'>
                                 <ItemList viewer={viewer} artist={artist} items={classified.get(memberComb)} />
@@ -55,6 +58,7 @@ export default createFragmentContainer(GoodsApp, {
                 id
                 memberId
                 name
+                birthday
             }
             ...ItemList_artist
         }

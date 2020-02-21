@@ -302,6 +302,7 @@ type Member implements Node {
   name: String!
   aliases: [String]
   description: String
+  birthday: String
 }
 
 input ModifyItemInput {

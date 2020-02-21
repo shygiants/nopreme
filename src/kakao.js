@@ -1,0 +1,1 @@
+Kakao.init(process.env.KAKAO_JS_KEY);
