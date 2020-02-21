@@ -58,7 +58,9 @@ class Feed extends Component {
 
     render() {
         const {addedExchanges} = this.state;
-        const {viewer, matches, exchangeList, router} = this.props;
+        const {viewer, matchList, exchangeList, router} = this.props;
+
+        const matches = getNodesFromConnection(matchList.matches);
 
         const exchangeNodes = getNodesFromConnection(exchangeList.exchanges);
         const requested = exchangeNodes.filter(exchange => exchange.requestor.userId === viewer.userId);
@@ -264,21 +266,30 @@ export default createFragmentContainer(Feed, {
             ...MatchCard_viewer
         }
     `,
-    matches: graphql`
-        fragment Feed_matches on Match @relay(plural: true) {
-            wishItem {
-                id
-                itemId
+    matchList: graphql`
+        fragment Feed_matchList on MatchList {
+            matches (
+                # first: 2147483647 # max GraphQLInt
+                first: 2 # max GraphQLInt
+            ) @connection(key: "Feed_matches") {
+                edges {
+                    node {
+                        wishItem {
+                            id
+                            itemId
+                        }
+                        posessionItem {
+                            id
+                            itemId
+                        }
+                        user {
+                            id
+                            userId
+                        }
+                        ...MatchCard_match
+                    }
+                }
             }
-            posessionItem {
-                id
-                itemId
-            }
-            user {
-                id
-                userId
-            }
-            ...MatchCard_match
         }
     `,
     exchangeList: graphql`

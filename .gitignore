@@ -138,3 +138,5 @@ docs
 __generated__
 docker/mongo/run_args.sh
 gcp-credentials.json
+.env.development
+.env.production

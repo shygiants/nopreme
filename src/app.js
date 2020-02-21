@@ -52,18 +52,22 @@ const Router = createFarceRouter({
             <Route 
                 Component={Feed}
                 query={graphql`
-                    query app_Feed_Query {
+                    query app_Feed_Query(
+                            $count: Int!
+                            $cursor: String
+                        )  {
                         viewer {
                             ...Feed_viewer
                         }
-                        matches {
-                            ...Feed_matches
+                        matchList {
+                            ...Feed_matchList @arguments(count: $count, cursor: $cursor)
                         }
                         exchangeList {
                             ...Feed_exchangeList
                         }
                     }
                 `}
+                prepareVariables={() => ({count: 2})}
             />
 
             <Route
