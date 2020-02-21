@@ -5,7 +5,7 @@ import ItemList from './ItemList';
 import GoodsInfo from './GoodsInfo';
 
 import {classify} from '../utils';
-import { Box, Heading, Accordion, AccordionPanel } from 'grommet';
+import { Box, Accordion, AccordionPanel } from 'grommet';
 
 class GoodsApp extends Component {
     render() {

@@ -1,5 +1,5 @@
 import React, {Component, createRef} from 'react';
-import {Box, Text, Button, TextInput, Layer, Drop} from 'grommet';
+import {Box, Button, TextInput, Drop} from 'grommet';
 import {CopyToClipboard as CTC} from 'react-copy-to-clipboard';
 import {Copy} from 'grommet-icons';
 

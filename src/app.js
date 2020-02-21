@@ -7,13 +7,11 @@ import {
     render
 } from 'react-dom';
 
-import { BrowserProtocol, queryMiddleware, HashProtocol } from 'farce';
+import { queryMiddleware, HashProtocol } from 'farce';
 import {
   createFarceRouter,
-  createRender,
   makeRouteConfig,
   Route,
-  Redirect,
 } from 'found';
 import { Resolver } from 'found-relay';
 
@@ -52,22 +50,18 @@ const Router = createFarceRouter({
             <Route 
                 Component={Feed}
                 query={graphql`
-                    query app_Feed_Query(
-                            $count: Int!
-                            $cursor: String
-                        )  {
+                    query app_Feed_Query {
                         viewer {
                             ...Feed_viewer
                         }
                         matchList {
-                            ...Feed_matchList @arguments(count: $count, cursor: $cursor)
+                            ...Feed_matchList
                         }
                         exchangeList {
                             ...Feed_exchangeList
                         }
                     }
                 `}
-                prepareVariables={() => ({count: 2})}
             />
 
             <Route

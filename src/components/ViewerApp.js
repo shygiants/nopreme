@@ -3,7 +3,7 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 
 import Link from './Link';
 import {Box, Anchor, Text} from 'grommet';
-import {Configure, User, Logout, CircleQuestion} from 'grommet-icons';
+import {User, Logout, CircleQuestion} from 'grommet-icons';
 
 class ViewerApp extends Component {
     logout() {

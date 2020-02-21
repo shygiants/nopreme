@@ -52,13 +52,13 @@ export default class SignIn extends Component {
                     아티스트를 사랑하는 팬들끼리 굿즈 교환
                 </Paragraph>                
                 <KakaoLogin onSuccess={this.handleSignIn} />
-                <Paragraph
+                {/* <Paragraph
                     margin={{top: 'large'}}
                     size='small'
                 >
                     {nopreme} = <b><i>No</i></b> + <i><b>Prem</b>ium</i> ({premium}, 프리미엄) + <b><i>e</i></b> <br/>
                     {nopreme}은 아티스트에 대한 팬들의 열렬한 마음을 이용해 부당하게 이득을 취하는 {premium}를 근절합니다.
-                </Paragraph>
+                </Paragraph> */}
             </Box>
         );
     }

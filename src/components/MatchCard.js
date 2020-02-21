@@ -1,4 +1,4 @@
-import React, {Component, createRef} from 'react';
+import React, {Component} from 'react';
 import {Box, Text, Button, Menu, Stack} from 'grommet';
 import {graphql, createFragmentContainer} from 'react-relay';
 import {Transaction, LinkNext, Flag, More} from 'grommet-icons';

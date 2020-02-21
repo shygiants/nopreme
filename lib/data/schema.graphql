@@ -263,10 +263,36 @@ type ItemList implements Node {
   items(after: String, first: Int, before: String, last: Int): ItemConnection
 }
 
-type Match {
+type Match implements Node {
+  """The ID of an object"""
+  id: ID!
   wishItem: Item!
   posessionItem: Item!
   user: User!
+}
+
+"""A connection to a list of items."""
+type MatchConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [MatchEdge]
+}
+
+"""An edge in a connection."""
+type MatchEdge {
+  """The item at the end of the edge"""
+  node: Match
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type MatchList implements Node {
+  """The ID of an object"""
+  id: ID!
+  matches(after: String, first: Int, before: String, last: Int): MatchConnection
 }
 
 type Member implements Node {
@@ -372,7 +398,7 @@ type PosessionEdge {
 
 type Query {
   viewer: User
-  matches: [Match]!
+  matchList: MatchList
   exchangeList: ExchangeList
   user(id: ID): User
   artist(name: String): Artist

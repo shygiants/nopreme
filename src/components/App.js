@@ -4,9 +4,8 @@ import React, {
 
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {grommet} from 'grommet/themes';
-import {Grommet, Header, Main, Footer, Layer, Button, Box, Heading} from 'grommet';
+import {Grommet, Header, Main, Box, Heading} from 'grommet';
 import { Search, User } from 'grommet-icons';
-import Avatar from './Avatar';
 import Link from './Link';
 import {deepMerge} from 'grommet/utils';
 

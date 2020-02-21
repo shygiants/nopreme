@@ -1,7 +1,7 @@
 import React, {
     Component
 } from 'react';
-import {graphql, createFragmentContainer} from 'react-relay';
+import {graphql, createRefetchContainer} from 'react-relay';
 import {Box, Tabs, Tab, Stack, Text} from 'grommet';
 
 import MatchCard from './MatchCard';
@@ -30,6 +30,8 @@ class Feed extends Component {
             this.setState(({addedExchanges}) => ({
                 addedExchanges: addedExchanges.concat([exchange]),
             }));
+
+            this._refetch();
         }).bind(this));
     }
 
@@ -54,6 +56,15 @@ class Feed extends Component {
     handleExchangeApproval(exchange) {
         const {relay, exchangeList} = this.props;
         ResolveExchangeMutation.commit(relay.environment, exchange, exchangeList);
+    }
+
+    _refetch() {
+        this.props.relay.refetch(
+            null,
+            null,
+            () => { console.log('Refetch done') },
+            {force: true},
+        );
     }
 
     render() {
@@ -257,7 +268,7 @@ class Feed extends Component {
     }
 }
 
-export default createFragmentContainer(Feed, {
+export default createRefetchContainer(Feed, {
     viewer: graphql`
         fragment Feed_viewer on User {
             id
@@ -270,7 +281,7 @@ export default createFragmentContainer(Feed, {
         fragment Feed_matchList on MatchList {
             matches (
                 # first: 2147483647 # max GraphQLInt
-                first: 2 # max GraphQLInt
+                first: 6 # max GraphQLInt
             ) @connection(key: "Feed_matches") {
                 edges {
                     node {
@@ -326,4 +337,16 @@ export default createFragmentContainer(Feed, {
             }
         }
     `,
-});
+}, graphql`
+    query FeedRefetchQuery {
+        viewer {
+            ...Feed_viewer
+        }
+        matchList {
+            ...Feed_matchList
+        }
+        exchangeList {
+            ...Feed_exchangeList
+        }
+    }
+`);

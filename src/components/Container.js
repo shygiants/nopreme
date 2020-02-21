@@ -3,9 +3,9 @@ import React, {
 } from 'react';
 import {grommet} from 'grommet/themes';
 
-import {Grommet, Header, Main, Box, Heading, Footer} from 'grommet';
+import {Grommet, Header, Main, Heading, Footer} from 'grommet';
 import Link from './Link';
-import {Configure, User, Logout, CircleQuestion} from 'grommet-icons';
+import {User} from 'grommet-icons';
 
 export default class Container extends Component {
     constructor(props) {

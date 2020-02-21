@@ -3,8 +3,7 @@ import React, {
 } from 'react';
 import {grommet} from 'grommet/themes';
 
-import {Grommet, Header, Main, Box, Heading, Footer} from 'grommet';
-import {Configure, User, Logout, CircleQuestion} from 'grommet-icons';
+import {Grommet, Main} from 'grommet';
 
 export default class Container extends Component {
     constructor(props) {

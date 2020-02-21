@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 
 import { Heading, Box, Image, Text } from 'grommet';
-import {Favorite, Transaction, Archive, Share} from 'grommet-icons'
+import {Favorite, Archive, Share} from 'grommet-icons'
 
 class ItemInfo extends Component {
     render() {

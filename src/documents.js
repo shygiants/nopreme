@@ -6,10 +6,9 @@ import React, {
 import {
     render
 } from 'react-dom';
-import { BrowserProtocol, queryMiddleware, HashProtocol } from 'farce';
+import { queryMiddleware, HashProtocol } from 'farce';
 import {
     createFarceRouter,
-    HttpError,
     makeRouteConfig,
     Redirect,
     Route,
@@ -17,9 +16,10 @@ import {
 } from 'found';
 
 import Container from './components/Container';
-import {Paragraph} from 'grommet'
+import {Paragraph, Box, Heading} from 'grommet'
 
-import termsOfService from '../resources/documents/terms-of-service.txt';
+import termsOfService from '../resources/documents/terms-of-service.md';
+import privacyPolicy from '../resources/documents/privacy-policy.md';
 import TalkChannel from './components/TalkChannel';
 
 const Router = createFarceRouter({
@@ -39,9 +39,18 @@ const Router = createFarceRouter({
                 path='terms-of-service'
                 render={() => {
                     return (
-                        <Paragraph>
-                            {termsOfService}
-                        </Paragraph>
+                        <Box
+                            pad={{horizontal: 'medium'}}
+                        >
+                            <Heading>이용약관</Heading>
+                            <Box
+                                wrap
+                                dangerouslySetInnerHTML={{
+                                    __html: termsOfService
+                                }}
+                            />
+
+                        </Box>
                     )
                 }}
             />
@@ -50,9 +59,18 @@ const Router = createFarceRouter({
                 path='privacy-policy'
                 render={() => {
                     return (
-                        <Paragraph>
-                            {termsOfService}
-                        </Paragraph>
+                        <Box
+                            pad={{horizontal: 'medium'}}
+                        >
+                            <Heading>개인정보처리방침</Heading>
+                            <Box
+                                wrap
+                                dangerouslySetInnerHTML={{
+                                    __html: privacyPolicy
+                                }}
+                            />
+
+                        </Box>
                     )
                 }}
             />

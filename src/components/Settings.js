@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Box, Text, Button, TextInput} from 'grommet';
+import {Box} from 'grommet';
 import {graphql, createFragmentContainer} from 'react-relay';
 
 class Settings extends Component {    

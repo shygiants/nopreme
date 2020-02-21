@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { Box, Button, Text } from 'grommet';
-import {Favorite, Transaction, Archive, Share} from 'grommet-icons'
+import { Box} from 'grommet';
+import {Favorite, Archive, Share} from 'grommet-icons'
 
 
 const COLLECTION = 'collection';

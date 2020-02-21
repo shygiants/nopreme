@@ -35,7 +35,7 @@ export default class KakaoLogin extends Component {
                 >
                     계속 진행하면 <i>Nopreme</i> 
                     <Anchor target='_blank' href='/documents/#/terms-of-service' label='서비스 약관'/> 및 
-                    <Anchor target='_blank' href='/documents/#/privacy-policy' label='개인정보 보호정책' />에 동의하는 것으로 간주됩니다.
+                    <Anchor target='_blank' href='/documents/#/privacy-policy' label='개인정보 처리방침' />에 동의하는 것으로 간주됩니다.
                 </Text>                
             </Box>
         );

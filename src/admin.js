@@ -5,10 +5,9 @@ import {
     render
 } from 'react-dom';
 
-import { BrowserProtocol, queryMiddleware, HashProtocol } from 'farce';
+import { queryMiddleware, HashProtocol } from 'farce';
 import {
   createFarceRouter,
-  createRender,
   makeRouteConfig,
   Route,
 } from 'found';

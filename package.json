@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/server.js",
+    "start": "NODE_ENV=production node dist/server.js",
     "build-server": "babel lib -d dist",
     "serve": "babel-node lib/server.js",
     "relay": "relay-compiler --src ./src --schema ./lib/data/schema.graphql --artifactDirectory ./__generated__/relay",
@@ -15,7 +15,7 @@
     "update-schema": "babel-node ./scripts/updateSchema.js",
     "help": "babel-node --help",
     "watch": "parcel watch src/entries/**/*.html src/entries/*.html -d docs/",
-    "gcp-build": "npm run update-schema && npm run relay && npm run build && npm run build-server"
+    "gcp-build": "NODE_ENV=production npm run update-schema && npm run relay && npm run build && npm run build-server"
   },
   "keywords": [],
   "author": "Sanghoon Yoon",
@@ -56,10 +56,11 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
-    "@babel/node": "^7.8.4",
     "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.4",
     "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
+    "parcel-plugin-markdown": "^0.4.2",
     "parcel-plugin-txt": "^1.0.3"
   },
   "directories": {
