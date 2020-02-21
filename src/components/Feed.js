@@ -19,6 +19,7 @@ class Feed extends Component {
 
         this.state = {
             addedExchanges: [],
+            activeTabIndex: 0,
         }
     }
 
@@ -58,17 +59,23 @@ class Feed extends Component {
         ResolveExchangeMutation.commit(relay.environment, exchange, exchangeList);
     }
 
+    handleTabChange(activeIndex) {
+        this.setState({activeTabIndex: activeIndex});
+    }
+
     _refetch() {
         this.props.relay.refetch(
             null,
             null,
-            () => { console.log('Refetch done') },
+            () => { 
+                this.setState({activeTabIndex: 1})
+             },
             {force: true},
         );
     }
 
     render() {
-        const {addedExchanges} = this.state;
+        const {addedExchanges, activeTabIndex} = this.state;
         const {viewer, matchList, exchangeList, router} = this.props;
 
         const matches = getNodesFromConnection(matchList.matches);
@@ -155,7 +162,10 @@ class Feed extends Component {
         );
 
         return (
-            <Tabs>
+            <Tabs
+                activeIndex={activeTabIndex}
+                onActive={this.handleTabChange.bind(this)}
+            >
                 <Tab 
                     title={(
                         <Box 
