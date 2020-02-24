@@ -1,0 +1,5 @@
+#!/usr/env/bin bash
+
+LOCAL_DB_DIR=/your/local/db/dir
+MONGO_INITDB_ROOT_USERNAME=username
+MONGO_INITDB_ROOT_PASSWORD=secret
