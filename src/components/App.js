@@ -66,7 +66,7 @@ class App extends Component {
                                 <Text
                                     size='xsmall'
                                 >
-                                    축! 아이즈원 음방 2관왕 달성!
+                                    아이즈원 음방 2관왕!
                                 </Text>
                             )}
                         />
