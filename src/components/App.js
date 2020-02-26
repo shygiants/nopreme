@@ -4,7 +4,7 @@ import React, {
 
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {grommet} from 'grommet/themes';
-import {Grommet, Header, Main, Box, Heading} from 'grommet';
+import {Grommet, Header, Main, Box, Heading, Text, Anchor} from 'grommet';
 import { Search, User } from 'grommet-icons';
 import Link from './Link';
 import {deepMerge} from 'grommet/utils';
@@ -42,18 +42,37 @@ class App extends Component {
                     pad={{horizontal: 'medium'}}
                     elevation='xsmall'
                 >
-                    <Link 
-                        to='/'
-                        label={(
-                            <Heading
-                                margin='xsmall'
-                                level='2'
-                                color='brand'
-                            >
-                                <b><i>Nopreme</i></b>
-                            </Heading>
-                        )}
-                    />
+                    <Box
+                        direction='row'
+                    >
+                        <Link 
+                            to='/'
+                            label={(
+                                <Heading
+                                    margin='xsmall'
+                                    level='2'
+                                    color='brand'
+                                >
+                                    <b><i>Nopreme</i></b>
+                                </Heading>
+                            )}
+                        />
+
+                        <Anchor 
+                            alignSelf='end'
+                            target='blank'
+                            href='http://naver.me/FeJmzbOA'  
+                            label={(
+                                <Text
+                                    size='xsmall'
+                                >
+                                    축! 아이즈원 음방 2관왕 달성!
+                                </Text>
+                            )}
+                        />
+                    </Box>
+                        
+                    
                     <Box
                         direction='row'
                         align='center'
