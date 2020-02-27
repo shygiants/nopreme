@@ -28,6 +28,7 @@ import {environment} from './environment';
 import { graphql } from 'react-relay';
 import ExchangeApp from './components/ExchangeApp';
 import Profile from './components/Profile';
+import Notice from './components/Notice';
 import Settings from './components/Settings';
 
 const artistName = 'IZ*ONE';
@@ -43,6 +44,9 @@ const Router = createFarceRouter({
                 query app_App_Query {
                     viewer {
                         ...App_viewer
+                    }
+                    homeNotice {
+                        ...App_homeNotice
                     }
                 }
             `}
@@ -178,6 +182,18 @@ const Router = createFarceRouter({
                     query app_Profile_Query {
                         viewer {
                             ...Profile_viewer
+                        }
+                    }
+                `}
+            />
+
+            <Route
+                path='notice'
+                Component={Notice}
+                query={graphql`
+                    query app_Notice_Query {
+                        notices {
+                            ...Notice_notices
                         }
                     }
                 `}

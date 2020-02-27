@@ -3,7 +3,7 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 
 import Link from './Link';
 import {Box, Anchor, Text} from 'grommet';
-import {User, Logout, CircleQuestion} from 'grommet-icons';
+import {User, Logout, CircleQuestion, Announce} from 'grommet-icons';
 
 class ViewerApp extends Component {
     logout() {
@@ -25,6 +25,7 @@ class ViewerApp extends Component {
                 </Box>
 
                 <Link to='/profile' icon={<User />} label='프로필' />
+                <Link to='/notice' icon={<Announce />} label='공지사항' />
 
                 <Anchor target='_blank' href='/documents' icon={<CircleQuestion />} label='문의' />
 

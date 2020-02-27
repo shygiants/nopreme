@@ -354,6 +354,18 @@ interface Node {
   id: ID!
 }
 
+type Notice implements Node {
+  """The ID of an object"""
+  id: ID!
+  noticeId: ID!
+  title: String!
+  img: String
+  text: String
+  link: String
+  linkText: String
+  createdAt: String!
+}
+
 """Information about pagination in a connection."""
 type PageInfo {
   """When paginating forwards, are there more items?"""
@@ -399,6 +411,8 @@ type PosessionEdge {
 
 type Query {
   viewer: User
+  homeNotice: Notice
+  notices: [Notice]
   matchList: MatchList
   exchangeList: ExchangeList
   user(id: ID): User

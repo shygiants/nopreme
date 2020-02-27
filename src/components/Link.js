@@ -4,11 +4,11 @@ import { Anchor } from 'grommet';
 
 export default class Link extends Component {
     render() {
-        const {label, to, icon, onClick, component} = this.props;
+        const {label, to, icon, onClick, component, ...rest} = this.props;
 
         return (
             <FoundLink 
-                {...this.props}
+                {...rest}
                 as={component || Anchor} 
                 to={to} 
                 icon={icon} 

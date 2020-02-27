@@ -6,8 +6,11 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 import {grommet} from 'grommet/themes';
 import {Grommet, Header, Main, Box, Heading, Text, Anchor} from 'grommet';
 import { Search, User } from 'grommet-icons';
-import Link from './Link';
 import {deepMerge} from 'grommet/utils';
+
+import Link from './Link';
+import NoticeLayer from './NoticeLayer';
+
 
 const customGrommet = deepMerge(grommet, {
     global: {
@@ -27,8 +30,46 @@ const customGrommet = deepMerge(grommet, {
 });
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+
+        const {homeNotice} = this.props;
+
+        let showNotice;
+        if (!homeNotice)
+            showNotice = false;
+        else {
+            if (localStorage.getItem('homeNoticeId') !== homeNotice.noticeId)
+                showNotice = true;
+            else {
+                const closeAt = new Date(localStorage.getItem('closeAt'));
+                const curr = new Date();
+
+                const diff = curr - closeAt;
+                
+                showNotice = diff > (1000 * 60 * 60 * 24);
+            }
+        }
+
+        this.state = {
+            showNotice,
+        };
+    }
+
+    handleClose() {
+        const {homeNotice} = this.props;
+
+        this.setState({
+            showNotice: false,
+        });
+
+        localStorage.setItem('homeNoticeId', homeNotice.noticeId);
+        localStorage.setItem('closeAt', new Date());
+    }
+
     render() {
-        const {router, viewer, children} = this.props;
+        const {showNotice} = this.state;
+        const {router, viewer, children, homeNotice} = this.props;
 
         if (viewer.openChatLink === undefined || viewer.openChatLink === null) {
             if (location.hash !== '#/profile') {
@@ -61,12 +102,12 @@ class App extends Component {
                         <Anchor 
                             alignSelf='end'
                             target='blank'
-                            href='http://naver.me/FeJmzbOA'  
+                            href='https://twitter.com/official_izone/status/1232991225063456768?s=20'  
                             label={(
                                 <Text
                                     size='xsmall'
                                 >
-                                    아이즈원 음방 2관왕!
+                                    아이즈원 음방 3관왕!
                                 </Text>
                             )}
                         />
@@ -87,6 +128,12 @@ class App extends Component {
                     background='light-1'
                     pad={{vertical: 'medium'}}
                 >
+                    {showNotice && homeNotice && (
+                        <NoticeLayer 
+                            homeNotice={homeNotice} 
+                            onClose={this.handleClose.bind(this)} 
+                        />
+                    )}
                     {children}
                 </Main>
             </Grommet>
@@ -99,6 +146,13 @@ export default createFragmentContainer(App, {
         fragment App_viewer on User {
             id
             openChatLink
+        }
+    `,
+    homeNotice: graphql`
+        fragment App_homeNotice on Notice {
+            id
+            noticeId
+            ...NoticeLayer_homeNotice
         }
     `,
 });
