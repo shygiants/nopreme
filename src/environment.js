@@ -72,10 +72,10 @@ const network = new RelayNetworkLayer([
         req.fetchOpts.credentials = 'same-origin'; // allow to send cookies (sending credentials to same domains)
         // req.fetchOpts.credentials = 'include'; // allow to send cookies for CORS (sending credentials to other domains)
   
-        // console.log('RelayRequest', req);
+        __DEV__ ? console.log('RelayRequest', req) : null;
   
         const res = await next(req);
-        // console.log('RelayResponse', res);
+        __DEV__ ? console.log('RelayResponse', res) : null;
   
         return res;
     },

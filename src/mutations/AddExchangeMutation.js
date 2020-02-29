@@ -18,6 +18,10 @@ const mutation = graphql`
                         userId
                         openChatLink
                     }
+                    requestor {
+                        id
+                        userId
+                    }
                     reqPosessionItem {
                         id
                         itemId
