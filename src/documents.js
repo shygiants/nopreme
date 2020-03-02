@@ -16,11 +16,12 @@ import {
 } from 'found';
 
 import Container from './components/Container';
-import {Paragraph, Box, Heading} from 'grommet'
+import {Box, Heading} from 'grommet'
 
 import termsOfService from '../resources/documents/terms-of-service.md';
-import privacyPolicy from '../resources/documents/privacy-policy.md';
+
 import TalkChannel from './components/TalkChannel';
+import PrivacyPolicy from './components/PrivacyPolicy';
 
 const Router = createFarceRouter({
     historyProtocol: new HashProtocol(),
@@ -54,25 +55,13 @@ const Router = createFarceRouter({
                     )
                 }}
             />
-
+            <Redirect
+                from='privacy-policy'
+                to='/privacy-policy/latest'
+            />
             <Route
-                path='privacy-policy'
-                render={() => {
-                    return (
-                        <Box
-                            pad={{horizontal: 'medium'}}
-                        >
-                            <Heading>개인정보처리방침</Heading>
-                            <Box
-                                wrap
-                                dangerouslySetInnerHTML={{
-                                    __html: privacyPolicy
-                                }}
-                            />
-
-                        </Box>
-                    )
-                }}
+                path='privacy-policy/:version'
+                Component={PrivacyPolicy}
             />
         </Route>
     ),

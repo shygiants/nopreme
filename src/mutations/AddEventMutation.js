@@ -35,8 +35,6 @@ function commit(
     date, 
     img
 }) {
-
-    console.log(mutation);
     return commitMutation(
         environment, 
         {

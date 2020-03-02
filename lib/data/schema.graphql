@@ -73,6 +73,12 @@ type AddPosessionPayload {
   clientMutationId: String
 }
 
+type Address {
+  states: [Region]
+  cities(stateCode: String): [Region]
+  childCities(stateCode: String, cityCode: String): [Region]
+}
+
 input AddWishInput {
   itemId: ID!
   num: Int = 1
@@ -190,7 +196,10 @@ type ExchangeEdge {
 type ExchangeList implements Node {
   """The ID of an object"""
   id: ID!
-  exchanges(after: String, first: Int, before: String, last: Int): ExchangeConnection
+  numRequested: Int
+  numAccepted: Int
+  requested(after: String, first: Int, before: String, last: Int): ExchangeConnection
+  accepted(after: String, first: Int, before: String, last: Int): ExchangeConnection
 }
 
 enum ExchangeStatus {
@@ -292,7 +301,7 @@ type MatchEdge {
 type MatchList implements Node {
   """The ID of an object"""
   id: ID!
-  matches(after: String, first: Int, before: String, last: Int): MatchConnection
+  matches(filterByRegion: Boolean = false, method: MethodType = DONTCARE, after: String, first: Int, before: String, last: Int): MatchConnection
 }
 
 type Member implements Node {
@@ -303,6 +312,12 @@ type Member implements Node {
   aliases: [String]
   description: String
   birthday: String
+}
+
+enum MethodType {
+  DIRECT
+  POST
+  DONTCARE
 }
 
 input ModifyItemInput {
@@ -322,6 +337,8 @@ type ModifyItemPayload {
 input ModifyUserInput {
   name: String
   openChatLink: String
+  regionCodes: [String]
+  method: MethodType
   clientMutationId: String
 }
 
@@ -413,6 +430,7 @@ type Query {
   viewer: User
   homeNotice: Notice
   notices: [Notice]
+  address: Address
   matchList: MatchList
   exchangeList: ExchangeList
   user(id: ID): User
@@ -429,6 +447,19 @@ type Query {
     """The ID of an object"""
     id: ID!
   ): Node
+}
+
+type Region implements Node {
+  """The ID of an object"""
+  id: ID!
+  regionId: ID!
+  stateCode: String!
+  stateName: String!
+  cityCode: String
+  cityName: String
+  parentCityCode: String
+  parentCityName: String
+  displayName: String
 }
 
 input RejectExchangeInput {
@@ -502,6 +533,8 @@ type User implements Node {
   collects(goodsId: ID = "any", after: String, first: Int, before: String, last: Int): CollectionConnection
   posesses(goodsId: ID = "any", after: String, first: Int, before: String, last: Int): PosessionConnection
   wishes(goodsId: ID = "any", after: String, first: Int, before: String, last: Int): WishConnection
+  regions: [Region]
+  method: MethodType!
 }
 
 type Wish implements Node {

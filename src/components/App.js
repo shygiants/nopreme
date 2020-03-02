@@ -47,7 +47,7 @@ class App extends Component {
 
                 const diff = curr - closeAt;
                 
-                showNotice = diff > (1000 * 60 * 60 * 24);
+                showNotice = diff > (1000 * 60 * 60 * 3);
             }
         }
 

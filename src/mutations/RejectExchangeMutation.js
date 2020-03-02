@@ -15,11 +15,11 @@ const mutation = graphql`
 function sharedUpdater(store, exchangeList, rejectedExchangeId) {
     if (exchangeList === undefined) return;
     const exchangeListProxy = store.get(exchangeList.id);
-    const conn = ConnectionHandler.getConnection(exchangeListProxy, 'Feed_exchanges');
+    const conn = ConnectionHandler.getConnection(exchangeListProxy, 'AcceptedExchangeList_accepted');
     ConnectionHandler.deleteNode(conn, rejectedExchangeId);
   }
 
-function commit(environment, exchange, exchangeList) {
+function commit(environment, exchange, exchangeList, onCompleted=() => {}) {
     return commitMutation(
         environment, 
         {
@@ -33,7 +33,8 @@ function commit(environment, exchange, exchangeList) {
                 const payload = store.getRootField('rejectExchange');
                 const rejectedExchangeId = payload.getValue('rejectedExchangeId');
                 sharedUpdater(store, exchangeList, rejectedExchangeId);
-            }
+            },
+            onCompleted,
         },
     );
 }

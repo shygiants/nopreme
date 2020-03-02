@@ -20,7 +20,7 @@ import {
 import uuidv4 from 'uuid/v4';
 
 // const __DEV__ = process.env.NODE_ENV === 'development';
-const __DEV__ = false;
+const __DEV__ = process.env.VERBOSE === 'true';
 
 const store = new Store(new RecordSource());
 const network = new RelayNetworkLayer([

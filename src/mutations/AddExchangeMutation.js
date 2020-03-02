@@ -31,7 +31,6 @@ const mutation = graphql`
                         itemId
                     }
                     status
-                    ...MatchCard_exchange
                 }
             }
         }
@@ -40,11 +39,11 @@ const mutation = graphql`
 
 function sharedUpdater(store, exchangeList, newEdge) {
     const eventProxy = store.get(exchangeList.id);
-    const conn = ConnectionHandler.getConnection(eventProxy, 'Feed_exchanges');
+    const conn = ConnectionHandler.getConnection(eventProxy, 'RequestedExchangeList_requested');
     ConnectionHandler.insertEdgeAfter(conn, newEdge);
 }
 
-function commit(environment, match, exchangeList, onComplete) {
+function commit(environment, match, exchangeList, onCompleted=() => {}) {
     return commitMutation(
         environment, 
         {
@@ -61,7 +60,7 @@ function commit(environment, match, exchangeList, onComplete) {
                 const newEdge = payload.getLinkedRecord('exchangeEdge');
                 sharedUpdater(store, exchangeList, newEdge);
             },
-            onCompleted: onComplete,
+            onCompleted,
         },
     );
 }

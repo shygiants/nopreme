@@ -16,7 +16,7 @@ const mutation = graphql`
     }
 `;
 
-function commit(environment, {name, openChatLink}) {
+function commit(environment, {name, openChatLink, regionCodes, method}) {
     return new Promise((resolve, reject) => {
         return commitMutation(
             environment, 
@@ -25,7 +25,9 @@ function commit(environment, {name, openChatLink}) {
                 variables: {
                     input: {
                         name, 
-                        openChatLink
+                        openChatLink,
+                        regionCodes,
+                        method,
                     },
                 },
                 onCompleted: resolve,

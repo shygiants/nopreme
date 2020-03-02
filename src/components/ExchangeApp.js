@@ -2,10 +2,12 @@ import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {Box, Text, Button} from 'grommet';
 
-import MatchCard from './MatchCard';
 import RemoveExchangeMutation from '../mutations/RemoveExchangeMutation';
 import RejectExchangeMutation from '../mutations/RejectExchangeMutation';
 import ResolveExchangeMutation from '../mutations/ResolveExchangeMutation';
+
+import RequestedExchangeCard from './RequestedExchangeCard';
+import AcceptedExchangeCard from './AcceptedExchangeCard';
 
 class ExchangeApp extends Component {
     get isExchangeAccepted() {
@@ -41,20 +43,17 @@ class ExchangeApp extends Component {
 
     handleExchangeCancel(exchange) {
         const {relay} = this.props;
-        RemoveExchangeMutation.commit(relay.environment, exchange);
-        this.moveToHome();
+        RemoveExchangeMutation.commit(relay.environment, exchange, null, this.moveToHome);
     }
 
     handleExchangeReject(exchange) {
         const {relay} = this.props;
-        RejectExchangeMutation.commit(relay.environment, exchange);
-        this.moveToHome();
+        RejectExchangeMutation.commit(relay.environment, exchange, null, this.moveToHome);
     }
 
     handleExchangeApproval(exchange) {
         const {relay} = this.props;
-        ResolveExchangeMutation.commit(relay.environment, exchange);
-        this.moveToHome();
+        ResolveExchangeMutation.commit(relay.environment, exchange, null, this.moveToHome);
     }
 
     moveToHome() {
@@ -82,16 +81,24 @@ class ExchangeApp extends Component {
             }
         }
 
-        return (
-            <MatchCard 
-                viewer={viewer} 
-                exchange={exchange}
-                match={null}
-                onExchangeCancel={this.handleExchangeCancel.bind(this)}
-                onExchangeReject={this.handleExchangeReject.bind(this)}
-                onExchangeApproval={this.handleExchangeApproval.bind(this)}
-            />   
-        );
+        if (this.isExchangeAccepted) {
+            return (
+                <AcceptedExchangeCard
+                    exchange={exchange}
+                    onExchangeReject={this.handleExchangeReject.bind(this)}
+                    onExchangeApproval={this.handleExchangeApproval.bind(this)}
+                />
+            );
+            
+        } else {
+            return (
+                <RequestedExchangeCard
+                    exchange={exchange}
+                    onExchangeCancel={this.handleExchangeCancel.bind(this)}
+                    onExchangeApproval={this.handleExchangeApproval.bind(this)}
+                />
+            );
+        }
     }
 }
 
@@ -100,13 +107,13 @@ export default createFragmentContainer(ExchangeApp, {
         fragment ExchangeApp_viewer on User {
             id
             userId
-            ...MatchCard_viewer
         }
     `,
     exchange: graphql`
         fragment ExchangeApp_exchange on Exchange {
             id
-            ...MatchCard_exchange
+            ...RequestedExchangeCard_exchange
+            ...AcceptedExchangeCard_exchange
             requestor {
                 id
                 userId

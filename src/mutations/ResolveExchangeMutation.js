@@ -12,14 +12,14 @@ const mutation = graphql`
     }
 `;
 
-function sharedUpdater(store, exchangeList, resolvedExchangeId) {
+function sharedUpdater(store, exchangeList, resolvedExchangeId, fromRequested) {
     if (exchangeList === undefined) return;
     const exchangeListProxy = store.get(exchangeList.id);
-    const conn = ConnectionHandler.getConnection(exchangeListProxy, 'Feed_exchanges');
+    const conn = ConnectionHandler.getConnection(exchangeListProxy, fromRequested? 'RequestedExchangeList_requested' : 'AcceptedExchangeList_accepted');
     ConnectionHandler.deleteNode(conn, resolvedExchangeId);
   }
 
-function commit(environment, exchange, exchangeList) {
+function commit(environment, exchange, exchangeList, fromRequested, onCompleted=() => {}) {
     return commitMutation(
         environment, 
         {
@@ -32,8 +32,9 @@ function commit(environment, exchange, exchangeList) {
             updater: store => {
                 const payload = store.getRootField('resolveExchange');
                 const resolvedExchangeId = payload.getValue('resolvedExchangeId');
-                sharedUpdater(store, exchangeList, resolvedExchangeId);
-            }
+                sharedUpdater(store, exchangeList, resolvedExchangeId, fromRequested);
+            },
+            onCompleted,
         },
     );
 }
