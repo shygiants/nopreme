@@ -114,7 +114,8 @@ class Profile extends Component {
         const {relay, router} = this.props;
         const methodKey = this.getMethodKey(method);
 
-        ModifyUserMutation.commit(relay.environment, {name, openChatLink, regionCodes, method: methodKey}).then(resp => {
+        const validRegionCodes = regionCodes.filter(regionCode => regionCode !== '');
+        ModifyUserMutation.commit(relay.environment, {name, openChatLink, regionCodes: validRegionCodes, method: methodKey}).then(resp => {
             router.go(-1);
         }).catch(err => {
             this.setState({
