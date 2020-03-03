@@ -102,12 +102,12 @@ class App extends Component {
                         <Anchor 
                             alignSelf='end'
                             target='blank'
-                            href='https://twitter.com/official_izone/status/1232991225063456768?s=20'  
+                            href='https://twitter.com/official_izone/status/1234789125355532294?s=20'  
                             label={(
                                 <Text
                                     size='xsmall'
                                 >
-                                    아이즈원 음방 3관왕!
+                                    아이즈원 음방 4관왕!
                                 </Text>
                             )}
                         />
