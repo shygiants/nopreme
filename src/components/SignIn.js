@@ -19,7 +19,8 @@ export default class SignIn extends Component {
             if (json.token !== undefined && json.token !== null) {
                 // SIGN IN
                 localStorage.setItem('jwt', json.token);
-                window.location.href = `http://${process.env.PUBLIC_URL}`;
+
+                window.location.href = `http://${process.env.PUBLIC_URL}${window.location.hash}`;
             }
 
             throw new Error('No Token');

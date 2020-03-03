@@ -55,7 +55,7 @@ const network = new RelayNetworkLayer([
             console.log('[client.js] resolve token refresh', req);
 
             localStorage.removeItem('jwt');
-            window.location.href = `http://${process.env.PUBLIC_URL}/signin`;
+            window.location.href = `http://${process.env.PUBLIC_URL}/signin${window.location.hash}`;
         },
     }),
     progressMiddleware({
