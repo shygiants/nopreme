@@ -78,7 +78,7 @@ class App extends Component {
         }
             
         return (
-            <Grommet style={{height: '100vh'}} theme={customGrommet}>
+            <Grommet theme={customGrommet}>
                 <Header
                     pad={{horizontal: 'medium'}}
                     elevation='xsmall'

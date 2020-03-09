@@ -1,8 +1,8 @@
 import React, {
     Component
 } from 'react';
-import {graphql, createRefetchContainer} from 'react-relay';
-import {Box, Text, CheckBox, DropButton, RadioButtonGroup} from 'grommet';
+import {graphql, createRefetchContainer, createPaginationContainer} from 'react-relay';
+import {Box, Text, CheckBox, DropButton, RadioButtonGroup, Button, InfiniteScroll, Heading} from 'grommet';
 import {Filter} from 'grommet-icons';
 
 import MatchCard from './MatchCard';
@@ -39,11 +39,11 @@ class MatchList extends Component {
             filterByRegion: checked,
         };
 
-        relay.refetch(vars, vars, () => {
+        relay.refetchConnection(6, () => {
             this.setState({
                 filterByRegion: checked
             });
-        }, {force: true});
+        }, vars);
     }
 
     handleMethodChange({target: {value}}) {
@@ -57,13 +57,23 @@ class MatchList extends Component {
             method,
         };
 
-        relay.refetch(vars, vars, () => {
+        relay.refetchConnection(6, () => {
             this.setState({
                 method: value,
                 open: false,
             });
-        }, {force: true});
+        }, vars);
 
+    }
+
+    _loadMore() {
+        if (!this.props.relay.hasMore() || this.props.relay.isLoading()) {
+            return;
+        }
+    
+        this.props.relay.loadMore(
+            6,
+        );
     }
 
     getMethodKey(method) {
@@ -71,7 +81,7 @@ class MatchList extends Component {
     }
 
     render() {
-        const {viewer, matchList, onExchangeRequest} = this.props;
+        const {viewer, matchList, onExchangeRequest, relay} = this.props;
         const {filterByRegion, method, open} = this.state;
 
         const matches = getNodesFromConnection(matchList.matches);
@@ -117,15 +127,29 @@ class MatchList extends Component {
                     />
                 </Box>
                 
-                
-                {matches.map((match, idx) => (
+                <InfiniteScroll scrollableAncestor={'window'} items={matches} step={6} onMore={this._loadMore.bind(this)}>
+                    {(match, idx) => (
                     <MatchCard 
                         key={`match${idx}`} 
                         viewer={viewer} 
                         match={match} 
                         onExchangeRequest={onExchangeRequest}
                     />                            
-                ))}
+                    )}
+                </InfiniteScroll>
+                {relay.hasMore() ? (
+                    <Button 
+                        label='더보기' 
+                        onClick={this._loadMore.bind(this)}
+                    />) : (
+                    <Heading
+                        margin='xsmall'
+                        level='2'
+                        color='brand'
+                    >
+                        <b><i>Nopreme</i></b>
+                    </Heading>
+                )}
 
                 {matches.length === 0 && (
                     <Box
@@ -144,7 +168,7 @@ class MatchList extends Component {
     }
 }
 
-export default createRefetchContainer(MatchList, {
+export default createPaginationContainer(MatchList, {
     viewer: graphql`
         fragment MatchList_viewer on User {
             id
@@ -154,14 +178,16 @@ export default createRefetchContainer(MatchList, {
     `,
     matchList: graphql`
         fragment MatchList_matchList on MatchList @argumentDefinitions(
+            count: {type: "Int", defaultValue: 6}
+            cursor: {type: "String"}
             filterByRegion: {type: "Boolean", defaultValue: true}
             method: {type: "MethodType", defaultValue: "POST"}
         ) {
             matches (
-                # first: 2147483647 # max GraphQLInt
                 filterByRegion: $filterByRegion
                 method: $method
-                first: 6 # max GraphQLInt
+                first: $count
+                after: $cursor
             ) @connection(key: "MatchList_matches", filters: ["filterByRegion", "method"]) {
                 edges {
                     node {
@@ -169,19 +195,42 @@ export default createRefetchContainer(MatchList, {
                         ...MatchCard_match
                     }
                 }
+                pageInfo{
+                    endCursor
+                    hasNextPage
+                }
             }
         }
     `,
-}, graphql`
-    query MatchListRefetchQuery($filterByRegion: Boolean, $method: MethodType) {
-        viewer {
-            ...Feed_viewer
+}, {
+    direction: 'forward',
+    getConnectionFromProps: props => props.matchList && props.matchList.matches,
+    // This is also the default implementation of `getFragmentVariables` if it isn't provided.
+    getFragmentVariables(prevVars, totalCount) {
+        return {
+            ...prevVars,
+            count: totalCount,
+        };
+    },
+    getVariables(props, {count, cursor}, fragmentVariables) {
+        return {
+            count,
+            cursor,
+            filterByRegion: fragmentVariables.filterByRegion,
+            method: fragmentVariables.method,
+        };
+    },
+    query: graphql`
+        query MatchListRefetchQuery($count: Int, $cursor: String, $filterByRegion: Boolean, $method: MethodType) {
+            viewer {
+                ...Feed_viewer
+            }
+            matchList {
+                ...Feed_matchList @arguments(count: $count, cursor: $cursor, filterByRegion: $filterByRegion, method: $method)
+            }
+            exchangeList {
+                ...Feed_exchangeList
+            }
         }
-        matchList {
-            ...Feed_matchList @arguments(filterByRegion: $filterByRegion, method: $method)
-        }
-        exchangeList {
-            ...Feed_exchangeList
-        }
-    }
-`);
+    `
+  });

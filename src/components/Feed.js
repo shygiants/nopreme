@@ -133,10 +133,12 @@ export default createRefetchContainer(Feed, {
     `,
     matchList: graphql`
         fragment Feed_matchList on MatchList @argumentDefinitions(
+            count: {type: "Int"}
+            cursor: {type: "String"}
             filterByRegion: {type: "Boolean"}
             method: {type: "MethodType"}
         ) {
-            ...MatchList_matchList @arguments(filterByRegion: $filterByRegion, method: $method)
+            ...MatchList_matchList @arguments(count: $count, cursor: $cursor, filterByRegion: $filterByRegion, method: $method)
         }
     `,
     exchangeList: graphql`

@@ -54,19 +54,19 @@ const Router = createFarceRouter({
             <Route 
                 Component={Feed}
                 query={graphql`
-                    query app_Feed_Query($filterByRegion: Boolean, $method: MethodType) {
+                    query app_Feed_Query($count: Int, $cursor: String, $filterByRegion: Boolean, $method: MethodType) {
                         viewer {
                             ...Feed_viewer
                         }
                         matchList {
-                            ...Feed_matchList @arguments(filterByRegion: $filterByRegion, method: $method)
+                            ...Feed_matchList @arguments(count: $count, cursor: $cursor, filterByRegion: $filterByRegion, method: $method)
                         }
                         exchangeList {
                             ...Feed_exchangeList
                         }
                     }
                 `}
-                prepareVariables={({filterByRegion, method}) => ({filterByRegion: filterByRegion || true, method: method || 'DONTCARE'})}
+                prepareVariables={({filterByRegion, method, count}) => ({filterByRegion: filterByRegion || true, method: method || 'DONTCARE', count: count || 6})}
             />
 
             <Route

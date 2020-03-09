@@ -32,7 +32,7 @@ class ViewerApp extends Component {
                 <Anchor target='_blank' href='https://twitter.com/nomorepremium' icon={<Twitter />} label='공식 트위터' />
 
                 {/* <Link to='/settings' icon={<Configure />} label='설정' /> */}
-                <Link to='/' icon={<Logout />} label='로그 아웃' onClick={this.logout} />
+                <Anchor href='/' icon={<Logout />} label='로그 아웃' onClick={this.logout} />
                 
             </Box>
         );
