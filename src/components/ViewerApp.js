@@ -3,7 +3,7 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 
 import Link from './Link';
 import {Box, Anchor, Text} from 'grommet';
-import {User, Logout, CircleQuestion, Announce} from 'grommet-icons';
+import {User, Logout, CircleQuestion, Announce, Twitter, Help} from 'grommet-icons';
 
 class ViewerApp extends Component {
     logout() {
@@ -26,8 +26,10 @@ class ViewerApp extends Component {
 
                 <Link to='/profile' icon={<User />} label='프로필' />
                 <Link to='/notice' icon={<Announce />} label='공지사항' />
+                <Anchor target='_blank' href='https://twitter.com/nomorepremium/status/1230938532425826305' icon={<Help />} label='사용법' />
 
                 <Anchor target='_blank' href='/documents' icon={<CircleQuestion />} label='문의' />
+                <Anchor target='_blank' href='https://twitter.com/nomorepremium' icon={<Twitter />} label='공식 트위터' />
 
                 {/* <Link to='/settings' icon={<Configure />} label='설정' /> */}
                 <Link to='/' icon={<Logout />} label='로그 아웃' onClick={this.logout} />
