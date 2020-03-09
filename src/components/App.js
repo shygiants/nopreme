@@ -5,7 +5,7 @@ import React, {
 import {graphql, createFragmentContainer,} from 'react-relay';
 import {grommet} from 'grommet/themes';
 import {Grommet, Header, Main, Box, Heading, Text, Anchor} from 'grommet';
-import { Search, User } from 'grommet-icons';
+import { Search, User} from 'grommet-icons';
 import {deepMerge} from 'grommet/utils';
 
 import Link from './Link';
@@ -102,12 +102,12 @@ class App extends Component {
                         <Anchor 
                             alignSelf='end'
                             target='blank'
-                            href='https://twitter.com/official_izone/status/1234789125355532294?s=20'  
+                            href='https://twitter.com/official_izone/status/1236985333595746304?s=20'  
                             label={(
                                 <Text
                                     size='xsmall'
                                 >
-                                    아이즈원 음방 4관왕!
+                                    고마워 유진아 ❤️
                                 </Text>
                             )}
                         />
