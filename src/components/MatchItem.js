@@ -16,13 +16,13 @@ class MatchItem extends Component {
                 align='center'
                 width='35vw'
                 focusIndicator={false}
+                gap='small'
             >
                 <Box
                     direction='row'
                     justify='start'
                     fill='horizontal'
                     gap='xsmall'
-                    margin={{bottom: 'small'}}
                 >
                     <Text
                         size='xsmall'
@@ -52,18 +52,35 @@ class MatchItem extends Component {
                 </Box>
 
                 <Box
-                    direction='row'
-                    justify='start'
+                    direction='column'
                     fill='horizontal'
-                    margin={{top: 'small'}}
                 >
-                    <Text
-                        size='xsmall'
-                        weight='bold'
-                        truncate
+                    <Box
+                        direction='row'
+                        justify='start'
+                        fill='horizontal'
                     >
-                        {member.name} {item.idx}
-                    </Text>
+                        <Text
+                            size='xsmall'
+                            weight='bold'
+                            truncate
+                        >
+                            {member.name} {item.idx}
+                        </Text>
+                    </Box>
+                    <Box 
+                        direction='row'
+                        justify='start'
+                        fill='horizontal'
+                    >
+                        <Text 
+                            size='xsmall' 
+                            color='dark-3'
+                            truncate
+                        >
+                            {item.goods.name}
+                        </Text>
+                    </Box>
                 </Box>
             </Box>
         );

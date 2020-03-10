@@ -277,6 +277,7 @@ class RequestedExchangeCard extends Component {
                         align='center'
                         justify='between'
                         fill='horizontal'
+                        margin={{bottom: 'small'}}
                     >
 
                         <MatchItem user={requestor} item={reqPosessionItem} />
@@ -286,19 +287,6 @@ class RequestedExchangeCard extends Component {
                         <MatchItem user={acceptor} item={accPosessionItem} />
 
                     </Box>
-
-                    <Box 
-                        direction='row'
-                    >
-                        <Text 
-                            size='xsmall' 
-                            color='dark-3'
-                            truncate
-                        >
-                            {reqPosessionItem.goods.name}
-                        </Text>
-                    </Box>
-
                     
                     {!this.isExchangeRejected && !this.isExchangeApprovedByAcceptor && (
                         <CopyToClipboard value={`http://${process.env.PUBLIC_URL}/#/exchanges/${exchange.exchangeId}`} />
@@ -360,19 +348,11 @@ export default createFragmentContainer(RequestedExchangeCard, {
             }
             reqPosessionItem {
                 id
-                goods {
-                    id
-                    name
-                }
                 ...MatchItem_item
                 ...UserItemCard_item
             }
             accPosessionItem {
                 id
-                goods {
-                    id
-                    name
-                }
                 ...MatchItem_item
                 ...UserItemCard_item
             }

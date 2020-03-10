@@ -129,12 +129,18 @@ class MatchList extends Component {
                 
                 <InfiniteScroll scrollableAncestor={'window'} items={matches} step={6} onMore={this._loadMore.bind(this)}>
                     {(match, idx) => (
-                    <MatchCard 
-                        key={`match${idx}`} 
-                        viewer={viewer} 
-                        match={match} 
-                        onExchangeRequest={onExchangeRequest}
-                    />                            
+                        <Box
+                            key={`match${idx}`} 
+                            direction='column'
+                            fill='horizontal'
+                            margin={{bottom: 'medium'}}
+                        >
+                            <MatchCard 
+                                viewer={viewer} 
+                                match={match} 
+                                onExchangeRequest={onExchangeRequest}
+                            />                            
+                        </Box>
                     )}
                 </InfiniteScroll>
                 {relay.hasMore() ? (

@@ -47,7 +47,7 @@ class App extends Component {
 
                 const diff = curr - closeAt;
                 
-                showNotice = diff > (1000 * 60 * 60 * 3);
+                showNotice = diff > (1000 * 60 * 60 * 24);
             }
         }
 
@@ -99,7 +99,7 @@ class App extends Component {
                             )}
                         />
 
-                        <Anchor 
+                        {/* <Anchor 
                             alignSelf='end'
                             target='blank'
                             href='https://twitter.com/official_izone/status/1236985333595746304?s=20'  
@@ -110,7 +110,7 @@ class App extends Component {
                                     고마워 유진아 ❤️
                                 </Text>
                             )}
-                        />
+                        /> */}
                     </Box>
                         
                     

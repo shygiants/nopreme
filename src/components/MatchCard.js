@@ -67,6 +67,7 @@ class MatchCard extends Component {
                         align='center'
                         justify='between'
                         fill='horizontal'
+                        margin={{bottom: 'small'}}
                     >
                         <MatchItem user={requestor} item={reqPosessionItem} />
                         
@@ -74,19 +75,6 @@ class MatchCard extends Component {
 
                         <MatchItem user={acceptor} item={accPosessionItem} />
                     </Box>
-
-                    <Box 
-                        direction='row'
-                    >
-                        <Text 
-                            size='xsmall' 
-                            color='dark-3'
-                            truncate
-                        >
-                            {reqPosessionItem.goods.name}
-                        </Text>
-                    </Box>
-                    
 
                     <Button
                         fill='horizontal'
@@ -138,19 +126,11 @@ export default createFragmentContainer(MatchCard, {
             wishItem {
                 id
                 itemId
-                goods {
-                    id
-                    name
-                }
                 ...MatchItem_item
             }
             posessionItem {
                 id
                 itemId
-                goods {
-                    id
-                    name
-                }
                 ...MatchItem_item
             }
             user {

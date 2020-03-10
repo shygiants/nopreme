@@ -204,6 +204,7 @@ class AcceptedExchangeCard extends Component {
                         align='center'
                         justify='between'
                         fill='horizontal'
+                        margin={{bottom: 'small'}}
                     >
 
                         <MatchItem user={acceptor} item={accPosessionItem} />
@@ -212,18 +213,6 @@ class AcceptedExchangeCard extends Component {
 
                         <MatchItem user={requestor} item={reqPosessionItem} />
 
-                    </Box>
-
-                    <Box 
-                        direction='row'
-                    >
-                        <Text 
-                            size='xsmall' 
-                            color='dark-3'
-                            truncate
-                        >
-                            {reqPosessionItem.goods.name}
-                        </Text>
                     </Box>
 
                     <Button 
@@ -290,19 +279,11 @@ export default createFragmentContainer(AcceptedExchangeCard, {
             }
             reqPosessionItem {
                 id
-                goods {
-                    id
-                    name
-                }
                 ...MatchItem_item
                 ...UserItemCard_item
             }
             accPosessionItem {
                 id
-                goods {
-                    id
-                    name
-                }
                 ...MatchItem_item
                 ...UserItemCard_item
             }
