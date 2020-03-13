@@ -98,14 +98,14 @@ class App extends Component {
                                 </Heading>
                             )}
                         />
-                        <Text
+                        {/* <Text
                             alignSelf='end'
                             size='xsmall'
                             color='brand'
                             weight='bold'
                         >
                             아이즈원 데뷔 <br/> 500일 축하해! 🎉
-                        </Text>
+                        </Text> */}
 
                         {/* <Anchor 
                             alignSelf='end'
