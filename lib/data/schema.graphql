@@ -111,6 +111,16 @@ type Banner implements Node {
   link: String
 }
 
+input BlockUserInput {
+  userId: ID!
+  clientMutationId: String
+}
+
+type BlockUserPayload {
+  blockedUserId: ID!
+  clientMutationId: String
+}
+
 type Collection implements Node {
   """The ID of an object"""
   id: ID!
@@ -371,6 +381,7 @@ type Mutation {
   rejectExchange(input: RejectExchangeInput!): RejectExchangePayload
   resolveExchange(input: ResolveExchangeInput!): ResolveExchangePayload
   modifyUser(input: ModifyUserInput!): ModifyUserPayload
+  blockUser(input: BlockUserInput!): BlockUserPayload
 }
 
 """An object with an ID"""

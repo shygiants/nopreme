@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {Box, Text, Button, Menu, Stack} from 'grommet';
 import {graphql, createFragmentContainer} from 'react-relay';
-import {Transaction, Flag, More, Location} from 'grommet-icons';
+import {Transaction, Flag, More, Location, Clock} from 'grommet-icons';
 
 import MatchItem from './MatchItem';
+import BlockUserMutation from '../mutations/BlockUserMutation';
 
 const methods = {
     DIRECT: '직거래',
@@ -12,12 +13,29 @@ const methods = {
 }
 
 class MatchCard extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            blocked: false,
+        };
+    }
     handleReport() {
         // TODO: Report
     }
 
+    handleBlock() {
+        const {relay, match} = this.props;
+        
+        BlockUserMutation.commit(
+            relay.environment, 
+            match.user,
+            () => this.setState({blocked: true}));
+    }
+
     render() {
         const {viewer, match, onExchangeRequest} = this.props;
+        const {blocked} = this.state;
 
         const {wishItem, posessionItem, user} = match;
 
@@ -25,6 +43,18 @@ class MatchCard extends Component {
         const requestor = viewer;
         const accPosessionItem = wishItem;
         const acceptor = user;
+
+        if (blocked)
+            return (
+                <Box
+                    pad='large'
+                    direction='column'
+                    align='center'
+                >
+                    <Text>숨긴 매칭</Text>
+                </Box>
+
+            );
         
         return (
             <Stack 
@@ -90,6 +120,12 @@ class MatchCard extends Component {
                     label={<Box pad='xsmall'><More size='18px'/></Box>}
                     icon={false}
                     items={[{
+                        label: '하루 동안 이 사용자 보지 않기',
+                        onClick: this.handleBlock.bind(this),
+                        icon: (
+                            <Box pad='small' align='center'><Clock size='small'/></Box>
+                        )
+                    }, {
                         label: '신고하기', 
                         onClick: this.handleReport.bind(this), 
                         icon: (
