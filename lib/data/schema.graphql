@@ -103,6 +103,14 @@ type Artist implements Node {
   goodsList: [Goods]
 }
 
+type Banner implements Node {
+  """The ID of an object"""
+  id: ID!
+  bannerId: ID!
+  texts: [String]!
+  link: String
+}
+
 type Collection implements Node {
   """The ID of an object"""
   id: ID!
@@ -429,6 +437,7 @@ type PosessionEdge {
 type Query {
   viewer: User
   homeNotice: Notice
+  banner: Banner
   notices: [Notice]
   address: Address
   matchList: MatchList

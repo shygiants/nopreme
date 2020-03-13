@@ -10,6 +10,7 @@ import {deepMerge} from 'grommet/utils';
 
 import Link from './Link';
 import NoticeLayer from './NoticeLayer';
+import Banner from './Banner';
 
 
 const customGrommet = deepMerge(grommet, {
@@ -69,7 +70,7 @@ class App extends Component {
 
     render() {
         const {showNotice} = this.state;
-        const {router, viewer, children, homeNotice} = this.props;
+        const {router, viewer, children, homeNotice, banner} = this.props;
 
         if (viewer.openChatLink === undefined || viewer.openChatLink === null) {
             if (location.hash !== '#/profile') {
@@ -98,27 +99,7 @@ class App extends Component {
                                 </Heading>
                             )}
                         />
-                        {/* <Text
-                            alignSelf='end'
-                            size='xsmall'
-                            color='brand'
-                            weight='bold'
-                        >
-                            아이즈원 데뷔 <br/> 500일 축하해! 🎉
-                        </Text> */}
-
-                        {/* <Anchor 
-                            alignSelf='end'
-                            target='blank'
-                            href='https://twitter.com/official_izone/status/1236985333595746304?s=20'  
-                            label={(
-                                <Text
-                                    size='xsmall'
-                                >
-                                    고마워 유진아 ❤️
-                                </Text>
-                            )}
-                        /> */}
+                        {banner && <Banner banner={banner} />}
                     </Box>
                         
                     
@@ -161,6 +142,11 @@ export default createFragmentContainer(App, {
             id
             noticeId
             ...NoticeLayer_homeNotice
+        }
+    `,
+    banner: graphql`
+        fragment App_banner on Banner {
+            ...Banner_banner
         }
     `,
 });

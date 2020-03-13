@@ -48,6 +48,9 @@ const Router = createFarceRouter({
                     homeNotice {
                         ...App_homeNotice
                     }
+                    banner {
+                        ...App_banner
+                    }
                 }
             `}
         >
