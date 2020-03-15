@@ -37,12 +37,6 @@ const mutation = graphql`
     }
 `;
 
-function sharedUpdater(store, exchangeList, newEdge) {
-    const eventProxy = store.get(exchangeList.id);
-    const conn = ConnectionHandler.getConnection(eventProxy, 'RequestedExchangeList_requested');
-    ConnectionHandler.insertEdgeAfter(conn, newEdge);
-}
-
 function commit(environment, match, exchangeList, onCompleted=() => {}) {
     return commitMutation(
         environment, 
@@ -55,11 +49,15 @@ function commit(environment, match, exchangeList, onCompleted=() => {}) {
                     acceptorId: match.user.userId, 
                 },
             },
-            updater: store => {
-                const payload = store.getRootField('addExchange');
-                const newEdge = payload.getLinkedRecord('exchangeEdge');
-                sharedUpdater(store, exchangeList, newEdge);
-            },
+            configs: [{
+                type: 'RANGE_ADD',
+                parentID: exchangeList.id,
+                connectionInfo: [{
+                    key: 'RequestedExchangeList_requested',
+                    rangeBehavior: 'prepend'
+                }],
+                edgeName: 'exchangeEdge',
+            }],
             onCompleted,
         },
     );

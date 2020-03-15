@@ -2,7 +2,8 @@ import React, {
     Component
 } from 'react';
 import {graphql, createRefetchContainer} from 'react-relay';
-import {Box, Tabs, Tab, Text} from 'grommet';
+import {Box, Tabs, Tab, Text, CheckBox, DropButton, RadioButtonGroup} from 'grommet';
+import {Filter} from 'grommet-icons';
 
 import MatchList from './MatchList';
 import RequestedExchangeList from './RequestedExchangeList';
@@ -12,6 +13,11 @@ import BadgedTab from './BadgedTab';
 
 import AddExchangeMutation from '../mutations/AddExchangeMutation';
 
+const methods = {
+    DIRECT: '직거래',
+    POST: '준등기',
+    DONTCARE: '상관 없음',
+};
 
 class Feed extends Component {
     constructor(props) {
@@ -20,20 +26,35 @@ class Feed extends Component {
         const {numRequested, numAccepted} = props.exchangeList;
 
         this.state = {
+            filterByRegion: true,
+            method: methods['DONTCARE'],
+            open: false,
             activeTabIndex: 0,
             numRequested,
             numAccepted,
-        }
+        };
     }
 
     handleExchangeRequest(match) {
         const {relay, exchangeList} = this.props;
+        const {filterByRegion, method} = this.state;
 
         AddExchangeMutation.commit(
             relay.environment, 
             match, 
             exchangeList, 
-            () => this._refetch.bind(this)()
+            () => {
+                const vars = {
+                    filterByRegion,
+                    method: this.getMethodKey(method),
+                    count: 6,
+                };
+
+                relay.refetch(
+                    vars, null, () => this.setState({activeTabIndex: 1}), {force: true}
+                )
+                
+            }
         );
     }
 
@@ -49,19 +70,59 @@ class Feed extends Component {
         this.setState({numAccepted});
     }
 
-    _refetch() {
-        this.props.relay.refetch(
+    handleFilterChange({target: {checked}}) {
+        const {relay} = this.props;
+        const {method} = this.state;
+
+        const vars = {
+            method: this.getMethodKey(method),
+            filterByRegion: checked,
+            count: 6,
+        };
+
+        relay.refetch(
+            vars,
             null,
-            null,
-            () => { 
-                this.setState({activeTabIndex: 1})
-             },
+            () => {
+                this.setState({
+                    filterByRegion: checked
+                });
+            },
             {force: true},
         );
     }
 
+    handleMethodChange({target: {value}}) {
+        const {relay} = this.props;
+        const {filterByRegion} = this.state;
+
+        const method = this.getMethodKey(value);
+
+        const vars = {
+            filterByRegion,
+            method,
+            count: 6,
+        };
+
+        relay.refetch(
+            vars,
+            null,
+            () => {
+                this.setState({
+                    method: value,
+                    open: false,
+                });
+            },
+            {force: true},
+        );
+    }
+
+    getMethodKey(method) {
+        return Object.keys(methods).find(k => methods[k] === method);
+    }
+
     render() {
-        const {activeTabIndex, numRequested, numAccepted} = this.state;
+        const {activeTabIndex, numRequested, numAccepted, filterByRegion, method, open} = this.state;
         const {viewer, matchList, exchangeList, router} = this.props;
 
         const tabStyle = {
@@ -86,6 +147,39 @@ class Feed extends Component {
                         </Box>
                     )}
                 >
+                    <Box
+                        fill='horizontal'
+                        direction='row'
+                        justify='end'
+                        gap='medium'
+                    >
+                        <DropButton
+                            plain
+                            open={open}
+                            focusIndicator={false}
+                            onOpen={() => this.setState({open: true})}
+                            onClose={() => this.setState({open: false})}
+                            icon={<Filter />}
+                            label={method}
+                            dropContent={(
+                                <Box
+                                    pad='small'
+                                >
+                                <RadioButtonGroup 
+                                    name='method'
+                                    options={['직거래', '준등기', '상관 없음']}
+                                    value={method}
+                                    onChange={this.handleMethodChange.bind(this)}
+                                />
+                                </Box>
+                            )}
+                        />
+                        <CheckBox
+                            checked={filterByRegion}
+                            label='같은 지역만'
+                            onChange={this.handleFilterChange.bind(this)}
+                        />
+                    </Box>
                     <MatchList 
                         viewer={viewer}
                         matchList={matchList}
@@ -138,6 +232,7 @@ export default createRefetchContainer(Feed, {
             filterByRegion: {type: "Boolean"}
             method: {type: "MethodType"}
         ) {
+            id
             ...MatchList_matchList @arguments(count: $count, cursor: $cursor, filterByRegion: $filterByRegion, method: $method)
         }
     `,
@@ -151,12 +246,12 @@ export default createRefetchContainer(Feed, {
         }
     `,
 }, graphql`
-    query FeedRefetchQuery {
+    query FeedRefetchQuery($count: Int, $cursor: String, $filterByRegion: Boolean, $method: MethodType) {
         viewer {
             ...Feed_viewer
         }
         matchList {
-            ...Feed_matchList
+            ...Feed_matchList @arguments(filterByRegion: $filterByRegion, method: $method, count: $count, cursor: $cursor)
         }
         exchangeList {
             ...Feed_exchangeList

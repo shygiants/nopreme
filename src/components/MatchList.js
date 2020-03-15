@@ -1,9 +1,8 @@
 import React, {
     Component
 } from 'react';
-import {graphql, createRefetchContainer, createPaginationContainer} from 'react-relay';
-import {Box, Text, CheckBox, DropButton, RadioButtonGroup, Button, InfiniteScroll, Heading} from 'grommet';
-import {Filter} from 'grommet-icons';
+import {graphql, createPaginationContainer} from 'react-relay';
+import {Box, Text, Button, InfiniteScroll, Heading} from 'grommet';
 
 import MatchCard from './MatchCard';
 import Link from './Link';
@@ -12,60 +11,7 @@ import CopyToClipboard from './CopyToClipboard';
 import {getNodesFromConnection} from '../utils';
 
 
-const methods = {
-    DIRECT: '직거래',
-    POST: '준등기',
-    DONTCARE: '상관 없음',
-}
-
-
 class MatchList extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            filterByRegion: true,
-            method: methods['DONTCARE'],
-            open: false,
-        };
-    }
-
-    handleFilterChange({target: {checked}}) {
-        const {relay} = this.props;
-        const {method} = this.state;
-
-        const vars = {
-            method: this.getMethodKey(method),
-            filterByRegion: checked,
-        };
-
-        relay.refetchConnection(6, () => {
-            this.setState({
-                filterByRegion: checked
-            });
-        }, vars);
-    }
-
-    handleMethodChange({target: {value}}) {
-        const {relay} = this.props;
-        const {filterByRegion} = this.state;
-
-        const method = this.getMethodKey(value);
-
-        const vars = {
-            filterByRegion,
-            method,
-        };
-
-        relay.refetchConnection(6, () => {
-            this.setState({
-                method: value,
-                open: false,
-            });
-        }, vars);
-
-    }
-
     _loadMore() {
         if (!this.props.relay.hasMore() || this.props.relay.isLoading()) {
             return;
@@ -76,13 +22,8 @@ class MatchList extends Component {
         );
     }
 
-    getMethodKey(method) {
-        return Object.keys(methods).find(k => methods[k] === method);
-    }
-
     render() {
         const {viewer, matchList, onExchangeRequest, relay} = this.props;
-        const {filterByRegion, method, open} = this.state;
 
         const matches = getNodesFromConnection(matchList.matches);
 
@@ -93,40 +34,6 @@ class MatchList extends Component {
                 align='center'
                 gap='medium'
             >
-                <Box
-                    fill='horizontal'
-                    direction='row'
-                    justify='end'
-                    gap='medium'
-                >
-                    <DropButton
-                        plain
-                        open={open}
-                        focusIndicator={false}
-                        onOpen={() => this.setState({open: true})}
-                        onClose={() => this.setState({open: false})}
-                        icon={<Filter />}
-                        label={method}
-                        dropContent={(
-                            <Box
-                                pad='small'
-                            >
-                            <RadioButtonGroup 
-                                name='method'
-                                options={['직거래', '준등기', '상관 없음']}
-                                value={method}
-                                onChange={this.handleMethodChange.bind(this)}
-                            />
-                            </Box>
-                        )}
-                    />
-                    <CheckBox
-                        checked={filterByRegion}
-                        label='같은 지역만'
-                        onChange={this.handleFilterChange.bind(this)}
-                    />
-                </Box>
-                
                 <InfiniteScroll scrollableAncestor={'window'} items={matches} step={6} onMore={this._loadMore.bind(this)}>
                     {(match, idx) => (
                         <Box
