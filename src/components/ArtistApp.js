@@ -10,7 +10,7 @@ class ArtistApp extends Component {
         const {artist} = this.props;
 
         const nodes = getNodesFromConnection(artist.events);
-        const sortedEvents = nodes.sort((a, b) => new Date(b) - new Date(a));
+        const sortedEvents = nodes.sort((a, b) => new Date(b.date) - new Date(a.date));
 
         const reducedGoodsList = sortedEvents.map(
             ({name, goodsList}) => getNodesFromConnection(goodsList).map(goods => ({...goods, eventName: name}))
