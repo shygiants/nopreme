@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import {Box, Heading, Text, Anchor, Tabs, Tab, Button, Image} from 'grommet';
+
 export default class FileUploader extends Component {
 
     handleChange(e) {
@@ -21,20 +23,30 @@ export default class FileUploader extends Component {
 
     render() {
         return (
-            <div>
-                <label>
+            <Box>
+                <Text size='small' color='brand'>
                     {this.props.label}
-                    <input 
-                        type='file'
-                        name='file'
-                        accept="image/png, image/jpeg"
+                </Text>
+                <input 
+                    type='file'
+                    name='file'
+                    accept="image/png, image/jpeg"
 
-                        onChange={this.handleChange.bind(this)}
-                    />
-                </label>
+                    onChange={this.handleChange.bind(this)}
+                />
                 
-                {this.props.publicUrl && <img src={this.props.publicUrl} />}
-            </div>
+                {this.props.publicUrl && (
+                    <Box
+                        width='medium'
+                        height='medium'
+                    >
+                        <Image 
+                            src={this.props.publicUrl} 
+                            fit='contain'
+                        />
+                    </Box>
+                )}
+            </Box>
         );
     }
 }

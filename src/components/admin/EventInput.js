@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
+import {Box, Heading, Text, Anchor, Tabs, Tab, Button} from 'grommet';
 
-import TextsInput from './TextsInput';
-import FileUploader from './FileUploader';
+import TextsInput from '../TextsInput';
+import FileUploader from '../FileUploader';
 
 export default class EventInput extends Component {
     constructor(props) {
@@ -38,10 +39,14 @@ export default class EventInput extends Component {
         }];
 
         return (
-            <div>
-                <TextsInput texts={texts} onSave={this.handleTextsInputSave.bind(this)} />
+            <Box
+                direction='column'
+                pad={{vertical: 'medium'}}
+                gap='small'
+            >
                 <FileUploader label='이미지'onSelected={this.handleImageFileSelected.bind(this)} publicUrl={this.state.publicUrl}/>
-            </div>
+                <TextsInput texts={texts} onSave={this.handleTextsInputSave.bind(this)} />                
+            </Box>
             
         );
 

@@ -1,3 +1,5 @@
+import './css/main.css';
+
 import React, {
     Component
 } from 'react';
@@ -13,13 +15,11 @@ import {
 } from 'found';
 import { Resolver } from 'found-relay';
 
-import App from './components/App';
-import ArtistEditor from './components/ArtistEditor';
-import EventEditor from './components/EventEditor';
+import AdminApp from './components/admin/AdminApp';
+import ArtistEditor from './components/admin/ArtistEditor';
+import EventEditor from './components/admin/EventEditor';
 import GoodsEditor from './components/GoodsEditor';
 import ItemEditor from './components/ItemEditor';
-import Pop from './components/Pop';
-import Feed from './components/Feed';
 
 import {environment} from './environment';
 import { graphql } from 'react-relay';
@@ -32,11 +32,11 @@ const Router = createFarceRouter({
     routeConfig: makeRouteConfig(
         <Route
             path='/'
-            Component={App}
+            Component={AdminApp}
             query={graphql`
-                query admin_App_Query {
+                query admin_AdminApp_Query {
                     viewer {
-                        ...App_viewer
+                        ...AdminApp_viewer
                     }
                 }
             `}
@@ -54,7 +54,6 @@ const Router = createFarceRouter({
             />
             <Route
                 path='events/:eventId'
-                Component={Pop}
             >
                 <Route
                     Component={EventEditor}

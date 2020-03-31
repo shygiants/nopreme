@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import {Box, Heading, Text, Anchor, Tabs, Tab, Button, TextInput} from 'grommet';
+
 export default class TextsInput extends Component {
     constructor(props) {
         super(props);
@@ -28,24 +30,30 @@ export default class TextsInput extends Component {
 
     render() {
         return (
-            <div>
+            <Box
+                direction='column'
+                gap='small'
+            >
                 {this.props.texts.map(({name, display}) => (
-                    <label key={name}>
-                        {display}
-                        <input
+                    <Box
+                        key={name}
+                    >
+                        <Text size='small' color='brand'>{display}</Text>
+                        <TextInput
                             name={name}
                             value={this.state[name]}
+                            focusIndicator={false}
+                            size='small'
                             onChange={this.onChange.bind(this)}
                             placeholder={`${display} 입력`}
                         />
-                    </label>
+                    </Box>
                 ))}
-                <button 
+                <Button 
                     onClick={this.onClick.bind(this)}
-                >
-                    추가
-                </button>
-            </div>
+                    label='추가'
+                />
+            </Box>
         );
     }
 }

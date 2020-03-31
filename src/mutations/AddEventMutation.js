@@ -14,18 +14,14 @@ const mutation = graphql`
                     id
                     eventId
                     name
-
+                    img
+                    date
+                    description
                 }              
             }
         }
     }
 `;
-
-function sharedUpdater(store, artist, newEdge) {
-    const artistProxy = store.get(artist.id);
-    const conn = ConnectionHandler.getConnection(artistProxy, 'EventList_events');
-    ConnectionHandler.insertEdgeAfter(conn, newEdge);
-  }
 
 function commit(
     environment, {
@@ -34,7 +30,7 @@ function commit(
     description, 
     date, 
     img
-}) {
+}, onCompleted=() => {}) {
     return commitMutation(
         environment, 
         {
@@ -48,11 +44,16 @@ function commit(
                     img,
                 },
             },
-            updater: store => {
-                const payload = store.getRootField('addEvent');
-                const newEdge = payload.getLinkedRecord('eventEdge');
-                sharedUpdater(store, artist, newEdge);
-            }
+            configs: [{
+                type: 'RANGE_ADD',
+                parentID: artist.id,
+                connectionInfo: [{
+                    key: 'EventList_events',
+                    rangeBehavior: 'append',
+                }],
+                edgeName: 'eventEdge',
+            }],
+            onCompleted,
         },
     );
 }

@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
+import {Box, Heading, Text, Anchor, DataTable, Image} from 'grommet';
 
 import EventGoodsList from './EventGoodsList';
-import EventInfo from './EventInfo';
 
-import AddGoodsMutation from '../mutations/AddGoodsMutation';
-import GoodsInput from './GoodsInput';
+import AddGoodsMutation from '../../mutations/AddGoodsMutation';
+import GoodsInput from '../GoodsInput';
 
 class EventEditor extends Component {
 
@@ -25,13 +25,27 @@ class EventEditor extends Component {
         const {artist, event} = this.props;
 
         return (
-            <div>
-                <EventInfo  artist={artist} event={event} />
-                <h2>굿즈 추가</h2>
-                <GoodsInput onSubmit={this.handleGoodsSave.bind(this)} />
-                <h2>굿즈 목록</h2>
+            <Box
+                direction='column'
+                pad={{horizontal: 'medium'}}
+            >
+                <Box
+                    width='medium'
+                    height='medium'
+                >
+                    <Image
+                        src={event.img}
+                        fit='contain'
+                    />
+                </Box>
+                <Heading level={2}>{event.name}</Heading>
+                <Text>{event.description}</Text>
+                <Text>{event.date}</Text>
+                
                 <EventGoodsList event={event} />
-            </div>
+                <GoodsInput onSubmit={this.handleGoodsSave.bind(this)} />
+
+            </Box>
         );
     }
 }
@@ -43,7 +57,10 @@ export default createFragmentContainer(EventEditor, {
         ) {
             id
             eventId
-            ...EventInfo_event @arguments(artistName: $artistName)
+            name
+            img
+            description
+            date
             ...EventGoodsList_event @arguments(artistName: $artistName)
         }
     `,
@@ -52,7 +69,6 @@ export default createFragmentContainer(EventEditor, {
             id
             artistId
             name
-            ...EventInfo_artist
         }
     `,
 });

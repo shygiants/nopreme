@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer,} from 'react-relay';
+import moment from 'moment-timezone';
+require('moment/locale/ko');
 
 import GoodsList from './GoodsList';
 
@@ -9,8 +11,12 @@ class ArtistApp extends Component {
     render() {
         const {artist} = this.props;
 
+        function dateStrToMilli(date) {
+            return moment.tz(date, 'LL', 'Asia/Seoul').valueOf();
+        }
+
         const nodes = getNodesFromConnection(artist.events);
-        const sortedEvents = nodes.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sortedEvents = nodes.sort((a, b) => dateStrToMilli(b.date) - dateStrToMilli(a.date));
 
         const reducedGoodsList = sortedEvents.map(
             ({name, goodsList}) => getNodesFromConnection(goodsList).map(goods => ({...goods, eventName: name}))
