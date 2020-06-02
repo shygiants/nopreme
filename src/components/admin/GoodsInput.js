@@ -2,21 +2,19 @@ import React, {Component} from 'react';
 import {Box, Button} from 'grommet';
 
 import TextInput from '../inputs/TextInput';
-import DatePicker from '../inputs/DatePicker';
 import ImageUploader from '../inputs/ImageUploader';
 
-export default class EventInput extends Component {
+export default class GoodsInput extends Component {
     constructor(props) {
         super(props);
 
-        const event = props.initialEvent || {};
+        const goods = props.initialGoods || {};
 
         this.state = {
             name: '',
             img: '',
             description: '',
-            date: '',
-            ...event,
+            ...goods,
         };
 
         this.handleSubmitClick = this.handleSubmitClick.bind(this);
@@ -29,13 +27,13 @@ export default class EventInput extends Component {
     }
 
     render() {
-        const {name, description, date, img} = this.state;
+        const {name, description, img} = this.state;
 
         return (
             <Box
                 direction='column'
                 pad={{vertical: 'medium'}}
-                gap='medium'
+                gap='small'
                 flex='grow'
             >
                 <ImageUploader
@@ -44,23 +42,17 @@ export default class EventInput extends Component {
                     value={img}
                     onChange={img => this.setState({img})}
                 />
-                <TextInput 
+                <TextInput
                     name='name'
                     label='이름'
                     value={name}
                     onChange={name => this.setState({name})}
                 />
-                <TextInput 
+                <TextInput
                     name='description'
                     label='설명'
                     value={description}
                     onChange={description => this.setState({description})}
-                />
-                <DatePicker
-                    name='date'
-                    label='날짜'
-                    value={date}
-                    onChange={date => this.setState({date})}
                 />
                 <Button 
                     onClick={this.handleSubmitClick}

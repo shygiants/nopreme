@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {graphql, createFragmentContainer} from 'react-relay'
-import {Box, Heading, Text, Anchor, DataTable, Image} from 'grommet';
+import {Box, Heading, Text, Anchor, Button, DataTable, Image} from 'grommet';
+import {Edit, Login} from 'grommet-icons';
 
-import Goods from '../Goods';
 import {getNodesFromConnection} from '../../utils';
 
 
@@ -10,7 +10,7 @@ class EventGoodsList extends Component {
     
 
     render() {
-        const {event} = this.props;
+        const {event, router, onEdit} = this.props;
         const {goodsList} = event;
 
         const nodes = getNodesFromConnection(goodsList);
@@ -20,7 +20,7 @@ class EventGoodsList extends Component {
                 <DataTable
                     columns={[{
                         property: 'img',
-                        header: <Text>이미지</Text>,
+                        header: '이미지',
                         render: datum => (
                             <Box
                                 height='100px'
@@ -34,11 +34,21 @@ class EventGoodsList extends Component {
                         )
                     }, {
                         property: 'name',
-                        header: <Text>이름</Text>,
+                        header: '이름',
                         primary: true,
                     }, {
                         property: 'description',
-                        header: <Text>설명</Text>,
+                        header: '설명',
+                    }, {
+                        property: 'edit',
+                        render: datum => (
+                            <Button icon={<Edit/>} onClick={() => onEdit(datum)}/>
+                        )
+                    }, {
+                        property: 'go',
+                        render: ({goodsId}) => (
+                            <Button icon={<Login/>} onClick={() => router.push(`/events/${event.eventId}/goods/${goodsId}`)}/>
+                        )
                     }]}
                     data={nodes}
                 />
@@ -63,6 +73,7 @@ export default createFragmentContainer(EventGoodsList, {
                 edges {
                     node {
                         id
+                        goodsId
                         name
                         img
                         description

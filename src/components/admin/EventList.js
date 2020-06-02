@@ -3,13 +3,14 @@ import {
     graphql, 
     createFragmentContainer,
 } from 'react-relay';
-import {Box, Heading, Text, Anchor, DataTable, Image} from 'grommet';
+import {Box, Heading, Text, Anchor, Button, DataTable, Image} from 'grommet';
+import {Edit, Login} from 'grommet-icons';
 
 import {getNodesFromConnection} from '../../utils';
 
 class EventList extends Component {
     render() {
-        const {router} = this.props;
+        const {router, onEdit} = this.props;
         const {events} = this.props.artist;
 
         const nodes = getNodesFromConnection(events);
@@ -33,17 +34,26 @@ class EventList extends Component {
                         )
                     }, {
                         property: 'name',
-                        header: <Text>이름</Text>,
+                        header: '이름',
                         primary: true,
                     }, {
                         property: 'date',
-                        header: <Text>날짜</Text>,
+                        header: '날짜',
                     }, {
                         property: 'description',
-                        header: <Text>설명</Text>,
-                    }, ]}
+                        header: '설명',
+                    }, {
+                        property: 'edit',
+                        render: datum => (
+                            <Button icon={<Edit/>} onClick={() => onEdit(datum)}/>
+                        )
+                    }, {
+                        property: 'go',
+                        render: datum => (
+                            <Button icon={<Login/>} onClick={() => router.push(`/events/${datum.eventId}`)}/>
+                        )
+                    }]}
                     data={nodes}
-                    onClickRow={event => router.push(`/events/${event.datum.eventId}`)}
                     sortable
                 />
             </Box>

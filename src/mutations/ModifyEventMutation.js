@@ -4,33 +4,25 @@ import {
 } from 'react-relay';
 
 const mutation = graphql`
-    mutation ModifyItemMutation($input: ModifyItemInput!) {
-        modifyItem(input: $input) {
-            itemEdge {
+    mutation ModifyEventMutation($input: ModifyEventInput!) {
+        modifyEvent(input: $input) {
+            eventEdge {
                 __typename
                 cursor
                 node {
                     id
-                    itemId
-                    idx
+                    eventId
+                    name
+                    description
+                    date
                     img
-                    members {
-                        id
-                        name
-                    }
                 }              
             }
         }
     }
 `;
 
-function commit(environment, {
-    id, 
-    idx, 
-    memberIds, 
-    goods, 
-    img
-}, onCompleted=() => {}) {
+function commit(environment, {id, artistId, name, date, description, img}, onCompleted=() => {}) {
     return commitMutation(
         environment, 
         {
@@ -38,9 +30,10 @@ function commit(environment, {
             variables: {
                 input: {
                     id,
-                    idx, 
-                    memberIds,
-                    goodsId: goods && goods.goodsId,
+                    artistId, 
+                    name,
+                    date,
+                    description,
                     img,
                 },
             },

@@ -338,6 +338,35 @@ enum MethodType {
   DONTCARE
 }
 
+input ModifyEventInput {
+  id: ID!
+  artistId: ID!
+  name: String
+  date: String
+  img: String
+  description: String
+  clientMutationId: String
+}
+
+type ModifyEventPayload {
+  eventEdge: EventEdge!
+  clientMutationId: String
+}
+
+input ModifyGoodsInput {
+  id: ID!
+  eventId: ID!
+  name: String
+  img: String
+  description: String
+  clientMutationId: String
+}
+
+type ModifyGoodsPayload {
+  goodsEdge: GoodsEdge!
+  clientMutationId: String
+}
+
 input ModifyItemInput {
   id: ID!
   idx: Int
@@ -382,6 +411,8 @@ type Mutation {
   resolveExchange(input: ResolveExchangeInput!): ResolveExchangePayload
   modifyUser(input: ModifyUserInput!): ModifyUserPayload
   blockUser(input: BlockUserInput!): BlockUserPayload
+  modifyEvent(input: ModifyEventInput!): ModifyEventPayload
+  modifyGoods(input: ModifyGoodsInput!): ModifyGoodsPayload
 }
 
 """An object with an ID"""

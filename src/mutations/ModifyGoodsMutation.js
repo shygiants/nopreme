@@ -4,8 +4,8 @@ import {
 } from 'react-relay';
 
 const mutation = graphql`
-    mutation AddGoodsMutation($input: AddGoodsInput!) {
-        addGoods(input: $input) {
+    mutation ModifyGoodsMutation($input: ModifyGoodsInput!) {
+        modifyGoods(input: $input) {
             goodsEdge {
                 __typename
                 cursor
@@ -13,8 +13,8 @@ const mutation = graphql`
                     id
                     goodsId
                     name
-                    img
                     description
+                    img
                 }              
             }
         }
@@ -22,11 +22,11 @@ const mutation = graphql`
 `;
 
 function commit(environment, {
+    id, 
+    eventId, 
     name, 
-    event, 
-    artist,
-    img,
-    description
+    description, 
+    img
 }, onCompleted=() => {}) {
     return commitMutation(
         environment, 
@@ -34,23 +34,13 @@ function commit(environment, {
             mutation,
             variables: {
                 input: {
-                    name, 
-                    eventId: event.eventId, 
-                    artistId: artist.artistId,
-                    img,
+                    id,
+                    eventId, 
+                    name,
                     description,
+                    img,
                 },
             },
-            configs: [{
-                type: 'RANGE_ADD',
-                parentID: event.id,
-                connectionInfo: [{
-                    key: 'EventGoodsList_goodsList',
-                    rangeBehavior: 'append',
-                    filters: {artistName: artist.name},
-                }],
-                edgeName: 'goodsEdge',
-            }],
             onCompleted,
         },
     );

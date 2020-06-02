@@ -6,7 +6,7 @@ export default class TextsInput extends Component {
     constructor(props) {
         super(props);
 
-        const {texts} = props
+        const {texts} = props;
 
         this.state = texts.reduce((map, {name, initialValue}) => {
             map[name] = initialValue || '';
@@ -20,12 +20,15 @@ export default class TextsInput extends Component {
 
     onClick() {
         // TODO: Validate text
-        this.props.onSave(this.state);
+        const {onSave, resetOnSave} = this.props;
+        onSave(this.state);
         
-        this.setState(this.props.texts.reduce((map, {name}) => {
-            map[name] = '';
-            return map;
-        }, {}));
+        if (resetOnSave) {
+            this.setState(this.props.texts.reduce((map, {name}) => {
+                map[name] = '';
+                return map;
+            }, {}));
+        }
     }
 
     render() {

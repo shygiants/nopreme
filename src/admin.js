@@ -18,8 +18,7 @@ import { Resolver } from 'found-relay';
 import AdminApp from './components/admin/AdminApp';
 import ArtistEditor from './components/admin/ArtistEditor';
 import EventEditor from './components/admin/EventEditor';
-import GoodsEditor from './components/GoodsEditor';
-import ItemEditor from './components/ItemEditor';
+import GoodsEditor from './components/admin/GoodsEditor';
 
 import {environment} from './environment';
 import { graphql } from 'react-relay';
@@ -91,18 +90,6 @@ const Router = createFarceRouter({
                             }
                         `}
                         prepareVariables={({goodsId, eventId}) => ({goodsId, artistName, eventId})}
-                    />
-                    <Route
-                        path='/items/:itemId'
-                        Component={ItemEditor}
-                            query={graphql`
-                                query admin_ItemEditor_Query($itemId: ID) {
-                                    item(id: $itemId) {
-                                        ...ItemEditor_item
-                                    }
-                                }
-                            `}
-                            prepareVariables={({itemId}) => ({itemId})}
                     />
                 </Route>
             </Route>

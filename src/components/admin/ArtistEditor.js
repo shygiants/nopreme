@@ -4,9 +4,10 @@ import {graphql, createFragmentContainer,} from 'react-relay';
 import EventList from './EventList';
 import EventInput from './EventInput';
 
-import {Box, Heading, Text, Anchor, Tabs, Tab, Button} from 'grommet';
+import {Box, Heading, Text, Anchor, Tabs, Tab, Button, Layer} from 'grommet';
 import {Add} from 'grommet-icons';
 import AddEventMutation from '../../mutations/AddEventMutation';
+import ModifyEventMutation from '../../mutations/ModifyEventMutation';
 
 class ArtistEditor extends Component {
     constructor(props) {
@@ -14,6 +15,7 @@ class ArtistEditor extends Component {
 
         this.state = {
             adding: false,
+            editing: null,
         };
     }
 
@@ -31,15 +33,32 @@ class ArtistEditor extends Component {
             description,
             img,
             artist: this.props.artist,
-        }, () => {
-            this.setState({
-                adding: false,
-            });
+        }, () => this.setState({adding: false}));
+    }
+
+    handleEventEdit(event) {
+        this.setState({
+            editing: event,
+        });
+    }
+
+    handleEventEditSave(event) {
+        ModifyEventMutation.commit(this.props.relay.environment, {
+            ...event,
+            id: event.eventId,
+            artistId: this.props.artist.artistId,
+        }, () => this.setState({editing: null}));
+    }
+
+    handleClose() {
+        this.setState({
+            editing: null,
+            adding: false,
         });
     }
 
     render() {
-        const {adding} = this.state;
+        const {adding, editing} = this.state;
         const {artist, router} = this.props;
 
         function tabTitle(title) {
@@ -66,18 +85,36 @@ class ArtistEditor extends Component {
                     justify='start'
                     fill='horizontal'
                 >
-                    <Tab title={tabTitle('이벤트')}>
-                        <EventList artist={artist} router={router}/>
-                        {adding? (
-                            <EventInput onSubmit={this.handleEventSave.bind(this)} />
-                        ) : (
-                            <Button fill hoverIndicator='light-2' onClick={this.handleAdd.bind(this)}>
-                                <Box flex='grow' pad="small" direction="row" align="center" gap="small">
-                                    <Add/>
-                                    <Text>새로운 이벤트 추가</Text>
+                    <Tab title={tabTitle('이벤트')}>                        
+                        {(adding || editing) && (
+                            <Layer 
+                                margin='large'
+                                responsive={false}
+                                position='center' 
+                                modal 
+                                full
+                                onClickOutside={this.handleClose.bind(this)} 
+                                onEsc={this.handleClose.bind(this)}
+                            >
+                                <Box
+                                    margin='medium'
+                                    overflow='auto'
+                                >
+                                    {editing ? (
+                                        <EventInput onSubmit={this.handleEventEditSave.bind(this)} initialEvent={editing}/>
+                                    ) : (
+                                        <EventInput onSubmit={this.handleEventSave.bind(this)} />
+                                    )}
                                 </Box>
-                            </Button>
+                            </Layer>
                         )}
+                        <Button fill hoverIndicator='light-2' onClick={this.handleAdd.bind(this)}>
+                            <Box flex='grow' pad="small" direction="row" align="center" gap="small">
+                                <Add/>
+                                <Text>새로운 이벤트 추가</Text>
+                            </Box>
+                        </Button>
+                        <EventList artist={artist} router={router} onEdit={this.handleEventEdit.bind(this)}/>
                     </Tab>
                     <Tab title={tabTitle('멤버')}>
                         <ul>

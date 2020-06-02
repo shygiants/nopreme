@@ -2,7 +2,6 @@ import {
     graphql,
     commitMutation,
 } from 'react-relay';
-import {ConnectionHandler} from 'relay-runtime';
 
 const mutation = graphql`
     mutation AddItemMutation($input: AddItemInput!) {
@@ -14,19 +13,25 @@ const mutation = graphql`
                     id
                     itemId
                     idx
+                    img
+                    members {
+                        id
+                        memberId
+                        name
+                    }
                 }              
             }
         }
     }
 `;
 
-function sharedUpdater(store, itemList, newEdge) {
-    const itemListProxy = store.get(itemList.id);
-    const conn = ConnectionHandler.getConnection(itemListProxy, 'GoodsApp_items');
-    ConnectionHandler.insertEdgeAfter(conn, newEdge);
-  }
 
-function commit(environment, idx, memberIds, goodsId, itemList) {
+function commit(environment, {
+    idx, 
+    memberIds, 
+    goodsId, 
+    itemList,
+}, onCompleted=() => {}) {
     return commitMutation(
         environment, 
         {
@@ -38,11 +43,16 @@ function commit(environment, idx, memberIds, goodsId, itemList) {
                     goodsId: goodsId,
                 },
             },
-            updater: store => {
-                const payload = store.getRootField('addItem');
-                const newEdge = payload.getLinkedRecord('itemEdge');
-                sharedUpdater(store, itemList, newEdge);
-            }
+            configs: [{
+                type: 'RANGE_ADD',
+                parentID: itemList.id,
+                connectionInfo: [{
+                    key: 'GoodsEditor_items',
+                    rangeBehavior: 'append',
+                }],
+                edgeName: 'itemEdge',
+            }],
+            onCompleted,
         },
     );
 }
