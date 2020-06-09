@@ -12,7 +12,7 @@ import Link from '../Link';
 const customGrommet = deepMerge(grommet, {
     global: {
         colors: {
-            brand: '#e5732f'
+            brand: '#622d96'
         },
         focus: {
             border: {

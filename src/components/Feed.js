@@ -152,6 +152,7 @@ class Feed extends Component {
                         direction='row'
                         justify='end'
                         gap='medium'
+                        pad={{vertical: 'small', horizontal: 'medium'}}
                     >
                         <DropButton
                             plain
