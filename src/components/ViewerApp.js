@@ -26,10 +26,15 @@ class ViewerApp extends Component {
 
                 <Link to='/profile' icon={<User />} label='프로필' />
                 <Link to='/notice' icon={<Announce />} label='공지사항' />
-                <Anchor target='_blank' href='https://twitter.com/nomorepremium/status/1230938532425826305' icon={<Help />} label='사용법' />
-
-                <Anchor target='_blank' href='/documents' icon={<CircleQuestion />} label='문의' />
-                <Anchor target='_blank' href='https://twitter.com/nomorepremium' icon={<Twitter />} label='공식 트위터' />
+                {/* <Anchor target='_blank' href='https://twitter.com/nomorepremium/status/1230938532425826305' icon={<Help />} label='사용법' /> */}
+                <Anchor 
+                    target='_blank' 
+                    href='https://open.kakao.com/o/sbZTCfYb' 
+                    icon={<CircleQuestion />} 
+                    label='운영자에게 사용법 문의하기' 
+                />
+                {/* <Anchor target='_blank' href='/documents' icon={<CircleQuestion />} label='문의' /> */}
+                {/* <Anchor target='_blank' href='https://twitter.com/nomorepremium' icon={<Twitter />} label='공식 트위터' /> */}
 
                 {/* <Link to='/settings' icon={<Configure />} label='설정' /> */}
                 <Anchor href='/' icon={<Logout />} label='로그 아웃' onClick={this.logout} />
